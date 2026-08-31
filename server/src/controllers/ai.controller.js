@@ -5,6 +5,7 @@ import Task from '../models/Task.model.js';
 import Goal from '../models/Goal.model.js';
 import Event from '../models/Event.model.js';
 import Note from '../models/Note.model.js';
+import StudySession from '../models/StudySession.model.js';
 
 dotenv.config();
 
@@ -44,6 +45,22 @@ const buildUserContext = async (userId) => {
       .limit(5)
       .select('title');
 
+    // 5. Study Stats
+    const nowD = new Date();
+    const weekStart = new Date(nowD);
+    weekStart.setDate(weekStart.getDate() - 7);
+    const studySessions = await StudySession.find({ userId, completed: true, startedAt: { $gte: weekStart } });
+    
+    let totalStudyMins = 0;
+    const subjectCounts = {};
+    studySessions.forEach(s => {
+      const mins = Math.round(s.duration / 60);
+      totalStudyMins += mins;
+      if (!subjectCounts[s.subject]) subjectCounts[s.subject] = 0;
+      subjectCounts[s.subject] += mins;
+    });
+    const bestSubject = Object.keys(subjectCounts).sort((a,b) => subjectCounts[b] - subjectCounts[a])[0] || 'None';
+
     // Build the string
     let contextStr = `USER CONTEXT (as of ${new Date().toLocaleDateString()}):\n`;
     contextStr += `Tasks: ${tasks.length} total, ${done} done, ${inProgress} in-progress, ${todo} todo\n`;
@@ -76,6 +93,8 @@ const buildUserContext = async (userId) => {
     if (recentNotes.length > 0) {
       contextStr += `Recent notes: ${recentNotes.map(n => n.title).join(', ')}\n`;
     }
+
+    contextStr += `Study Stats (Last 7 days): ${Math.round(totalStudyMins / 60 * 10) / 10} hours total. Most studied: ${bestSubject}\n`;
 
     return contextStr;
   } catch (err) {

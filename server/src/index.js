@@ -8,6 +8,7 @@ import taskRoutes from './routes/task.routes.js';
 import goalRoutes from './routes/goal.routes.js';
 import noteRoutes from './routes/note.routes.js';
 import eventRoutes from './routes/event.routes.js';
+import studyRoutes from './routes/study.routes.js';
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use('/api/tasks', taskRoutes);
 app.use('/api/goals', goalRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/study', studyRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

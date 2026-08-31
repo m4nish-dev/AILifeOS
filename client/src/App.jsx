@@ -5,6 +5,7 @@ import Tasks from './pages/Tasks/Tasks'
 import Goals from './pages/Goals/Goals'
 import Calendar from './pages/Calendar/Calendar'
 import Notes from './pages/Notes/Notes'
+import Study from './pages/Study/Study'
 import AIAssistant from './pages/AIAssistant/AIAssistant'
 import Analytics from './pages/Analytics/Analytics'
 import Settings from './pages/Settings/Settings'
@@ -32,6 +33,7 @@ export default function App() {
         <Route path="/goals" element={<Goals />} />
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/notes" element={<Notes />} />
+        <Route path="/study" element={<Study />} />
         <Route path="/assistant" element={<AIAssistant />} />
         <Route path="/analytics" element={<Analytics />} />
         <Route path="/settings" element={<Settings />} />
