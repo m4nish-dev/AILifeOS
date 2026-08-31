@@ -3,7 +3,7 @@ import { Pin, Trash2, Sparkles, FileQuestion, BookOpen, Copy, Eye, EyeOff, Tag a
 import AINoteActions from '../AINoteActions/AINoteActions'
 import './NoteEditor.css'
 
-export default function NoteEditor({ note, folders, onSave, onDelete, onSummarize, onQuiz }) {
+export default function NoteEditor({ note, folders, saveStatus, onSave, onDelete, onSummarize, onQuiz }) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [tags, setTags] = useState([])
@@ -26,7 +26,7 @@ export default function NoteEditor({ note, folders, onSave, onDelete, onSummariz
     if (!note) return
     const timeout = setTimeout(() => {
       if (title !== note.title || content !== note.content || pinned !== note.pinned || folderId !== note.folderId || JSON.stringify(tags) !== JSON.stringify(note.tags)) {
-        onSave({ ...note, title, content, tags, pinned, folderId, updatedAt: new Date().toISOString().slice(0,10) })
+        onSave({ ...note, title, content, tags, pinned, folderId })
       }
     }, 600)
     return () => clearTimeout(timeout)
@@ -55,8 +55,8 @@ export default function NoteEditor({ note, folders, onSave, onDelete, onSummariz
           <select className="ne__folder-select" value={folderId} onChange={(e) => setFolderId(e.target.value)}>
             {folders.map(f => <option key={f.id} value={f.id}>{f.icon} {f.name}</option>)}
           </select>
-          <span className="ne__saved">
-            Auto-saved · {new Date(note.updatedAt).toLocaleDateString()}
+          <span className="ne__saved" style={{ color: saveStatus === 'saving' ? 'var(--blue-500)' : saveStatus === 'error' ? 'var(--red-500)' : 'var(--text-tertiary)' }}>
+            {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'error' ? 'Error saving' : `Saved · ${new Date(note.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
           </span>
         </div>
         <div className="ne__toolbar-right">

@@ -1,30 +1,54 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import NotesSidebar from '../../components/notes/NotesSidebar/NotesSidebar'
 import NoteEditor from '../../components/notes/NoteEditor/NoteEditor'
 import NoteQuizModal from '../../components/notes/NoteQuizModal/NoteQuizModal'
-import { foldersData, notesData } from '../../data/mockNotes'
+import { noteService } from '../../services/noteService'
+import { foldersData } from '../../data/mockNotes' // Keep folders local for now
 import './Notes.css'
 
 export default function Notes() {
   const [folders, setFolders] = useState(foldersData)
-  const [notes, setNotes] = useState(notesData)
+  const [notes, setNotes] = useState([])
   const [selectedFolder, setSelectedFolder] = useState(null)
-  const [selectedNote, setSelectedNote] = useState(notesData[0])
+  const [selectedNote, setSelectedNote] = useState(null)
+  
+  const [apiLoading, setApiLoading] = useState(true)
+  const [saveStatus, setSaveStatus] = useState('saved') // 'saved' | 'saving' | 'error'
+
   const [aiModal, setAiModal] = useState({ open: false, mode: 'summary', note: null })
 
-  const handleNewNote = () => {
-    const newNote = {
-      id: `n${Date.now()}`,
-      folderId: selectedFolder || folders[0].id,
-      title: 'Untitled Note',
-      content: '# New Note\n\nStart writing…',
-      createdAt: new Date().toISOString().slice(0, 10),
-      updatedAt: new Date().toISOString().slice(0, 10),
-      tags: [],
-      pinned: false,
+  const fetchNotes = useCallback(async () => {
+    try {
+      setApiLoading(true)
+      const data = await noteService.getNotes()
+      setNotes(data)
+      if (data.length > 0) setSelectedNote(data[0])
+    } catch (err) {
+      console.error('Failed to load notes:', err)
+    } finally {
+      setApiLoading(false)
     }
-    setNotes([newNote, ...notes])
-    setSelectedNote(newNote)
+  }, [])
+
+  useEffect(() => { fetchNotes() }, [fetchNotes])
+
+  const handleNewNote = async () => {
+    try {
+      setSaveStatus('saving')
+      const newNote = await noteService.createNote({
+        title: 'Untitled Note',
+        content: '# New Note\n\nStart writing…',
+        folderId: selectedFolder || folders[0].id,
+        tags: [],
+        pinned: false
+      })
+      setNotes([newNote, ...notes])
+      setSelectedNote(newNote)
+      setSaveStatus('saved')
+    } catch (err) {
+      console.error('Failed to create note', err)
+      setSaveStatus('error')
+    }
   }
 
   const handleNewFolder = () => {
@@ -33,16 +57,39 @@ export default function Notes() {
     setFolders([...folders, { id: `f${Date.now()}`, name, icon: '📁', color: 'green' }])
   }
 
-  const handleSave = (updatedNote) => {
-    setNotes(notes.map(n => n.id === updatedNote.id ? updatedNote : n))
-    setSelectedNote(updatedNote)
+  const handleSave = async (updatedNote) => {
+    try {
+      setSaveStatus('saving')
+      const savedNote = await noteService.updateNote(updatedNote.id || updatedNote._id, updatedNote)
+      setNotes(prev => prev.map(n => (n.id === savedNote.id || n._id === savedNote._id) ? savedNote : n))
+      if (selectedNote && (selectedNote.id === savedNote.id || selectedNote._id === savedNote._id)) {
+        setSelectedNote(savedNote)
+      }
+      setSaveStatus('saved')
+    } catch (err) {
+      console.error('Failed to save note', err)
+      setSaveStatus('error')
+    }
   }
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (!confirm('Delete this note?')) return
-    const remaining = notes.filter(n => n.id !== id)
-    setNotes(remaining)
-    setSelectedNote(remaining[0] || null)
+    try {
+      await noteService.deleteNote(id)
+      const remaining = notes.filter(n => n.id !== id && n._id !== id)
+      setNotes(remaining)
+      setSelectedNote(remaining[0] || null)
+    } catch (err) {
+      console.error('Failed to delete note', err)
+    }
+  }
+
+  if (apiLoading) {
+    return (
+      <div className="notes-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-tertiary)' }}>
+        Loading notes...
+      </div>
+    )
   }
 
   return (
@@ -60,6 +107,7 @@ export default function Notes() {
       <NoteEditor
         note={selectedNote}
         folders={folders}
+        saveStatus={saveStatus}
         onSave={handleSave}
         onDelete={handleDelete}
         onSummarize={(note) => setAiModal({ open: true, mode: 'summary', note })}

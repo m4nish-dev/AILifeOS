@@ -6,6 +6,8 @@ import aiRoutes from './routes/ai.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import taskRoutes from './routes/task.routes.js';
 import goalRoutes from './routes/goal.routes.js';
+import noteRoutes from './routes/note.routes.js';
+import eventRoutes from './routes/event.routes.js';
 
 dotenv.config();
 
@@ -25,6 +27,8 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/goals', goalRoutes);
+app.use('/api/notes', noteRoutes);
+app.use('/api/events', eventRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

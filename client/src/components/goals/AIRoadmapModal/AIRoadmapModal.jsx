@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { X, Sparkles, Check, Loader, Wand2 } from 'lucide-react'
+import { aiService } from '../../../services/aiService'
 import './AIRoadmapModal.css'
 
 const EXAMPLES = [
@@ -19,20 +20,15 @@ export default function AIRoadmapModal({ open, onClose, onGenerate }) {
   const generate = async () => {
     if (!prompt.trim()) return
     setLoading(true)
-    // Simulate AI generation
-    setTimeout(() => {
-      setResult({
-        title: prompt.charAt(0).toUpperCase() + prompt.slice(1),
-        description: `AI-generated roadmap for: ${prompt}`,
-        weeks: [
-          { week: 1, focus: 'Foundations', milestones: ['Set up environment', 'Master the basics', 'Build first mini-project'] },
-          { week: 2, focus: 'Core Skills', milestones: ['Deep dive into fundamentals', 'Practice daily challenges', 'Complete guided tutorial'] },
-          { week: 3, focus: 'Application', milestones: ['Build main project', 'Add advanced features', 'Get feedback'] },
-          { week: 4, focus: 'Polish & Ship', milestones: ['Polish and test', 'Deploy or publish', 'Reflect and iterate'] },
-        ],
-      })
+    try {
+      const data = await aiService.generateGoalRoadmap(prompt)
+      setResult(data)
+    } catch (err) {
+      console.error('AI generation failed', err)
+      alert('Failed to generate roadmap. Make sure backend is running.')
+    } finally {
       setLoading(false)
-    }, 1600)
+    }
   }
 
   const accept = () => {
