@@ -1,0 +1,64 @@
+.mcal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xl);
+  padding: var(--sp-4);
+}
+.mcal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sp-3);
+}
+.mcal__title {
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-md);
+  color: var(--text-primary);
+}
+.mcal__nav { display: flex; gap: 2px; }
+.mcal__nav button {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  color: var(--text-secondary);
+  border-radius: var(--r-sm);
+  transition: background var(--t-fast);
+}
+.mcal__nav button:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+.mcal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+.mcal__grid--days { margin-bottom: 4px; }
+.mcal__dow {
+  font-size: 10px;
+  font-weight: var(--fw-semibold);
+  color: var(--text-tertiary);
+  text-align: center;
+  padding: 4px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.mcal__cell {
+  aspect-ratio: 1;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+  border-radius: var(--r-md);
+  transition: background var(--t-fast), color var(--t-fast);
+}
+.mcal__cell:not(:disabled):hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.mcal__cell--today {
+  background: linear-gradient(135deg, var(--green-600), var(--green-500)) !important;
+  color: #fff !important;
+  font-weight: var(--fw-bold);
+  box-shadow: var(--shadow-glow-green);
+}
+.mcal__cell--empty { cursor: default; }

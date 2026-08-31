@@ -1,0 +1,80 @@
+.ring-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xl);
+  padding: var(--sp-4);
+}
+.ring-card__head { margin-bottom: var(--sp-3); }
+.ring-card__head h4 {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.ring-card__body {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+.ring-card__ring {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  flex-shrink: 0;
+}
+.ring-card__ring svg { width: 100%; height: 100%; }
+.ring-card__track {
+  fill: none;
+  stroke: var(--bg-app);
+  stroke-width: 10;
+}
+.ring-card__center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+.ring-card__num {
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-xl);
+  color: var(--text-primary);
+}
+.ring-card__label {
+  font-size: 9px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: var(--fw-semibold);
+}
+.ring-card__legend {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ring-card__legend li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.ring-card__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--r-full);
+}
+.ring-card__legend-label {
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  font-weight: var(--fw-medium);
+}
+.ring-card__legend-val {
+  font-size: var(--fs-xs);
+  color: var(--text-primary);
+  font-weight: var(--fw-semibold);
+}

@@ -1,0 +1,5 @@
+.notes-page {
+  display: flex; gap: var(--sp-4);
+  max-width: 1600px; margin: 0 auto;
+}
+@media (max-width: 900px) { .notes-page { flex-direction: column; } .ns { width: 100%; position: static; height: auto; max-height: 400px; } .ne { height: auto; min-height: 500px; } }

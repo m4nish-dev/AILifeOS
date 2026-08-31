@@ -1,0 +1,95 @@
+.tf {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xl);
+  padding: var(--sp-4) var(--sp-5);
+  margin-bottom: var(--sp-5);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  animation: fadeIn var(--t-slow) both;
+}
+
+.tf__group {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.tf__label {
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+  font-weight: var(--fw-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.tf__chips {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.tf__chip {
+  padding: 5px 11px;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+  background: var(--bg-app);
+  border: 1px solid transparent;
+  border-radius: var(--r-full);
+  transition: all var(--t-fast);
+}
+.tf__chip:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.tf__chip--active {
+  background: var(--text-primary);
+  color: #fff;
+}
+.tf__chip--active.tf__chip--high   { background: var(--red-600);   }
+.tf__chip--active.tf__chip--medium { background: var(--amber-500); }
+.tf__chip--active.tf__chip--low    { background: var(--green-600); }
+
+.tf__divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border-default);
+}
+
+.tf__right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.tf__sort-label {
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+  font-weight: var(--fw-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.tf__sort {
+  padding: 6px 10px;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  color: var(--text-primary);
+  background: var(--bg-app);
+  border-radius: var(--r-md);
+  cursor: pointer;
+}
+
+.tf__clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--red-600);
+  background: var(--red-50);
+  border-radius: var(--r-full);
+  transition: background var(--t-fast);
+}
+.tf__clear:hover { background: var(--red-100); }

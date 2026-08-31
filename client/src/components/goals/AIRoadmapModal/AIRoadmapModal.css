@@ -1,0 +1,147 @@
+.arm__backdrop {
+  position: fixed; inset: 0; background: rgba(16,24,40,0.5);
+  backdrop-filter: blur(6px); z-index: 100;
+  display: grid; place-items: center; padding: var(--sp-6);
+  animation: fadeIn var(--t-base) both;
+}
+.arm {
+  width: 100%; max-width: 720px; max-height: 90vh;
+  background: var(--bg-surface); border-radius: var(--r-2xl);
+  box-shadow: var(--shadow-lg); display: flex; flex-direction: column; overflow: hidden;
+  animation: slideUp var(--t-slow) both;
+}
+
+.arm__head {
+  padding: var(--sp-5) var(--sp-6);
+  background: linear-gradient(135deg, var(--coffee-700), var(--coffee-500));
+  color: #fff; position: relative; overflow: hidden;
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+.arm__head::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 100% 0%, rgba(255,255,255,0.15), transparent 60%);
+}
+.arm__badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px; background: rgba(255,255,255,0.2);
+  font-size: 10px; font-weight: var(--fw-bold); letter-spacing: 0.08em;
+  text-transform: uppercase; border-radius: var(--r-full); margin-bottom: 8px;
+  position: relative;
+}
+.arm__title {
+  font-family: var(--font-display); font-weight: var(--fw-bold);
+  font-size: var(--fs-xl); color: #fff; letter-spacing: -0.01em;
+  position: relative;
+}
+.arm__sub { color: rgba(255,255,255,0.85); font-size: var(--fs-sm); margin-top: 4px; position: relative; }
+.arm__close {
+  width: 34px; height: 34px; border-radius: var(--r-md);
+  display: grid; place-items: center; color: #fff;
+  background: rgba(255,255,255,0.15); transition: background var(--t-fast);
+  position: relative;
+}
+.arm__close:hover { background: rgba(255,255,255,0.28); }
+
+.arm__body { padding: var(--sp-6); overflow-y: auto; flex: 1; }
+
+.arm__prompt label,
+.arm__examples label {
+  display: block; font-size: var(--fs-xs); font-weight: var(--fw-semibold);
+  color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+.arm__textarea {
+  width: 100%; padding: 14px 16px; border: 1px solid var(--border-default);
+  border-radius: var(--r-lg); background: var(--bg-surface-alt);
+  font-size: var(--fs-md); color: var(--text-primary); font-family: inherit;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast); resize: vertical;
+}
+.arm__textarea:focus {
+  border-color: var(--coffee-600); box-shadow: 0 0 0 3px rgba(122,78,45,0.12);
+  background: var(--bg-surface); outline: none;
+}
+
+.arm__examples { margin: var(--sp-4) 0; }
+.arm__example-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.arm__example {
+  padding: 8px 12px; font-size: var(--fs-xs); font-weight: var(--fw-medium);
+  color: var(--text-secondary); background: var(--bg-surface-alt);
+  border: 1px solid var(--border-subtle); border-radius: var(--r-full);
+  transition: all var(--t-fast);
+}
+.arm__example:hover:not(:disabled) {
+  border-color: var(--coffee-600); color: var(--coffee-700); background: var(--coffee-50);
+}
+.arm__example:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.arm__generate {
+  width: 100%; padding: 14px; margin-top: var(--sp-4);
+  background: linear-gradient(135deg, var(--coffee-600), var(--coffee-500));
+  color: #fff; font-size: var(--fs-md); font-weight: var(--fw-semibold);
+  border-radius: var(--r-lg); display: inline-flex; align-items: center;
+  justify-content: center; gap: 8px; box-shadow: var(--shadow-glow-coffee);
+  transition: transform var(--t-fast);
+}
+.arm__generate:hover:not(:disabled) { transform: translateY(-1px); }
+.arm__generate:disabled { opacity: 0.6; cursor: not-allowed; }
+.arm__spin { animation: spin 1s linear infinite; }
+
+/* Result */
+.arm__result-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: var(--sp-4); margin-bottom: var(--sp-4);
+  padding-bottom: var(--sp-4); border-bottom: 1px solid var(--border-subtle);
+}
+.arm__result-title {
+  font-family: var(--font-display); font-size: var(--fs-lg);
+  font-weight: var(--fw-bold); color: var(--text-primary); margin-bottom: 4px;
+}
+.arm__result-desc { font-size: var(--fs-sm); color: var(--text-secondary); }
+.arm__result-stats { display: flex; flex-direction: column; gap: 4px; text-align: right; }
+.arm__result-stats span {
+  font-size: 11px; color: var(--coffee-700); font-weight: var(--fw-semibold);
+  padding: 3px 8px; background: var(--coffee-50); border-radius: var(--r-full);
+}
+
+.arm__weeks { display: flex; flex-direction: column; gap: var(--sp-3); }
+.arm__week {
+  padding: var(--sp-4); background: var(--bg-surface-alt);
+  border: 1px solid var(--border-subtle); border-radius: var(--r-lg);
+}
+.arm__week-head { display: flex; align-items: center; gap: var(--sp-3); margin-bottom: var(--sp-3); }
+.arm__week-num {
+  width: 32px; height: 32px; border-radius: var(--r-md);
+  background: var(--coffee-600); color: #fff;
+  display: grid; place-items: center;
+  font-family: var(--font-display); font-weight: var(--fw-bold); font-size: var(--fs-xs);
+}
+.arm__week-focus {
+  font-family: var(--font-display); font-weight: var(--fw-bold);
+  font-size: var(--fs-md); color: var(--text-primary);
+}
+.arm__week-list { display: flex; flex-direction: column; gap: 6px; }
+.arm__week-list li {
+  display: flex; align-items: center; gap: 8px;
+  font-size: var(--fs-sm); color: var(--text-primary); padding-left: 40px;
+}
+.arm__week-list svg { color: var(--green-600); }
+
+.arm__actions {
+  display: flex; justify-content: flex-end; gap: var(--sp-2);
+  margin-top: var(--sp-5);
+}
+.arm__btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 18px; font-size: var(--fs-sm); font-weight: var(--fw-semibold);
+  border-radius: var(--r-md); transition: all var(--t-fast);
+}
+.arm__btn--primary {
+  background: linear-gradient(135deg, var(--coffee-600), var(--coffee-500));
+  color: #fff; box-shadow: var(--shadow-glow-coffee);
+}
+.arm__btn--primary:hover { transform: translateY(-1px); }
+.arm__btn--ghost {
+  color: var(--text-primary); background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+}
+.arm__btn--ghost:hover { background: var(--bg-hover); }

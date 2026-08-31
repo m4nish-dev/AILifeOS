@@ -1,0 +1,63 @@
+.al {
+  min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr;
+  background: var(--bg-app);
+}
+
+.al__brand {
+  padding: var(--sp-8) var(--sp-10); color: #fff;
+  background: linear-gradient(135deg, var(--green-800), var(--green-600) 50%, var(--coffee-600));
+  position: relative; overflow: hidden;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.al__brand::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.15), transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255,255,255,0.08), transparent 50%);
+}
+
+.al__brand-top {
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative;
+}
+.al__logo { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: var(--fw-bold); font-size: var(--fs-lg); }
+.al__logo-icon {
+  width: 34px; height: 34px; border-radius: var(--r-md);
+  background: rgba(255,255,255,0.2); display: grid; place-items: center;
+}
+.al__pro {
+  padding: 3px 8px; background: rgba(255,255,255,0.2);
+  font-size: 10px; font-weight: var(--fw-bold); letter-spacing: 0.06em;
+  border-radius: var(--r-full);
+}
+
+.al__hero { position: relative; }
+.al__hero h1 {
+  font-family: var(--font-display); font-size: var(--fs-4xl);
+  font-weight: var(--fw-bold); line-height: 1.15; letter-spacing: -0.02em;
+  margin-bottom: var(--sp-3);
+}
+.al__hero p { font-size: var(--fs-md); color: rgba(255,255,255,0.85); line-height: 1.6; margin-bottom: var(--sp-6); }
+
+.al__features { display: flex; flex-direction: column; gap: 10px; }
+.al__feat {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: var(--fs-sm); color: rgba(255,255,255,0.9); font-weight: var(--fw-medium);
+}
+.al__feat svg { color: rgba(255,255,255,0.8); }
+
+.al__foot {
+  padding: var(--sp-4); background: rgba(255,255,255,0.1);
+  border-radius: var(--r-lg); font-size: var(--fs-sm); font-style: italic;
+  line-height: 1.5; position: relative; backdrop-filter: blur(10px);
+}
+.al__foot span { display: block; margin-top: 8px; font-style: normal; font-size: 11px; opacity: 0.8; }
+
+.al__main { display: grid; place-items: center; padding: var(--sp-8); }
+
+@media (max-width: 900px) {
+  .al { grid-template-columns: 1fr; }
+  .al__brand { padding: var(--sp-6); min-height: 30vh; }
+  .al__hero h1 { font-size: var(--fs-2xl); }
+  .al__features, .al__foot { display: none; }
+}

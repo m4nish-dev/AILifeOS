@@ -1,0 +1,19 @@
+.ai-page {
+  display: flex; gap: var(--sp-4);
+  max-width: 1400px; margin: 0 auto;
+}
+.ai-main {
+  flex: 1; background: var(--bg-surface); border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xl); display: flex; flex-direction: column;
+  height: calc(100vh - 132px); overflow: hidden;
+}
+.ai-main__chat { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.ai-main__input {
+  padding: var(--sp-4); border-top: 1px solid var(--border-subtle);
+  background: var(--bg-surface-alt);
+}
+.ai-main__hint {
+  text-align: center; font-size: 10px; color: var(--text-tertiary);
+  margin-top: 8px; font-weight: var(--fw-medium);
+}
+@media (max-width: 900px) { .ai-page { flex-direction: column; } .cs { width: 100%; position: static; height: auto; max-height: 220px; } }

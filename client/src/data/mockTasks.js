@@ -1,0 +1,38 @@
+export const todaysTasks = [
+  {
+    id: 't1',
+    time: '10:00 AM',
+    title: 'Complete Backend API',
+    project: 'AI LifeOS Project',
+    duration: 90,
+    priority: 'high',
+    category: 'development',
+  },
+  {
+    id: 't2',
+    time: '12:00 PM',
+    title: 'DSA Practice',
+    project: 'DSA & Algorithms',
+    duration: 60,
+    priority: 'medium',
+    category: 'dsa',
+  },
+  {
+    id: 't3',
+    time: '03:00 PM',
+    title: 'Internship Work',
+    project: 'Company Project',
+    duration: 120,
+    priority: 'high',
+    category: 'work',
+  },
+  {
+    id: 't4',
+    time: '07:00 PM',
+    title: 'React Revision',
+    project: 'Learning',
+    duration: 45,
+    priority: 'low',
+    category: 'learning',
+  },
+]

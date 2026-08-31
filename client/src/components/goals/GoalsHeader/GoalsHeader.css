@@ -1,0 +1,58 @@
+.gh { margin-bottom: var(--sp-5); animation: fadeIn var(--t-slow) both; }
+.gh__top {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: var(--sp-6); flex-wrap: wrap; margin-bottom: var(--sp-4);
+}
+.gh__title {
+  font-family: var(--font-display); font-weight: var(--fw-bold);
+  font-size: var(--fs-3xl); letter-spacing: -0.02em; color: var(--text-primary);
+}
+.gh__sub { color: var(--text-secondary); font-size: var(--fs-sm); margin-top: 4px; }
+
+.gh__actions { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+
+.gh__search {
+  display: flex; align-items: center; gap: 8px; padding: 0 var(--sp-3);
+  height: 40px; min-width: 240px; background: var(--bg-surface);
+  border: 1px solid var(--border-default); border-radius: var(--r-lg);
+  color: var(--text-tertiary); transition: border-color var(--t-fast);
+}
+.gh__search:focus-within { border-color: var(--green-600); }
+.gh__search input { flex: 1; font-size: var(--fs-sm); color: var(--text-primary); }
+.gh__search input::placeholder { color: var(--text-tertiary); }
+
+.gh__ai {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0 16px; height: 40px;
+  background: linear-gradient(135deg, var(--coffee-600), var(--coffee-500));
+  color: #fff; font-size: var(--fs-sm); font-weight: var(--fw-semibold);
+  border-radius: var(--r-lg); box-shadow: var(--shadow-glow-coffee);
+  transition: transform var(--t-fast);
+}
+.gh__ai:hover { transform: translateY(-1px); }
+
+.gh__create {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0 16px; height: 40px;
+  background: linear-gradient(135deg, var(--green-600), var(--green-500));
+  color: #fff; font-size: var(--fs-sm); font-weight: var(--fw-semibold);
+  border-radius: var(--r-lg); box-shadow: var(--shadow-glow-green);
+  transition: transform var(--t-fast);
+}
+.gh__create:hover { transform: translateY(-1px); }
+
+.gh__tabs {
+  display: flex; gap: 4px; padding: 4px;
+  background: var(--bg-surface); border: 1px solid var(--border-subtle);
+  border-radius: var(--r-lg); width: fit-content;
+}
+.gh__tab {
+  padding: 7px 14px; font-size: var(--fs-sm); font-weight: var(--fw-medium);
+  color: var(--text-secondary); border-radius: var(--r-md);
+  transition: all var(--t-fast);
+}
+.gh__tab:hover { color: var(--text-primary); }
+.gh__tab--active {
+  background: var(--bg-app); color: var(--text-primary);
+  font-weight: var(--fw-semibold);
+}

@@ -1,0 +1,35 @@
+.gs {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-4); margin-bottom: var(--sp-5);
+}
+.gs__card {
+  background: var(--bg-surface); border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xl); padding: var(--sp-4) var(--sp-5);
+  position: relative; overflow: hidden;
+  transition: transform var(--t-base), box-shadow var(--t-base);
+  animation: slideUp var(--t-slow) both;
+}
+.gs__card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.gs__card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: var(--_c);
+}
+.gs__card--green { --_c: var(--green-600); --_tint: var(--green-50); }
+.gs__card--green-dark { --_c: var(--green-700); --_tint: var(--green-50); }
+.gs__card--coffee { --_c: var(--coffee-600); --_tint: var(--coffee-50); }
+.gs__card--red { --_c: var(--red-600); --_tint: var(--red-50); }
+
+.gs__row { display: flex; align-items: center; gap: var(--sp-2); margin-bottom: var(--sp-3); }
+.gs__icon {
+  width: 30px; height: 30px; border-radius: var(--r-md);
+  background: var(--_tint); color: var(--_c);
+  display: grid; place-items: center;
+}
+.gs__label { font-size: var(--fs-sm); color: var(--text-secondary); font-weight: var(--fw-medium); }
+.gs__value {
+  font-family: var(--font-display); font-weight: var(--fw-bold);
+  font-size: 30px; color: var(--text-primary); line-height: 1; letter-spacing: -0.02em;
+}
+.gs__sub { margin-top: var(--sp-2); font-size: var(--fs-xs); color: var(--text-tertiary); font-weight: var(--fw-medium); }
+
+@media (max-width: 900px) { .gs { grid-template-columns: repeat(2, 1fr); } }

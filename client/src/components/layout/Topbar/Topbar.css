@@ -1,0 +1,115 @@
+.topbar {
+  height: var(--topbar-h);
+  padding: 0 var(--sp-8);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+/* Search */
+.topbar__search {
+  flex: 1;
+  max-width: 620px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 0 var(--sp-4);
+  background: var(--bg-app);
+  border: 1px solid transparent;
+  border-radius: var(--r-lg);
+  transition: border-color var(--t-fast), background var(--t-fast);
+}
+.topbar__search:focus-within {
+  border-color: var(--green-600);
+  background: var(--bg-surface);
+}
+.topbar__search-icon {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+.topbar__search-input {
+  flex: 1;
+  font-size: var(--fs-base);
+  color: var(--text-primary);
+}
+.topbar__search-input::placeholder { color: var(--text-tertiary); }
+.topbar__search-kbd {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-sm);
+  background: var(--bg-surface);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: var(--fw-medium);
+}
+
+/* Actions */
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-left: auto;
+}
+
+.topbar__streak {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 7px 12px;
+  border-radius: var(--r-full);
+  background: var(--coffee-50);
+  color: var(--coffee-700);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+}
+.topbar__streak-icon {
+  color: var(--coffee-600);
+}
+
+.topbar__icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-full);
+  display: grid;
+  place-items: center;
+  color: var(--text-secondary);
+  background: var(--bg-app);
+  position: relative;
+  transition: background var(--t-fast), color var(--t-fast);
+}
+.topbar__icon-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.topbar__dot {
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  background: var(--red-600);
+  border-radius: var(--r-full);
+  border: 2px solid var(--bg-surface);
+}
+
+.topbar__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-full);
+  background: linear-gradient(135deg, var(--green-600), var(--green-500));
+  color: #fff;
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-sm);
+  display: grid;
+  place-items: center;
+  box-shadow: var(--shadow-glow-green);
+}

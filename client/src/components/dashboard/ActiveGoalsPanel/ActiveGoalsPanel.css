@@ -1,0 +1,93 @@
+.agoals {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xl);
+  padding: var(--sp-4);
+}
+.agoals__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sp-3);
+}
+.agoals__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+}
+.agoals__title h4 {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+}
+.agoals__all {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--fs-xs);
+  color: var(--green-600);
+  font-weight: var(--fw-semibold);
+}
+.agoals__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.agoals__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  border-radius: var(--r-lg);
+  background: var(--bg-surface-alt);
+  transition: background var(--t-fast);
+}
+.agoals__item:hover { background: var(--bg-hover); }
+.agoals__item--green  { --_c: var(--green-600); }
+.agoals__item--coffee { --_c: var(--coffee-600); }
+.agoals__item--red    { --_c: var(--red-600); }
+
+.agoals__icon {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-md);
+  background: var(--bg-surface);
+  color: var(--_c);
+  display: grid;
+  place-items: center;
+}
+.agoals__meta { min-width: 0; }
+.agoals__row-1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+.agoals__name {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--text-primary);
+}
+.agoals__pct {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  color: var(--_c);
+}
+.agoals__bar {
+  height: 5px;
+  background: var(--bg-hover);
+  border-radius: var(--r-full);
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+.agoals__bar-fill {
+  height: 100%;
+  background: var(--_c);
+  border-radius: var(--r-full);
+  transition: width var(--t-slow);
+}
+.agoals__sub {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  font-weight: var(--fw-medium);
+}

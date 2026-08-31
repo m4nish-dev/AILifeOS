@@ -1,0 +1,95 @@
+.em__backdrop {
+  position: fixed; inset: 0; background: rgba(16,24,40,0.45);
+  backdrop-filter: blur(4px); z-index: 100;
+  display: grid; place-items: center; padding: var(--sp-6);
+  animation: fadeIn var(--t-base) both;
+}
+.em {
+  width: 100%; max-width: 560px; background: var(--bg-surface);
+  border-radius: var(--r-2xl); box-shadow: var(--shadow-lg);
+  overflow: hidden; animation: slideUp var(--t-slow) both;
+}
+.em__head {
+  padding: var(--sp-5) var(--sp-6); color: #fff; position: relative;
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+.em__head--green { background: linear-gradient(135deg, var(--green-700), var(--green-500)); }
+.em__head--coffee { background: linear-gradient(135deg, var(--coffee-700), var(--coffee-500)); }
+.em__head--amber { background: linear-gradient(135deg, #B67108, var(--amber-500)); }
+.em__head--red { background: linear-gradient(135deg, var(--red-700), var(--red-500)); }
+.em__head--blue { background: linear-gradient(135deg, var(--blue-600), var(--blue-500)); }
+
+.em__badge {
+  display: inline-block; padding: 4px 10px; background: rgba(255,255,255,0.2);
+  font-size: 10px; font-weight: var(--fw-bold); letter-spacing: 0.08em;
+  text-transform: uppercase; border-radius: var(--r-full); margin-bottom: 6px;
+}
+.em__title {
+  font-family: var(--font-display); font-weight: var(--fw-bold);
+  font-size: var(--fs-lg); color: #fff;
+}
+.em__close {
+  width: 34px; height: 34px; border-radius: var(--r-md);
+  display: grid; place-items: center; color: #fff;
+  background: rgba(255,255,255,0.15); transition: background var(--t-fast);
+}
+.em__close:hover { background: rgba(255,255,255,0.28); }
+
+.em__form { padding: var(--sp-5) var(--sp-6); }
+.em__field { display: flex; flex-direction: column; gap: 6px; margin-bottom: var(--sp-3); }
+.em__field label {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: var(--fs-xs); font-weight: var(--fw-semibold);
+  color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em;
+}
+.em__field-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); margin-bottom: var(--sp-3); }
+.em__field-row .em__field { margin-bottom: 0; }
+
+.em__input, .em__select {
+  padding: 10px 12px; border: 1px solid var(--border-default);
+  border-radius: var(--r-md); background: var(--bg-surface);
+  font-size: var(--fs-sm); color: var(--text-primary); font-family: inherit;
+  transition: border-color var(--t-fast); width: 100%;
+}
+.em__input:focus, .em__select:focus {
+  border-color: var(--green-600); outline: none;
+  box-shadow: 0 0 0 3px rgba(14,140,90,0.12);
+}
+.em__input--lg { padding: 12px 14px; font-size: var(--fs-md); font-weight: var(--fw-semibold); }
+
+.em__colors { display: flex; gap: 8px; }
+.em__color {
+  width: 30px; height: 30px; border-radius: var(--r-full);
+  border: 3px solid transparent; transition: all var(--t-fast);
+}
+.em__color--green { background: var(--green-600); }
+.em__color--coffee { background: var(--coffee-600); }
+.em__color--amber { background: var(--amber-500); }
+.em__color--red { background: var(--red-600); }
+.em__color--blue { background: var(--blue-500); }
+.em__color:hover { transform: scale(1.1); }
+.em__color--active { box-shadow: 0 0 0 2px var(--text-primary); }
+
+.em__foot {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: var(--sp-5); padding-top: var(--sp-4);
+  border-top: 1px solid var(--border-subtle); gap: var(--sp-2);
+}
+.em__foot-right { margin-left: auto; display: flex; gap: var(--sp-2); }
+.em__btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 18px; font-size: var(--fs-sm); font-weight: var(--fw-semibold);
+  border-radius: var(--r-md); transition: all var(--t-fast);
+}
+.em__btn--primary {
+  background: linear-gradient(135deg, var(--green-600), var(--green-500));
+  color: #fff; box-shadow: var(--shadow-glow-green);
+}
+.em__btn--primary:hover { transform: translateY(-1px); }
+.em__btn--ghost {
+  color: var(--text-primary); background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+}
+.em__btn--ghost:hover { background: var(--bg-hover); }
+.em__btn--danger { color: var(--red-600); background: var(--red-50); }
+.em__btn--danger:hover { background: var(--red-100); }

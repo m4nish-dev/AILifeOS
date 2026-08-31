@@ -1,0 +1,94 @@
+.asstm {
+  background: linear-gradient(135deg, var(--bg-surface) 0%, var(--green-50) 200%);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xl);
+  padding: var(--sp-4);
+}
+.asstm__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sp-3);
+}
+.asstm__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--text-primary);
+}
+.asstm__mark {
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, var(--green-600), var(--green-500));
+  color: #fff;
+  border-radius: var(--r-sm);
+  display: grid;
+  place-items: center;
+}
+.asstm__online {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: var(--fw-semibold);
+  color: var(--green-700);
+}
+.asstm__online-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--r-full);
+  background: var(--green-500);
+  animation: pulse 1.8s infinite;
+}
+
+.asstm__input {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 6px 6px 6px 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-full);
+  transition: border-color var(--t-fast);
+  margin-bottom: var(--sp-3);
+}
+.asstm__input:focus-within { border-color: var(--green-600); }
+.asstm__input input {
+  flex: 1;
+  font-size: var(--fs-xs);
+  color: var(--text-primary);
+}
+.asstm__input input::placeholder { color: var(--text-tertiary); }
+.asstm__input button {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-full);
+  background: linear-gradient(135deg, var(--green-600), var(--green-500));
+  color: #fff;
+  display: grid;
+  place-items: center;
+  transition: transform var(--t-fast);
+}
+.asstm__input button:hover { transform: scale(1.06); }
+
+.asstm__chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.asstm__chip {
+  font-size: 10px;
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  transition: all var(--t-fast);
+}
+.asstm__chip:hover {
+  border-color: var(--green-600);
+  color: var(--green-700);
+}
