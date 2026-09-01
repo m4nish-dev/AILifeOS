@@ -9,6 +9,7 @@ import Study from './pages/Study/Study'
 import AIAssistant from './pages/AIAssistant/AIAssistant'
 import Analytics from './pages/Analytics/Analytics'
 import Settings from './pages/Settings/Settings'
+import Profile from './pages/Profile/Profile'
 import Login from './pages/Auth/Login'
 import Register from './pages/Auth/Register'
 
@@ -37,6 +38,7 @@ export default function App() {
         <Route path="/assistant" element={<AIAssistant />} />
         <Route path="/analytics" element={<Analytics />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/profile" element={<Profile />} />
       </Route>
 
       {/* Catch-all */}

@@ -1,41 +1,182 @@
-.dash {
-  display: grid;
-  grid-template-columns: 1fr var(--right-panel-w);
-  gap: var(--sp-6);
-  max-width: 1600px;
-  margin: 0 auto;
-}
-.dash__main { min-width: 0; }
-.dash__aside {
+.dash-page {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-4);
-  position: sticky;
-  top: calc(var(--topbar-h) + var(--sp-6));
-  align-self: start;
-  max-height: calc(100vh - var(--topbar-h) - var(--sp-8));
+  gap: 32px;
+  padding: 16px;
+  height: 100%;
   overflow-y: auto;
-  padding-right: 2px;
 }
-.dash__aside::-webkit-scrollbar { width: 4px; }
 
-.dash__triple {
+.dash-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.dash-hero__title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.dash-hero__subtitle {
+  font-size: 16px;
+  color: var(--text-tertiary);
+}
+
+.dash-stats {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 1.2fr;
-  gap: var(--sp-4);
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
 }
 
-@media (max-width: 1280px) {
-  .dash { grid-template-columns: 1fr; }
-  .dash__aside {
-    position: static;
-    max-height: none;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-  }
+.dash-stat-card {
+  background: var(--surface-100);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-@media (max-width: 900px) {
-  .dash__triple { grid-template-columns: 1fr; }
-  .dash__aside { grid-template-columns: 1fr; }
+.dash-stat__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.dash-stat__value {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.dash-insight {
+  background: linear-gradient(135deg, rgba(var(--blue-500-rgb), 0.1), rgba(var(--purple-500-rgb), 0.1));
+  border: 1px solid rgba(var(--blue-500-rgb), 0.2);
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.dash-card {
+  background: var(--surface-100);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dash-card__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.dash-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dash-list__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--surface-200);
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.dash-list__item:hover {
+  transform: translateY(-2px);
+  background: var(--surface-300);
+}
+
+.dash-list__item-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--surface-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.dash-list__item-content {
+  flex: 1;
+  overflow: hidden;
+}
+
+.dash-list__item-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-list__item-sub {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+.dash-goal-progress {
+  width: 100%;
+  height: 6px;
+  background: var(--surface-300);
+  border-radius: 3px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.dash-goal-progress__fill {
+  height: 100%;
+  background: var(--green-500);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+.dash-empty {
+  text-align: center;
+  padding: 32px 0;
+  color: var(--text-tertiary);
+  font-size: 14px;
+}
+
+.dash-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 400px;
 }

@@ -9,6 +9,8 @@ import goalRoutes from './routes/goal.routes.js';
 import noteRoutes from './routes/note.routes.js';
 import eventRoutes from './routes/event.routes.js';
 import studyRoutes from './routes/study.routes.js';
+import analyticsRoutes from './routes/analytics.routes.js';
+import dashboardRoutes from './routes/dashboard.routes.js';
 
 dotenv.config();
 
@@ -31,6 +33,8 @@ app.use('/api/goals', goalRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/study', studyRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

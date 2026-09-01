@@ -47,6 +47,11 @@ export function AuthProvider({ children }) {
     setUser(userData)
   }
 
+  const updateUser = (userData) => {
+    localStorage.setItem('ailifeos-user', JSON.stringify(userData))
+    setUser(userData)
+  }
+
   const logout = () => {
     localStorage.removeItem('ailifeos-token')
     localStorage.removeItem('ailifeos-user')
@@ -62,7 +67,7 @@ export function AuthProvider({ children }) {
   const firstName = user?.name ? user.name.split(' ')[0] : ''
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, refreshUser, initials, firstName }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, refreshUser, updateUser, initials, firstName }}>
       {children}
     </AuthContext.Provider>
   )

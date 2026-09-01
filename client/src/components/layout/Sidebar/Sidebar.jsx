@@ -4,7 +4,7 @@ import {
   StickyNote, BookOpen, Sparkles, BarChart3,
   Settings, Plus, ChevronRight, Briefcase, Code2, GraduationCap
 } from 'lucide-react'
-import { useAuth } from '../../../context/AuthContext'
+import UserMenu from '../UserMenu/UserMenu'
 import './Sidebar.css'
 
 const navItems = [
@@ -25,7 +25,6 @@ const workspaces = [
 ]
 
 export default function Sidebar() {
-  const { user, initials } = useAuth()
   return (
     <aside className="sidebar">
       <div className="sidebar__brand">
@@ -80,15 +79,8 @@ export default function Sidebar() {
           <span>Settings</span>
         </NavLink>
 
-        <div className="sidebar__user">
-          <div className="sidebar__user-avatar">{initials}</div>
-          <div className="sidebar__user-meta">
-            <span className="sidebar__user-name">{user?.name || 'Loading…'}</span>
-            <span className="sidebar__user-plan">
-              Free Plan · <em>Upgrade</em>
-            </span>
-          </div>
-          <ChevronRight size={16} className="sidebar__user-chev" />
+        <div className="sidebar__user-wrap" style={{ marginTop: 'auto', display: 'flex', justifyContent: 'center', width: '100%', padding: '16px 0' }}>
+          <UserMenu />
         </div>
       </div>
     </aside>
