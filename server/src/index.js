@@ -43,9 +43,8 @@ app.use('/api/notifications', notificationRoutes);
 // Health check
 app.get('/api/health', (req, res) => {
   res.status(200).json({
-    success: true,
-    message: 'AILifeOS Server is running',
-    timestamp: new Date().toISOString(),
+    status: 'ok',
+    timestamp: new Date().toISOString()
   });
 });
 
