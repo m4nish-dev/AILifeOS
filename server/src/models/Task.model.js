@@ -39,6 +39,15 @@ const taskSchema = new mongoose.Schema(
     time: { type: String, default: '' },
     duration: { type: Number, default: 30 },
     tags: [{ type: String, trim: true }],
+    eventId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Event'
+    },
+    goalId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Goal',
+      index: true
+    },
     subtasks: [
       {
         id: String,

@@ -1,4 +1,5 @@
 import Task from '../models/Task.model.js';
+import Event from '../models/Event.model.js';
 
 // @desc   Get all tasks for the authenticated user
 // @route  GET /api/tasks
@@ -89,7 +90,7 @@ export const updateTask = async (req, res) => {
     }
 
     // Apply updates field by field (never overwrite userId)
-    const allowed = ['title', 'description', 'status', 'priority', 'dueDate', 'category', 'project', 'time', 'duration', 'tags', 'subtasks'];
+    const allowed = ['title', 'description', 'status', 'priority', 'dueDate', 'category', 'project', 'time', 'duration', 'tags', 'subtasks', 'goalId', 'eventId'];
     allowed.forEach(field => {
       if (req.body[field] !== undefined) task[field] = req.body[field];
     });
@@ -123,6 +124,33 @@ export const deleteTask = async (req, res) => {
     await task.deleteOne();
 
     res.status(200).json({ success: true, message: 'Task deleted successfully.', data: null });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const scheduleTask = async (req, res) => {
+  try {
+    const task = await Task.findById(req.params.id);
+    if (!task) return res.status(404).json({ success: false, message: 'Task not found' });
+    if (task.userId.toString() !== req.user._id.toString()) return res.status(403).json({ success: false, message: 'Not authorized' });
+
+    const { start, end } = req.body;
+    if (!start || !end) return res.status(400).json({ success: false, message: 'Start and end times required' });
+
+    const event = await Event.create({
+      userId: req.user._id,
+      title: task.title,
+      description: `Scheduled for task: ${task.title}`,
+      start: new Date(start),
+      end: new Date(end),
+      color: 'blue'
+    });
+
+    task.eventId = event._id;
+    await task.save();
+
+    res.status(200).json({ success: true, data: { task, event } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

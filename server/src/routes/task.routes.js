@@ -1,5 +1,5 @@
 import express from 'express';
-import { getTasks, getTask, createTask, updateTask, deleteTask } from '../controllers/task.controller.js';
+import { getTasks, getTask, createTask, updateTask, deleteTask, scheduleTask } from '../controllers/task.controller.js';
 import { protect } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
@@ -15,5 +15,7 @@ router.route('/:id')
   .get(getTask)
   .put(updateTask)
   .delete(deleteTask);
+
+router.post('/:id/schedule', scheduleTask);
 
 export default router;

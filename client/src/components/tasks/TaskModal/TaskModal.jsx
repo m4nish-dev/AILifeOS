@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react'
 import {
   X, Calendar, Clock, Flag, Folder, AlignLeft,
-  Plus, Trash2, Check, Tag, Sparkles
+  Plus, Trash2, Check, Tag, Sparkles, Target, Loader2
 } from 'lucide-react'
 import { STATUSES, STATUS_LABEL, CATEGORIES } from '../../../data/mockTasksFull'
+import api from '../../../services/api'
+import { taskService } from '../../../services/taskService'
+import { useToast } from '../../../context/ToastContext'
 import './TaskModal.css'
 
 const PRIORITIES = ['high', 'medium', 'low']
@@ -22,11 +25,19 @@ const emptyTask = {
   subtasks: [],
 }
 
-export default function TaskModal({ open, task, initialStatus, onClose, onSave, onDelete }) {
+export default function TaskModal({ open, task, initialStatus, isSaving, onClose, onSave, onDelete }) {
   const isEdit = Boolean(task)
   const [form, setForm] = useState(emptyTask)
   const [newSub, setNewSub] = useState('')
   const [newTag, setNewTag] = useState('')
+  const [goals, setGoals] = useState([])
+  const { showToast } = useToast()
+
+  useEffect(() => {
+    if (open) {
+      api.get('/goals').then(res => setGoals(res.data.data)).catch(console.error)
+    }
+  }, [open])
 
   useEffect(() => {
     if (task) {
@@ -71,13 +82,29 @@ export default function TaskModal({ open, task, initialStatus, onClose, onSave, 
   }
   const removeTag = (t) => update('tags', form.tags.filter(x => x !== t))
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault()
     if (!form.title.trim()) return
     const payload = isEdit
       ? { ...form }
       : { ...form, id: `t${Date.now()}` }
-    onSave(payload, isEdit)
+    await onSave(payload, isEdit)
+  }
+
+  const handleSchedule = async () => {
+    if (!form.dueDate || !form.time) {
+      showToast('Please set a due date and time first', 'error')
+      return
+    }
+    try {
+      const start = new Date(`${form.dueDate}T${form.time}`)
+      const end = new Date(start.getTime() + (form.duration || 30) * 60000)
+      const updated = await taskService.scheduleTask(task.id || task._id, start.toISOString(), end.toISOString())
+      setForm(prev => ({ ...prev, eventId: updated.eventId }))
+      showToast('Scheduled on Calendar!', 'success')
+    } catch (err) {
+      showToast('Failed to schedule', 'error')
+    }
   }
 
   const doneSubs = form.subtasks?.filter(s => s.done).length || 0
@@ -300,6 +327,23 @@ export default function TaskModal({ open, task, initialStatus, onClose, onSave, 
                 />
               </div>
 
+              <div className="tm__field">
+                <label>
+                  <Target size={13} />
+                  Link to Goal
+                </label>
+                <select
+                  className="tm__select"
+                  value={form.goalId || ''}
+                  onChange={(e) => update('goalId', e.target.value)}
+                >
+                  <option value="">None</option>
+                  {goals.map(g => (
+                    <option key={g._id || g.id} value={g._id || g.id}>{g.title}</option>
+                  ))}
+                </select>
+              </div>
+
               <div className="tm__field-row">
                 <div className="tm__field">
                   <label>
@@ -352,6 +396,21 @@ export default function TaskModal({ open, task, initialStatus, onClose, onSave, 
                   </div>
                 </div>
               </div>
+
+              {isEdit && (
+                <div className="tm__field">
+                  <button 
+                    type="button" 
+                    className="tm__btn tm__btn--secondary" 
+                    style={{ width: '100%', justifyContent: 'center' }}
+                    onClick={handleSchedule}
+                    disabled={!!form.eventId}
+                  >
+                    <Calendar size={14} />
+                    {form.eventId ? '📅 Scheduled' : 'Schedule on Calendar'}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -372,16 +431,17 @@ export default function TaskModal({ open, task, initialStatus, onClose, onSave, 
                 type="button"
                 className="tm__btn tm__btn--ghost"
                 onClick={onClose}
+                disabled={isSaving}
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 className="tm__btn tm__btn--primary"
-                disabled={!form.title.trim()}
+                disabled={!form.title.trim() || isSaving}
               >
-                <Check size={14} strokeWidth={2.5} />
-                {isEdit ? 'Save Changes' : 'Create Task'}
+                {isSaving ? <Loader2 size={14} className="an-spin" /> : <Check size={14} strokeWidth={2.5} />}
+                {isSaving ? 'Saving...' : (isEdit ? 'Save Changes' : 'Create Task')}
               </button>
             </div>
           </div>

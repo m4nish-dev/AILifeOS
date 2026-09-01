@@ -4,7 +4,11 @@ import MonthView from '../../components/calendar/MonthView/MonthView'
 import WeekView from '../../components/calendar/WeekView/WeekView'
 import DayView from '../../components/calendar/DayView/DayView'
 import EventModal from '../../components/calendar/EventModal/EventModal'
+import Skeleton from '../../components/common/Skeleton/Skeleton'
+import EmptyState from '../../components/common/EmptyState/EmptyState'
 import { eventService } from '../../services/eventService'
+import { useToast } from '../../context/ToastContext'
+import { Calendar as CalendarIcon } from 'lucide-react'
 import './Calendar.css'
 
 export default function Calendar() {
@@ -16,6 +20,8 @@ export default function Calendar() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editingEvent, setEditingEvent] = useState(null)
   const [initialDate, setInitialDate] = useState(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const { showToast } = useToast()
 
   const fetchEvents = useCallback(async () => {
     try {
@@ -58,29 +64,34 @@ export default function Calendar() {
   }
 
   const handleSave = async (eventData, isEdit) => {
+    setIsSaving(true)
     try {
       if (isEdit) {
         const updated = await eventService.updateEvent(eventData.id || eventData._id, eventData)
         setEvents(prev => prev.map(e => (e.id === updated.id || e._id === updated._id) ? updated : e))
+        showToast('Event updated successfully', 'success')
       } else {
         const created = await eventService.createEvent(eventData)
         setEvents(prev => [...prev, created])
+        showToast('Event created successfully', 'success')
       }
       setModalOpen(false); setEditingEvent(null); setInitialDate(null)
     } catch (err) {
-      console.error('Failed to save event:', err)
-      alert(err.response?.data?.message || 'Failed to save event')
+      showToast(err.response?.data?.message || 'Failed to save event', 'error')
+    } finally {
+      setIsSaving(false)
     }
   }
 
   const handleDelete = async (id) => {
-    if (!confirm('Delete this event?')) return
+    if (!window.confirm('Are you sure you want to delete this event?')) return
     try {
       await eventService.deleteEvent(id)
       setEvents(prev => prev.filter(e => e.id !== id && e._id !== id))
+      showToast('Event deleted', 'success')
       setModalOpen(false); setEditingEvent(null)
     } catch (err) {
-      console.error('Failed to delete event:', err)
+      showToast(err.response?.data?.message || 'Failed to delete event', 'error')
     }
   }
 
@@ -101,8 +112,9 @@ export default function Calendar() {
     try {
       // Backend sync
       await eventService.moveEvent(eventId, updatedStartIso, updatedEndIso)
+      showToast('Event moved', 'success')
     } catch (err) {
-      console.error('Failed to move event:', err)
+      showToast(err.response?.data?.message || 'Failed to move event', 'error')
       fetchEvents() // Revert on failure
     }
   }
@@ -117,9 +129,16 @@ export default function Calendar() {
       />
 
       {apiLoading && events.length === 0 ? (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, color: 'var(--text-tertiary)' }}>Loading calendar...</div>
+        <div style={{ padding: 24, display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gridTemplateRows: 'repeat(5, 1fr)', gap: 12, flex: 1 }}>
+          <Skeleton variant="card" height="100%" count={35} />
+        </div>
       ) : (
         <>
+          {events.length === 0 && (
+            <div style={{ padding: '12px 24px', background: 'rgba(var(--blue-500-rgb), 0.1)', color: 'var(--blue-600)', textAlign: 'center', fontSize: 13, borderBottom: '1px solid var(--border-subtle)' }}>
+              No events scheduled for this period. Click any slot to add one.
+            </div>
+          )}
           {view === 'month' && (
             <MonthView currentDate={currentDate} events={events}
               onEventClick={openEdit} onDayClick={openCreate} onDrop={handleDrop} />
@@ -137,6 +156,7 @@ export default function Calendar() {
 
       <EventModal
         open={modalOpen} event={editingEvent} initialDate={initialDate}
+        isSaving={isSaving}
         onClose={() => { setModalOpen(false); setEditingEvent(null); setInitialDate(null) }}
         onSave={handleSave} onDelete={handleDelete}
       />

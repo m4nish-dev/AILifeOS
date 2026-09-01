@@ -1,7 +1,7 @@
 import express from 'express';
 import { 
   getGoals, getGoal, createGoal, updateGoal, deleteGoal, 
-  toggleMilestone, addMilestone, removeMilestone 
+  toggleMilestone, addMilestone, removeMilestone, getGoalTasks 
 } from '../controllers/goal.controller.js';
 import { protect } from '../middleware/auth.middleware.js';
 
@@ -24,5 +24,8 @@ router.route('/:id/milestones')
 router.route('/:id/milestones/:milestoneId')
   .patch(toggleMilestone)
   .delete(removeMilestone);
+
+router.route('/:id/tasks')
+  .get(getGoalTasks);
 
 export default router;

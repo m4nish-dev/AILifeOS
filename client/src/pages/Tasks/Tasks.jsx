@@ -5,8 +5,11 @@ import TasksFilters from '../../components/tasks/TasksFilters/TasksFilters'
 import TasksListView from '../../components/tasks/TasksListView/TasksListView'
 import TasksKanbanView from '../../components/tasks/TasksKanbanView/TasksKanbanView'
 import TaskModal from '../../components/tasks/TaskModal/TaskModal'
-import EmptyState from '../../components/tasks/EmptyState/EmptyState'
+import EmptyState from '../../components/common/EmptyState/EmptyState'
+import Skeleton from '../../components/common/Skeleton/Skeleton'
 import { taskService } from '../../services/taskService'
+import { useToast } from '../../context/ToastContext'
+import { Sparkles } from 'lucide-react'
 import './Tasks.css'
 
 const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 }
@@ -30,6 +33,8 @@ export default function Tasks() {
   const [modalOpen, setModalOpen]       = useState(false)
   const [editingTask, setEditingTask]   = useState(null)
   const [initialStatus, setInitialStatus] = useState(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const { showToast } = useToast()
 
   // ── Fetch all tasks on mount ──────────────────────────────
   const fetchTasks = useCallback(async () => {
@@ -90,27 +95,34 @@ export default function Tasks() {
   }
 
   const handleSave = async (taskData, isEdit) => {
+    setIsSaving(true)
     try {
       if (isEdit) {
         const updated = await taskService.updateTask(taskData.id || taskData._id, taskData)
         setTasks(prev => prev.map(t => (t.id === updated.id || t._id === updated._id) ? updated : t))
+        showToast('Task updated successfully', 'success')
       } else {
         const created = await taskService.createTask(taskData)
         setTasks(prev => [created, ...prev])
+        showToast('Task created successfully', 'success')
       }
       closeModal()
     } catch (err) {
-      console.error('Save task error:', err.response?.data?.message || err.message)
+      showToast(err.response?.data?.message || 'Failed to save task', 'error')
+    } finally {
+      setIsSaving(false)
     }
   }
 
   const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this task?')) return
     try {
       await taskService.deleteTask(id)
       setTasks(prev => prev.filter(t => t.id !== id && t._id !== id))
+      showToast('Task deleted', 'success')
       closeModal()
     } catch (err) {
-      console.error('Delete task error:', err.response?.data?.message || err.message)
+      showToast(err.response?.data?.message || 'Failed to delete task', 'error')
     }
   }
 
@@ -119,8 +131,9 @@ export default function Tasks() {
     try {
       const updated = await taskService.updateTask(task.id || task._id, { status: newStatus })
       setTasks(prev => prev.map(t => (t.id === updated.id || t._id === updated._id) ? updated : t))
+      showToast(`Task marked as ${newStatus}`, 'success')
     } catch (err) {
-      console.error('Toggle task error:', err.response?.data?.message || err.message)
+      showToast(err.response?.data?.message || 'Failed to update task', 'error')
     }
   }
 
@@ -128,8 +141,9 @@ export default function Tasks() {
     try {
       const updated = await taskService.updateTask(task.id || task._id, { status: newStatus })
       setTasks(prev => prev.map(t => (t.id === updated.id || t._id === updated._id) ? updated : t))
+      showToast(`Task moved to ${newStatus}`, 'success')
     } catch (err) {
-      console.error('Status change error:', err.response?.data?.message || err.message)
+      showToast(err.response?.data?.message || 'Failed to move task', 'error')
     }
   }
 
@@ -141,9 +155,12 @@ export default function Tasks() {
   if (apiLoading) {
     return (
       <div className="tasks">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', gap: 12, color: 'var(--text-tertiary)', fontSize: 14 }}>
-          <div style={{ width: 18, height: 18, border: '2px solid var(--border-default)', borderTopColor: 'var(--green-600)', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
-          Loading your tasks…
+        <div style={{ padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <Skeleton variant="line" height={40} width="30%" />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+            <Skeleton variant="card" height={100} count={4} />
+          </div>
+          <Skeleton variant="table-row" count={5} />
         </div>
       </div>
     )
@@ -184,9 +201,11 @@ export default function Tasks() {
 
       {filtered.length === 0 ? (
         <EmptyState
-          onCreate={() => openCreate()}
-          hasFilters={hasActiveFilters}
-          onClear={clearFilters}
+          icon={Sparkles}
+          title={hasActiveFilters ? 'No tasks found' : 'Your task list is clear! ✨'}
+          description={hasActiveFilters ? 'Try adjusting your filters or search query.' : 'Create your first task and let\'s make it happen.'}
+          actionLabel={hasActiveFilters ? 'Clear Filters' : 'Create Task'}
+          onAction={hasActiveFilters ? clearFilters : () => openCreate()}
         />
       ) : view === 'list' ? (
         <TasksListView
@@ -208,6 +227,7 @@ export default function Tasks() {
         open={modalOpen}
         task={editingTask}
         initialStatus={initialStatus}
+        isSaving={isSaving}
         onClose={closeModal}
         onSave={handleSave}
         onDelete={handleDelete}

@@ -5,6 +5,7 @@ import {
   Settings, Plus, ChevronRight, Briefcase, Code2, GraduationCap
 } from 'lucide-react'
 import UserMenu from '../UserMenu/UserMenu'
+import { useToast } from '../../../context/ToastContext'
 import './Sidebar.css'
 
 const navItems = [
@@ -24,9 +25,10 @@ const workspaces = [
   { id: 'learning',    label: 'Learning',    icon: GraduationCap },
 ]
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }) {
+  const { showToast } = useToast()
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}>
       <div className="sidebar__brand">
         <div className="sidebar__logo">
           <div className="sidebar__logo-mark">
@@ -44,6 +46,7 @@ export default function Sidebar() {
           <NavLink
             key={to}
             to={to}
+            onClick={onClose}
             className={({ isActive }) =>
               `sidebar__link${isActive ? ' sidebar__link--active' : ''}`
             }
@@ -66,7 +69,10 @@ export default function Sidebar() {
               <span>{label}</span>
             </li>
           ))}
-          <li className="sidebar__ws sidebar__ws--add">
+          <li 
+            className="sidebar__ws sidebar__ws--add"
+            onClick={() => showToast('Custom workspaces coming soon', 'info')}
+          >
             <Plus size={16} strokeWidth={2} />
             <span>New Workspace</span>
           </li>

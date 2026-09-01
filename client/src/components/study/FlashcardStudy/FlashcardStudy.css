@@ -1,0 +1,188 @@
+.fc-study {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.fc-study__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+.fc-study__back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.fc-study__back:hover {
+  background: var(--surface-200);
+  color: var(--text-primary);
+}
+
+.fc-study__progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.fc-study__progress-bar {
+  width: 120px;
+  height: 6px;
+  background: var(--surface-200);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.fc-study__progress-fill {
+  height: 100%;
+  background: var(--blue-500);
+  transition: width 0.3s ease;
+}
+
+/* 3D Scene */
+.fc-scene {
+  width: 100%;
+  height: 400px;
+  perspective: 1000px;
+  cursor: pointer;
+  margin-bottom: 40px;
+}
+
+.fc-card {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.fc-card--flipped {
+  transform: rotateY(180deg);
+}
+
+.fc-card__face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  background: var(--surface-100);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.fc-card__face--back {
+  transform: rotateY(180deg);
+  border-color: var(--blue-500);
+  background: rgba(var(--blue-500-rgb), 0.02);
+}
+
+.fc-card__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 24px;
+}
+
+.fc-card__content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.fc-card__hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  margin-top: 24px;
+}
+
+/* Controls */
+.fc-study__controls {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+
+.fc-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fc-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+
+.fc-btn--wrong {
+  background: rgba(var(--red-500-rgb), 0.1);
+  color: var(--red-500);
+}
+.fc-btn--wrong:not(:disabled):hover {
+  background: rgba(var(--red-500-rgb), 0.2);
+}
+
+.fc-btn--correct {
+  background: var(--green-500);
+  color: white;
+}
+.fc-btn--correct:not(:disabled):hover {
+  background: var(--green-600);
+}
+
+.fc-btn--primary {
+  background: var(--blue-500);
+  color: white;
+}
+
+.fc-study-done {
+  text-align: center;
+  padding: 40px;
+}
+
+.fc-study-done__icon {
+  font-size: 64px;
+  margin-bottom: 24px;
+}

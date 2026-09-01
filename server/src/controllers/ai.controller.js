@@ -6,6 +6,8 @@ import Goal from '../models/Goal.model.js';
 import Event from '../models/Event.model.js';
 import Note from '../models/Note.model.js';
 import StudySession from '../models/StudySession.model.js';
+import StudyGoal from '../models/StudyGoal.model.js';
+import Flashcard from '../models/Flashcard.model.js';
 
 dotenv.config();
 
@@ -61,6 +63,19 @@ const buildUserContext = async (userId) => {
     });
     const bestSubject = Object.keys(subjectCounts).sort((a,b) => subjectCounts[b] - subjectCounts[a])[0] || 'None';
 
+    // 6. Study Goals
+    const activeStudyGoals = await StudyGoal.find({ userId, active: true });
+    let goalProgressStr = '';
+    activeStudyGoals.forEach(g => {
+      const subjectSessions = studySessions.filter(s => s.subject === g.subject);
+      const actualMins = Math.round(subjectSessions.reduce((acc, s) => acc + s.duration, 0) / 60);
+      const progPct = Math.min(Math.round((actualMins / g.targetMinutesPerWeek) * 100), 100);
+      goalProgressStr += `  - ${g.subject}: ${progPct}% (${actualMins}/${g.targetMinutesPerWeek} min)\n`;
+    });
+
+    // 7. Flashcards
+    const dueCards = await Flashcard.countDocuments({ userId, nextReview: { $lte: new Date() } });
+
     // Build the string
     let contextStr = `USER CONTEXT (as of ${new Date().toLocaleDateString()}):\n`;
     contextStr += `Tasks: ${tasks.length} total, ${done} done, ${inProgress} in-progress, ${todo} todo\n`;
@@ -96,6 +111,12 @@ const buildUserContext = async (userId) => {
 
     contextStr += `Study Stats (Last 7 days): ${Math.round(totalStudyMins / 60 * 10) / 10} hours total. Most studied: ${bestSubject}\n`;
 
+    if (activeStudyGoals.length > 0) {
+      contextStr += `Study Goals Progress:\n${goalProgressStr}`;
+    }
+    
+    contextStr += `Flashcards due for review: ${dueCards}\n`;
+
     return contextStr;
   } catch (err) {
     console.error('Error building context:', err);
@@ -110,6 +131,38 @@ export const chatWithAI = async (req, res) => {
 
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({ success: false, message: 'Invalid request format. "messages" array is required.' });
+    }
+
+    // Check for Slash Commands
+    const userMsgContent = messages[messages.length - 1].content.trim();
+    if (userMsgContent.startsWith('/')) {
+      const parts = userMsgContent.split(' ');
+      const command = parts[0].toLowerCase();
+      const payload = parts.slice(1).join(' ');
+
+      let responseText = '';
+      
+      if (command === '/task' && payload) {
+        await Task.create({ userId, title: payload });
+        responseText = `✅ Created task: "${payload}"`;
+      } else if (command === '/goal' && payload) {
+        await Goal.create({ userId, title: payload });
+        responseText = `✅ Created goal: "${payload}"`;
+      } else if (command === '/note' && payload) {
+        await Note.create({ userId, title: payload, content: '' });
+        responseText = `✅ Created note: "${payload}"`;
+      } else if (command === '/event' && payload) {
+        const start = new Date();
+        const end = new Date(start.getTime() + 60 * 60 * 1000); // +1 hour
+        await Event.create({ userId, title: payload, start, end });
+        responseText = `✅ Scheduled event: "${payload}" for now.`;
+      } else if (command === '/summarize') {
+        responseText = `To summarize a note, please open it in the Notes tab and use the AI summarize button there.`;
+      } else {
+        responseText = `Unknown command or missing title. Available: /task, /goal, /note, /event.`;
+      }
+
+      return res.status(200).json({ success: true, message: responseText });
     }
 
     // 1. Build context & construct prompt

@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { CheckSquare, Calendar, Target, FileText, Sparkles, Flame, Loader2, AlertCircle, Clock, Zap } from 'lucide-react'
+import { CheckSquare, Calendar, Target, FileText, Sparkles, Flame, Loader2, AlertCircle, Clock, Zap, Rocket } from 'lucide-react'
 import { dashboardService } from '../../services/dashboardService'
+import Skeleton from '../../components/common/Skeleton/Skeleton'
+import EmptyState from '../../components/common/EmptyState/EmptyState'
 import './Dashboard.css'
 
 export default function Dashboard() {
@@ -33,8 +35,16 @@ export default function Dashboard() {
 
   if (loading && !data) {
     return (
-      <div className="dash-loading">
-        <Loader2 size={32} className="an-spin" color="var(--green-500)" />
+      <div className="dash-page" style={{ display: 'flex', flexDirection: 'column', gap: 24, padding: 32 }}>
+        <Skeleton variant="line" height={40} width="40%" />
+        <Skeleton variant="line" height={24} width="20%" />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+          <Skeleton variant="card" height={100} count={4} />
+        </div>
+        <Skeleton variant="line" height={60} />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
+          <Skeleton variant="card" height={200} count={4} />
+        </div>
       </div>
     )
   }
@@ -66,7 +76,17 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Stats Row */}
+      {(stats.tasksTotal === 0 && activeGoalsList.length === 0 && recentNotes.length === 0 && upcomingEvents.length === 0) ? (
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface-200)', borderRadius: 'var(--r-lg)', padding: 32, marginTop: 16 }}>
+          <EmptyState
+            icon={Rocket}
+            title={`Welcome to AI LifeOS, ${user.name.split(' ')[0]}! 🚀`}
+            description="Your personal dashboard is completely empty. Start by creating a task, setting a goal, or writing your first note."
+          />
+        </div>
+      ) : (
+        <>
+          {/* Stats Row */}
       <div className="dash-stats">
         <div className="dash-stat-card">
           <div className="dash-stat__header"><CheckSquare size={16} className="text-green-500" /> Tasks Done</div>
@@ -165,6 +185,8 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+        </>
+      )}
 
     </div>
   )

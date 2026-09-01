@@ -14,3 +14,21 @@
   padding: var(--sp-6) var(--sp-8);
   overflow: auto;
 }
+
+.layout__backdrop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .layout__backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+    backdrop-filter: blur(2px);
+  }
+  .layout__content {
+    padding: var(--sp-4);
+  }
+}

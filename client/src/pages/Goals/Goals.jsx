@@ -4,7 +4,11 @@ import GoalStats from '../../components/goals/GoalStats/GoalStats'
 import GoalCard from '../../components/goals/GoalCard/GoalCard'
 import GoalModal from '../../components/goals/GoalModal/GoalModal'
 import AIRoadmapModal from '../../components/goals/AIRoadmapModal/AIRoadmapModal'
+import Skeleton from '../../components/common/Skeleton/Skeleton'
+import EmptyState from '../../components/common/EmptyState/EmptyState'
 import { goalService } from '../../services/goalService'
+import { useToast } from '../../context/ToastContext'
+import { Target } from 'lucide-react'
 import './Goals.css'
 
 export default function Goals() {
@@ -17,6 +21,8 @@ export default function Goals() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editingGoal, setEditingGoal] = useState(null)
   const [aiOpen, setAiOpen] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const { showToast } = useToast()
 
   // ── Fetch all goals on mount ──────────────────────────────
   const fetchGoals = useCallback(async () => {
@@ -45,27 +51,34 @@ export default function Goals() {
   const openEdit = (goal) => { setEditingGoal(goal); setModalOpen(true) }
   
   const handleSave = async (goalData, isEdit) => {
+    setIsSaving(true)
     try {
       if (isEdit) {
         const updated = await goalService.updateGoal(goalData.id || goalData._id, goalData)
         setGoals(prev => prev.map(g => (g.id === updated.id || g._id === updated._id) ? updated : g))
+        showToast('Goal updated successfully', 'success')
       } else {
         const created = await goalService.createGoal(goalData)
         setGoals(prev => [created, ...prev])
+        showToast('Goal created successfully', 'success')
       }
       setModalOpen(false); setEditingGoal(null)
     } catch (err) {
-      console.error('Save goal error:', err.response?.data?.message || err.message)
+      showToast(err.response?.data?.message || 'Failed to save goal', 'error')
+    } finally {
+      setIsSaving(false)
     }
   }
 
   const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this goal?')) return
     try {
       await goalService.deleteGoal(id)
       setGoals(prev => prev.filter(g => g.id !== id && g._id !== id))
+      showToast('Goal deleted', 'success')
       setModalOpen(false); setEditingGoal(null)
     } catch (err) {
-      console.error('Delete goal error:', err.response?.data?.message || err.message)
+      showToast(err.response?.data?.message || 'Failed to delete goal', 'error')
     }
   }
   
@@ -73,8 +86,9 @@ export default function Goals() {
     try {
       const created = await goalService.createGoal(goalData)
       setGoals(prev => [created, ...prev])
+      showToast('Goal generated with AI', 'success')
     } catch (err) {
-      console.error('AI generate error:', err.response?.data?.message || err.message)
+      showToast(err.response?.data?.message || 'Failed to generate goal', 'error')
     }
   }
 
@@ -82,9 +96,11 @@ export default function Goals() {
   if (apiLoading) {
     return (
       <div className="goals-page">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', gap: 12, color: 'var(--text-tertiary)', fontSize: 14 }}>
-          <div style={{ width: 18, height: 18, border: '2px solid var(--border-default)', borderTopColor: 'var(--green-600)', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
-          Loading your goals…
+        <div style={{ padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+          <Skeleton variant="line" height={40} width="40%" />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 24 }}>
+            <Skeleton variant="card" height={220} count={3} />
+          </div>
         </div>
       </div>
     )
@@ -113,11 +129,13 @@ export default function Goals() {
       <GoalStats goals={goals} />
 
       {filtered.length === 0 ? (
-        <div className="goals-empty">
-          <div className="goals-empty__icon">🎯</div>
-          <h3>No goals yet</h3>
-          <p>Start with a big vision and let AI break it down.</p>
-        </div>
+        <EmptyState
+          icon={Target}
+          title="No goals yet"
+          description="Start with a big vision and let AI break it down into actionable milestones."
+          actionLabel="Create Goal"
+          onAction={openCreate}
+        />
       ) : (
         <div className="goals-grid">
           {filtered.map(goal => (
@@ -128,6 +146,7 @@ export default function Goals() {
 
       <GoalModal
         open={modalOpen} goal={editingGoal}
+        isSaving={isSaving}
         onClose={() => { setModalOpen(false); setEditingGoal(null) }}
         onSave={handleSave} onDelete={handleDelete}
       />

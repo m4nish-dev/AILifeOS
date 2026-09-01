@@ -225,3 +225,37 @@ export const deleteAccount = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// @desc   Export user data
+// @route  GET /api/auth/export
+// @access Protected
+export const exportData = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const [user, tasks, goals, notes, events, studySessions, conversations] = await Promise.all([
+      User.findById(userId).select('-password'),
+      Task.find({ userId }),
+      Goal.find({ userId }),
+      Note.find({ userId }),
+      Event.find({ userId }),
+      StudySession.find({ userId }),
+      Conversation.find({ userId })
+    ]);
+
+    const data = {
+      user,
+      tasks,
+      goals,
+      notes,
+      events,
+      studySessions,
+      conversations,
+      exportedAt: new Date()
+    };
+
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

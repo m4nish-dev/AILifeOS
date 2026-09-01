@@ -2,8 +2,12 @@ import { useCallback, useEffect, useState } from 'react'
 import NotesSidebar from '../../components/notes/NotesSidebar/NotesSidebar'
 import NoteEditor from '../../components/notes/NoteEditor/NoteEditor'
 import NoteQuizModal from '../../components/notes/NoteQuizModal/NoteQuizModal'
+import Skeleton from '../../components/common/Skeleton/Skeleton'
+import EmptyState from '../../components/common/EmptyState/EmptyState'
 import { noteService } from '../../services/noteService'
 import { foldersData } from '../../data/mockNotes' // Keep folders local for now
+import { useToast } from '../../context/ToastContext'
+import { FileText } from 'lucide-react'
 import './Notes.css'
 
 export default function Notes() {
@@ -14,6 +18,7 @@ export default function Notes() {
   
   const [apiLoading, setApiLoading] = useState(true)
   const [saveStatus, setSaveStatus] = useState('saved') // 'saved' | 'saving' | 'error'
+  const { showToast } = useToast()
 
   const [aiModal, setAiModal] = useState({ open: false, mode: 'summary', note: null })
 
@@ -45,8 +50,9 @@ export default function Notes() {
       setNotes([newNote, ...notes])
       setSelectedNote(newNote)
       setSaveStatus('saved')
+      showToast('Note created', 'success')
     } catch (err) {
-      console.error('Failed to create note', err)
+      showToast(err.response?.data?.message || 'Failed to create note', 'error')
       setSaveStatus('error')
     }
   }
@@ -67,27 +73,60 @@ export default function Notes() {
       }
       setSaveStatus('saved')
     } catch (err) {
-      console.error('Failed to save note', err)
+      showToast(err.response?.data?.message || 'Failed to save note', 'error')
       setSaveStatus('error')
     }
   }
 
   const handleDelete = async (id) => {
-    if (!confirm('Delete this note?')) return
+    if (!window.confirm('Are you sure you want to delete this note?')) return
     try {
       await noteService.deleteNote(id)
       const remaining = notes.filter(n => n.id !== id && n._id !== id)
       setNotes(remaining)
       setSelectedNote(remaining[0] || null)
+      showToast('Note deleted', 'success')
     } catch (err) {
-      console.error('Failed to delete note', err)
+      showToast(err.response?.data?.message || 'Failed to delete note', 'error')
     }
   }
 
   if (apiLoading) {
     return (
-      <div className="notes-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-tertiary)' }}>
-        Loading notes...
+      <div className="notes-page" style={{ display: 'flex' }}>
+        <div style={{ width: 280, borderRight: '1px solid var(--border-subtle)', padding: 16 }}>
+          <Skeleton variant="line" height={32} />
+          <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <Skeleton variant="line" height={24} count={3} />
+          </div>
+          <div style={{ marginTop: 32, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <Skeleton variant="card" height={80} count={4} />
+          </div>
+        </div>
+        <div style={{ flex: 1, padding: 32 }}>
+          <Skeleton variant="line" height={48} width="50%" />
+          <Skeleton variant="line" height={24} count={10} />
+        </div>
+      </div>
+    )
+  }
+
+  if (notes.length === 0) {
+    return (
+      <div className="notes-page">
+        <NotesSidebar
+          folders={folders} notes={notes} selectedFolder={selectedFolder} selectedNote={selectedNote}
+          onSelectFolder={setSelectedFolder} onSelectNote={setSelectedNote} onNewNote={handleNewNote} onNewFolder={handleNewFolder}
+        />
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-app)' }}>
+          <EmptyState
+            icon={FileText}
+            title="Capture your first thought"
+            description="Start building your knowledge base."
+            actionLabel="Create Note"
+            onAction={handleNewNote}
+          />
+        </div>
       </div>
     )
   }

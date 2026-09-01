@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Plus, Search, FolderPlus, Pin, FileText } from 'lucide-react'
+import EmptyState from '../../common/EmptyState/EmptyState'
 import './NotesSidebar.css'
 
 export default function NotesSidebar({
@@ -88,9 +89,12 @@ export default function NotesSidebar({
             </div>
           )}
           {filteredNotes.length === 0 && (
-            <div className="ns__empty">
-              <FileText size={28} />
-              <span>No notes here</span>
+            <div style={{ padding: '0 16px' }}>
+              <EmptyState 
+                icon={FileText} 
+                title="No notes here" 
+                description="Create a new note to get started." 
+              />
             </div>
           )}
         </div>
