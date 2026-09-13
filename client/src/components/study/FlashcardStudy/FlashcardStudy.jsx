@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Check, X, RotateCw } from 'lucide-react';
+import { ArrowLeft, Check, X, RotateCw, PartyPopper } from 'lucide-react';
 import './FlashcardStudy.css';
 
 export default function FlashcardStudy({ cards, onReview, onExit }) {
@@ -18,7 +18,9 @@ export default function FlashcardStudy({ cards, onReview, onExit }) {
   if (isDone) {
     return (
       <div className="fc-study-done">
-        <div className="fc-study-done__icon">🎉</div>
+        <div className="fc-study-done__icon">
+          <PartyPopper size={48} color="var(--blue-500)" />
+        </div>
         <h2>You're all caught up!</h2>
         <p>You've reviewed all due cards in this deck.</p>
         <button className="fc-btn fc-btn--primary" onClick={onExit}>Back to Decks</button>

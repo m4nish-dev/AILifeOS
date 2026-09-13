@@ -407,7 +407,11 @@ export default function TaskModal({ open, task, initialStatus, isSaving, onClose
                     disabled={!!form.eventId}
                   >
                     <Calendar size={14} />
-                    {form.eventId ? '📅 Scheduled' : 'Schedule on Calendar'}
+                    {form.eventId ? (
+                      <>
+                        <Calendar size={14} style={{ display: 'inline', marginRight: 4, verticalAlign: 'text-bottom' }} /> Scheduled
+                      </>
+                    ) : 'Schedule on Calendar'}
                   </button>
                 </div>
               )}

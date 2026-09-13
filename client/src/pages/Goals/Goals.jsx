@@ -8,7 +8,7 @@ import Skeleton from '../../components/common/Skeleton/Skeleton'
 import EmptyState from '../../components/common/EmptyState/EmptyState'
 import { goalService } from '../../services/goalService'
 import { useToast } from '../../context/ToastContext'
-import { Target } from 'lucide-react'
+import { Target, AlertTriangle } from 'lucide-react'
 import './Goals.css'
 
 export default function Goals() {
@@ -110,7 +110,12 @@ export default function Goals() {
     return (
       <div className="goals-page">
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', gap: 12 }}>
-          <p style={{ color: 'var(--red-600)', fontSize: 14 }}>⚠️ {apiError}</p>
+          {apiError && (
+            <p style={{ color: 'var(--red-600)', fontSize: 14 }}>
+              <AlertTriangle size={14} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: 4 }} />
+              {apiError}
+            </p>
+          )}
           <button onClick={fetchGoals} style={{ padding: '8px 16px', background: 'var(--green-600)', color: '#fff', borderRadius: 8, fontSize: 13, cursor: 'pointer' }}>Retry</button>
         </div>
       </div>

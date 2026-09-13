@@ -7,7 +7,7 @@ import EmptyState from '../../components/common/EmptyState/EmptyState'
 import { noteService } from '../../services/noteService'
 import { foldersData } from '../../data/mockNotes' // Keep folders local for now
 import { useToast } from '../../context/ToastContext'
-import { FileText } from 'lucide-react'
+import { FileText, Folder } from 'lucide-react'
 import './Notes.css'
 
 export default function Notes() {
@@ -60,7 +60,7 @@ export default function Notes() {
   const handleNewFolder = () => {
     const name = prompt('Folder name?')
     if (!name) return
-    setFolders([...folders, { id: `f${Date.now()}`, name, icon: '📁', color: 'green' }])
+    setFolders([...folders, { id: `f${Date.now()}`, name, icon: <Folder size={16} />, color: 'green' }])
   }
 
   const handleSave = async (updatedNote) => {

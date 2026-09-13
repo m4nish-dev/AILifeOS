@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { CheckSquare, Calendar, Target, FileText, Sparkles, Flame, Loader2, AlertCircle, Clock, Zap, Rocket } from 'lucide-react'
+import { CheckSquare, Calendar, Target, FileText, Sparkles, Flame, Loader2, AlertCircle, Clock, Zap, Rocket, CheckCircle2, Circle, BookOpen, Hand, PartyPopper } from 'lucide-react'
 import { dashboardService } from '../../services/dashboardService'
 import Skeleton from '../../components/common/Skeleton/Skeleton'
 import EmptyState from '../../components/common/EmptyState/EmptyState'
@@ -67,9 +67,12 @@ export default function Dashboard() {
     <div className="dash-page">
       {/* Hero Row */}
       <div className="dash-hero">
-        <div>
-          <h1 className="dash-hero__title">{user.greeting}, {user.name.split(' ')[0]} 👋</h1>
-          <p className="dash-hero__subtitle">Here's what's happening today.</p>
+        <div className="dash-hero__text">
+          <h1 className="dash-hero__title">
+            {user.greeting}, {user.name.split(' ')[0]}
+            <Hand size={28} style={{ display: 'inline', marginLeft: 8, verticalAlign: 'text-bottom' }} />
+          </h1>
+          <p className="dash-hero__subtitle">Here's your productivity overview for today.</p>
         </div>
         <div className="dash-hero__subtitle" style={{ fontWeight: 500 }}>
           {todayStr}
@@ -80,8 +83,8 @@ export default function Dashboard() {
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--surface-200)', borderRadius: 'var(--r-lg)', padding: 32, marginTop: 16 }}>
           <EmptyState
             icon={Rocket}
-            title={`Welcome to AI LifeOS, ${user.name.split(' ')[0]}! 🚀`}
-            description="Your personal dashboard is completely empty. Start by creating a task, setting a goal, or writing your first note."
+            title={<>Welcome to AI LifeOS, {user.name.split(' ')[0]}! <Rocket size={20} style={{ display: 'inline', verticalAlign: 'text-bottom' }} /></>}
+            description="Start building your ultimate productivity hub. Create your first task to see this dashboard come to life."
           />
         </div>
       ) : (
@@ -131,7 +134,11 @@ export default function Dashboard() {
                   <div className="dash-list__item-sub">{task.priority.toUpperCase()} Priority</div>
                 </div>
               </Link>
-            )) : <div className="dash-empty">No pending tasks for today! 🎉</div>}
+            )) : (
+              <div className="dash-empty">
+                No pending tasks for today! <PartyPopper size={20} style={{ display: 'inline', marginLeft: 8, verticalAlign: 'text-bottom' }} />
+              </div>
+            )}
           </div>
         </div>
 

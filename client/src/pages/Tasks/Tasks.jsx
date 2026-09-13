@@ -9,7 +9,7 @@ import EmptyState from '../../components/common/EmptyState/EmptyState'
 import Skeleton from '../../components/common/Skeleton/Skeleton'
 import { taskService } from '../../services/taskService'
 import { useToast } from '../../context/ToastContext'
-import { Sparkles } from 'lucide-react'
+import { CheckSquare, AlertTriangle, Sparkles } from 'lucide-react'
 import './Tasks.css'
 
 const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 }
@@ -170,7 +170,10 @@ export default function Tasks() {
     return (
       <div className="tasks">
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh', gap: 12 }}>
-          <p style={{ color: 'var(--red-600)', fontSize: 14 }}>⚠️ {apiError}</p>
+          <p style={{ color: 'var(--red-600)', fontSize: 14 }}>
+            <AlertTriangle size={14} style={{ display: 'inline', verticalAlign: 'text-bottom', marginRight: 4 }} />
+            {apiError}
+          </p>
           <button onClick={fetchTasks} style={{ padding: '8px 16px', background: 'var(--green-600)', color: '#fff', borderRadius: 8, fontSize: 13, cursor: 'pointer' }}>Retry</button>
         </div>
       </div>
@@ -201,9 +204,9 @@ export default function Tasks() {
 
       {filtered.length === 0 ? (
         <EmptyState
-          icon={Sparkles}
-          title={hasActiveFilters ? 'No tasks found' : 'Your task list is clear! ✨'}
-          description={hasActiveFilters ? 'Try adjusting your filters or search query.' : 'Create your first task and let\'s make it happen.'}
+          icon={CheckSquare}
+          title={hasActiveFilters ? 'No tasks found' : <>Your task list is clear! <Sparkles size={16} style={{ display: 'inline', marginLeft: 4, verticalAlign: 'text-bottom' }} /></>}
+          description={hasActiveFilters ? 'Try adjusting your filters to see more tasks.' : 'Enjoy the peace or start adding new to-dos.'}
           actionLabel={hasActiveFilters ? 'Clear Filters' : 'Create Task'}
           onAction={hasActiveFilters ? clearFilters : () => openCreate()}
         />

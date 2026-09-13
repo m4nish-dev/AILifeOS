@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { Smile, Meh, Frown } from 'lucide-react';
 import './MoodPrompt.css';
 
 export default function MoodPrompt({ onSelect }) {
   const options = [
-    { id: 'great', emoji: '🤩', label: 'Great' },
-    { id: 'good', emoji: '🙂', label: 'Good' },
-    { id: 'ok', emoji: '😐', label: 'Okay' },
-    { id: 'struggling', emoji: '😫', label: 'Struggling' }
+    { id: 'great', icon: <Smile size={24} />, label: 'Great' },
+    { id: 'good', icon: <Smile size={24} />, label: 'Good' },
+    { id: 'ok', icon: <Meh size={24} />, label: 'Okay' },
+    { id: 'struggling', icon: <Frown size={24} />, label: 'Struggling' }
   ];
 
   return (
@@ -14,13 +14,13 @@ export default function MoodPrompt({ onSelect }) {
       <h3>Session complete! How did you feel?</h3>
       <div className="mood-prompt__options">
         {options.map(opt => (
-          <button 
-            key={opt.id} 
-            className="mood-prompt__btn" 
+          <button
+            key={opt.id}
+            className="mp__btn"
             onClick={() => onSelect(opt.id)}
           >
-            <span className="mood-prompt__emoji">{opt.emoji}</span>
-            <span className="mood-prompt__label">{opt.label}</span>
+            <div className="mp__emoji">{opt.icon}</div>
+            <div className="mp__label">{opt.label}</div>
           </button>
         ))}
       </div>

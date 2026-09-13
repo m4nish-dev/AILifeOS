@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { X, Loader, Check, BookOpen, FileQuestion, Sparkles } from 'lucide-react'
+import { X, Loader, Check, BookOpen, FileQuestion, Sparkles, Lightbulb } from 'lucide-react'
 import { aiService } from '../../../services/aiService'
 import './NoteQuizModal.css'
 
@@ -75,7 +75,10 @@ export default function NoteQuizModal({ open, mode, note, onClose }) {
                   </div>
                   <div className="nqm__section">
                     <h3>Study Tip</h3>
-                    <p className="nqm__tip">💡 {summary.tip}</p>
+                    <p className="nqm__tip">
+          <Lightbulb size={16} style={{ display: 'inline', marginRight: 4, verticalAlign: 'text-bottom' }} />
+          {summary.tip}
+        </p>
                   </div>
                 </>
               )}
@@ -108,7 +111,10 @@ export default function NoteQuizModal({ open, mode, note, onClose }) {
                     })}
                   </div>
                   {showAnswers && (
-                    <div className="nqm__q-explain">💡 {q.explanation}</div>
+                    <div className="nqm__q-explain">
+              <Lightbulb size={16} style={{ display: 'inline', marginRight: 4, verticalAlign: 'text-bottom' }} />
+              {q.explanation}
+            </div>
                   )}
                 </div>
               ))}
