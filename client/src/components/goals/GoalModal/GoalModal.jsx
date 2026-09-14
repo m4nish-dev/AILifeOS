@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { X, Plus, Check, Trash2, Target, Calendar, Flag } from 'lucide-react'
+import { X, Plus, Check, Trash2, Target, Calendar, Flag, Loader2 } from 'lucide-react'
 import { GOAL_CATEGORIES } from '../../../data/mockGoalsFull'
 import './GoalModal.css'
 
@@ -10,7 +10,7 @@ const emptyGoal = {
 
 const COLORS = ['green', 'coffee', 'amber', 'red', 'blue']
 
-export default function GoalModal({ open, goal, onClose, onSave, onDelete }) {
+export default function GoalModal({ open, goal, isSaving, onClose, onSave, onDelete }) {
   const isEdit = Boolean(goal)
   const [form, setForm] = useState(emptyGoal)
   const [newMilestone, setNewMilestone] = useState('')
@@ -155,10 +155,10 @@ export default function GoalModal({ open, goal, onClose, onSave, onDelete }) {
               </button>
             )}
             <div className="gm__foot-right">
-              <button type="button" className="gm__btn gm__btn--ghost" onClick={onClose}>Cancel</button>
-              <button type="submit" className="gm__btn gm__btn--primary" disabled={!form.title.trim()}>
-                <Check size={14} strokeWidth={2.5} />
-                {isEdit ? 'Save Changes' : 'Create Goal'}
+              <button type="button" className="gm__btn gm__btn--ghost" onClick={onClose} disabled={isSaving}>Cancel</button>
+              <button type="submit" className="gm__btn gm__btn--primary" disabled={!form.title.trim() || isSaving}>
+                {isSaving ? <Loader2 size={14} className="an-spin" /> : <Check size={14} strokeWidth={2.5} />}
+                {isSaving ? 'Saving...' : (isEdit ? 'Save Changes' : 'Create Goal')}
               </button>
             </div>
           </div>

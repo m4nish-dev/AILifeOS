@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { User, Palette, Bell, Shield, CreditCard, Sun, Moon, Monitor, Check, Camera, Loader2 } from 'lucide-react'
+import { User, Palette, Bell, Shield, CreditCard, Sun, Moon, Monitor, Check, Camera, Loader2, Download } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
@@ -271,6 +271,24 @@ function AccountSection({ showToast }) {
     }
   }
 
+  const handleExport = async () => {
+    try {
+      const res = await api.get('/auth/export')
+      const dataStr = JSON.stringify(res.data.data, null, 2)
+      const dataBlob = new Blob([dataStr], { type: 'application/json' })
+      const url = URL.createObjectURL(dataBlob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `ailifeos_export_${new Date().toISOString().split('T')[0]}.json`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      showToast('Data exported successfully', 'success')
+    } catch (err) {
+      showToast('Failed to export data', 'error')
+    }
+  }
+
   return (
     <Section title="Account & Security" sub="Manage your account credentials and access.">
       <div className="set-field">
@@ -293,7 +311,15 @@ function AccountSection({ showToast }) {
         </button>
       </div>
 
-      <div className="set-danger">
+      <div className="set-danger" style={{ marginTop: 24, borderColor: 'var(--border-color)', background: 'transparent' }}>
+        <h4>Export Data</h4>
+        <p>Download a copy of all your data (tasks, notes, goals, etc) in JSON format.</p>
+        <button className="set-btn set-btn--secondary" onClick={handleExport} style={{ marginTop: 16 }}>
+          <Download size={14} /> Export My Data
+        </button>
+      </div>
+
+      <div className="set-danger" style={{ marginTop: 24 }}>
         <h4>Danger Zone</h4>
         <p>Deleting your account is permanent. All data will be irrevocably lost.</p>
         <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>

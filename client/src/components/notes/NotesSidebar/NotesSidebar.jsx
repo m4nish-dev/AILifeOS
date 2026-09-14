@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Plus, Search, FolderPlus, Pin, FileText } from 'lucide-react'
+import { Plus, X, Search, MoreVertical, FolderPlus, Pin, FileText, Folder } from 'lucide-react'
+import EmptyState from '../../common/EmptyState/EmptyState'
 import './NotesSidebar.css'
 
 export default function NotesSidebar({
@@ -41,20 +42,24 @@ export default function NotesSidebar({
             className={`ns__folder${!selectedFolder ? ' ns__folder--active' : ''}`}
             onClick={() => onSelectFolder(null)}
           >
-            <span className="ns__folder-icon">📁</span>
+            <span className="ns__folder-icon">
+              <Folder size={16} />
+            </span>
             <span>All Notes</span>
             <span className="ns__folder-count">{notes.length}</span>
           </button>
-          {folders.map(f => {
-            const count = notes.filter(n => n.folderId === f.id).length
+          {folders.map(folder => {
+            const count = notes.filter(n => n.folderId === folder.id).length
             return (
               <button
-                key={f.id}
-                className={`ns__folder${selectedFolder === f.id ? ' ns__folder--active' : ''}`}
-                onClick={() => onSelectFolder(f.id)}
+                key={folder.id}
+                className={`ns__folder${selectedFolder === folder.id ? ' ns__folder--active' : ''}`}
+                onClick={() => onSelectFolder(folder.id)}
               >
-                <span className="ns__folder-icon">{f.icon}</span>
-                <span>{f.name}</span>
+                <span className="ns__folder-icon">
+                  {typeof folder.icon === 'string' && folder.icon.includes('size=') ? folder.icon : (folder.icon || <Folder size={16} />)}
+                </span>
+                <span>{folder.name}</span>
                 <span className="ns__folder-count">{count}</span>
               </button>
             )
@@ -88,9 +93,12 @@ export default function NotesSidebar({
             </div>
           )}
           {filteredNotes.length === 0 && (
-            <div className="ns__empty">
-              <FileText size={28} />
-              <span>No notes here</span>
+            <div style={{ padding: '0 16px' }}>
+              <EmptyState 
+                icon={FileText} 
+                title="No notes here" 
+                description="Create a new note to get started." 
+              />
             </div>
           )}
         </div>

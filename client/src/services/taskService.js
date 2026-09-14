@@ -37,6 +37,11 @@ export const taskService = {
     const { data } = await api.delete(`/tasks/${id}`);
     return data;
   },
+
+  async scheduleTask(id, start, end) {
+    const { data } = await api.post(`/tasks/${id}/schedule`, { start, end });
+    return normalize(data.data.task);
+  },
 };
 
 export default taskService;

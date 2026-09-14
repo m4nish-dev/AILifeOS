@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Pin, Trash2, Sparkles, FileQuestion, BookOpen, Copy, Eye, EyeOff, Tag as TagIcon, X } from 'lucide-react'
+import { Pin, Trash2, Sparkles, FileQuestion, BookOpen, Copy, Eye, EyeOff, Tag as TagIcon, X, BookMarked, FileText } from 'lucide-react'
 import AINoteActions from '../AINoteActions/AINoteActions'
+import EmptyState from '../../common/EmptyState/EmptyState'
 import './NoteEditor.css'
 
 export default function NoteEditor({ note, folders, saveStatus, onSave, onDelete, onSummarize, onQuiz }) {
@@ -11,6 +12,7 @@ export default function NoteEditor({ note, folders, saveStatus, onSave, onDelete
   const [pinned, setPinned] = useState(false)
   const [folderId, setFolderId] = useState('')
   const [preview, setPreview] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (note) {
@@ -41,9 +43,11 @@ export default function NoteEditor({ note, folders, saveStatus, onSave, onDelete
   if (!note) {
     return (
       <div className="ne ne--empty">
-        <div className="ne__empty-icon">📝</div>
-        <h3>Select a note to view</h3>
-        <p>Or create a new one to get started</p>
+        <EmptyState 
+          icon={FileText}
+          title="Select a note to view"
+          description="Or create a new one to get started"
+        />
       </div>
     )
   }
@@ -73,6 +77,14 @@ export default function NoteEditor({ note, folders, saveStatus, onSave, onDelete
             aria-label="Preview"
           >
             {preview ? <EyeOff size={14} /> : <Eye size={14} />}
+          </button>
+          <button
+            className="ne__tool"
+            onClick={() => navigate('/study')}
+            aria-label="Flashcards"
+            title="Study Flashcards for this Note"
+          >
+            <BookMarked size={14} />
           </button>
           <button className="ne__tool ne__tool--danger" onClick={() => onDelete(note.id)} aria-label="Delete">
             <Trash2 size={14} />

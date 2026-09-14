@@ -1,4 +1,6 @@
 import Goal from '../models/Goal.model.js';
+import Task from '../models/Task.model.js';
+import Notification from '../models/Notification.model.js';
 
 // @desc   Get all goals
 // @route  GET /api/goals
@@ -108,7 +110,23 @@ export const deleteGoal = async (req, res) => {
     }
 
     await goal.deleteOne();
-    res.status(200).json({ success: true, message: 'Goal deleted', data: null });
+    res.status(200).json({ success: true, message: 'Goal deleted successfully.', data: null });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc   Get all tasks linked to a goal
+// @route  GET /api/goals/:id/tasks
+// @access Protected
+export const getGoalTasks = async (req, res) => {
+  try {
+    const goal = await Goal.findById(req.params.id);
+    if (!goal) return res.status(404).json({ success: false, message: 'Goal not found' });
+    if (goal.userId.toString() !== req.user._id.toString()) return res.status(403).json({ success: false, message: 'Not authorized' });
+
+    const tasks = await Task.find({ goalId: goal._id }).sort({ createdAt: -1 });
+    res.status(200).json({ success: true, data: tasks });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -128,13 +146,24 @@ export const toggleMilestone = async (req, res) => {
     const milestone = goal.milestones.id(req.params.milestoneId);
     if (!milestone) return res.status(404).json({ success: false, message: 'Milestone not found' });
 
+    const prevStatus = goal.status;
     milestone.done = !milestone.done;
     milestone.completedAt = milestone.done ? new Date() : undefined;
 
     // Auto complete check
     const allDone = goal.milestones.every(m => m.done);
-    if (allDone && goal.status !== 'completed') {
+    if (allDone && prevStatus !== 'completed') {
       goal.status = 'completed';
+      // Trigger Notification
+      await Notification.create({
+        userId: req.user._id,
+        type: 'goal',
+        title: 'Goal Completed! 🏆',
+        message: `You've achieved your goal: "${goal.title}"`,
+        link: '/goals'
+      });
+    } else if (!allDone && prevStatus === 'completed') {
+      goal.status = 'active';
     }
 
     await goal.save();

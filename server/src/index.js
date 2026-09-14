@@ -11,6 +11,8 @@ import eventRoutes from './routes/event.routes.js';
 import studyRoutes from './routes/study.routes.js';
 import analyticsRoutes from './routes/analytics.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
+import searchRoutes from './routes/search.routes.js';
+import notificationRoutes from './routes/notification.routes.js';
 
 dotenv.config();
 
@@ -35,13 +37,14 @@ app.use('/api/events', eventRoutes);
 app.use('/api/study', studyRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/search', searchRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
   res.status(200).json({
-    success: true,
-    message: 'AILifeOS Server is running',
-    timestamp: new Date().toISOString(),
+    status: 'ok',
+    timestamp: new Date().toISOString()
   });
 });
 

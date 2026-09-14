@@ -74,7 +74,7 @@ export default function AIAssistant() {
       // Refresh sidebar
       fetchConversations()
     } catch (err) {
-      setActiveMessages([...updatedMessages, { role: 'assistant', content: '⚠️ Error: ' + err.message }])
+      setActiveMessages([...updatedMessages, { role: 'assistant', content: 'Error: ' + err.message }])
     } finally {
       setLoading(false)
     }

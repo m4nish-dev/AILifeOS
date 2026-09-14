@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, Mail, Lock, User, Sparkles, CheckCircle2, Brain, Target, Calendar, Zap } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, User, Sparkles, CheckCircle2, Brain, Target, Calendar, Zap, Hand, Rocket, AlertTriangle } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import './Auth.css'
 
@@ -124,7 +124,11 @@ export default function AuthPage({ mode }) {
           {/* Header */}
           <div className="auth__form-head">
             <h2 className="auth__form-title">
-              {isLogin ? 'Welcome back 👋' : 'Start your journey 🚀'}
+              {isLogin ? (
+                <>Welcome back <Hand size={24} style={{ display: 'inline', marginLeft: 8 }} /></>
+              ) : (
+                <>Start your journey <Rocket size={24} style={{ display: 'inline', marginLeft: 8 }} /></>
+              )}
             </h2>
             <p className="auth__form-sub">
               {isLogin
@@ -202,8 +206,8 @@ export default function AuthPage({ mode }) {
 
             {/* Error */}
             {error && (
-              <div className="auth__error">
-                <span>⚠️ {error}</span>
+              <div className="auth__error" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                <AlertTriangle size={14} /> <span>{error}</span>
               </div>
             )}
 

@@ -1,9 +1,11 @@
+import { Atom, Calculator, Code, Briefcase, Lightbulb } from 'lucide-react'
+
 export const foldersData = [
-  { id: 'f1', name: 'React',    icon: '⚛️', color: 'blue' },
-  { id: 'f2', name: 'DSA',      icon: '🧮', color: 'amber' },
-  { id: 'f3', name: 'Backend',  icon: '⚙️', color: 'green' },
-  { id: 'f4', name: 'Personal', icon: '📝', color: 'coffee' },
-  { id: 'f5', name: 'Ideas',    icon: '💡', color: 'red' },
+  { id: 'f1', name: 'React',    icon: <Atom size={16} />, color: 'blue' },
+  { id: 'f2', name: 'DSA',      icon: <Calculator size={16} />, color: 'amber' },
+  { id: 'f3', name: 'Frontend', icon: <Code size={16} />, color: 'green' },
+  { id: 'f4', name: 'Personal', icon: <Briefcase size={16} />, color: 'coffee' },
+  { id: 'f5', name: 'Ideas',    icon: <Lightbulb size={16} />, color: 'red' },
 ]
 
 export const notesData = [

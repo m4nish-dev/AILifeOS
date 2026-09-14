@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { BarChart3, TrendingUp, Target, Clock, CheckCircle2, Flame, Loader2, AlertCircle } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid } from 'recharts'
 import analyticsService from '../../services/analyticsService'
+import Skeleton from '../../components/common/Skeleton/Skeleton'
+import EmptyState from '../../components/common/EmptyState/EmptyState'
 import { Link } from 'react-router-dom'
 import './Analytics.css'
 
@@ -77,8 +79,12 @@ export default function Analytics() {
             <p className="an-head__sub">Crunching your data...</p>
           </div>
         </div>
-        <div className="an-loading">
-          <Loader2 size={32} className="an-spin" color="var(--green-500)" />
+        <div style={{ display: 'flex', gap: 16, marginTop: 24 }}>
+          <Skeleton variant="card" height={100} count={4} />
+        </div>
+        <div style={{ display: 'flex', gap: 24, marginTop: 24 }}>
+          <Skeleton variant="card" height={300} width="66%" />
+          <Skeleton variant="card" height={300} width="34%" />
         </div>
       </div>
     )
@@ -105,14 +111,12 @@ export default function Analytics() {
         <div className="an-head">
           <h1 className="an-head__title">Analytics</h1>
         </div>
-        <div className="an-empty">
-          <BarChart3 size={48} color="var(--text-tertiary)" />
-          <h2>No data yet</h2>
-          <p>Start tracking your tasks and study sessions to see your productivity insights.</p>
-          <div className="an-empty-actions">
-            <Link to="/tasks" className="an-btn-primary">Create a Task</Link>
-            <Link to="/study" className="an-btn-secondary">Start a Study Session</Link>
-          </div>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <EmptyState
+            icon={BarChart3}
+            title="No data yet"
+            description="Start tracking your tasks and study sessions to see your productivity insights."
+          />
         </div>
       </div>
     )

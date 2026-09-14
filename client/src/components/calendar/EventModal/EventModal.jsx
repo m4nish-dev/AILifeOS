@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { X, Calendar, Clock, Tag, Trash2, Check } from 'lucide-react'
+import { X, Calendar, Clock, Tag, Trash2, Check, Loader2 } from 'lucide-react'
 import { EVENT_CATEGORIES } from '../../../data/mockEvents'
 import './EventModal.css'
 
@@ -12,7 +12,7 @@ function toLocalDateTime(iso) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
-export default function EventModal({ open, event, initialDate, onClose, onSave, onDelete }) {
+export default function EventModal({ open, event, initialDate, isSaving, onClose, onSave, onDelete }) {
   const isEdit = Boolean(event)
   const [form, setForm] = useState({ title: '', start: '', end: '', color: 'green', category: 'work' })
 
@@ -114,9 +114,10 @@ export default function EventModal({ open, event, initialDate, onClose, onSave, 
               </button>
             )}
             <div className="em__foot-right">
-              <button type="button" className="em__btn em__btn--ghost" onClick={onClose}>Cancel</button>
-              <button type="submit" className="em__btn em__btn--primary">
-                <Check size={14} strokeWidth={2.5} /> {isEdit ? 'Save' : 'Create'}
+              <button type="button" className="em__btn em__btn--ghost" onClick={onClose} disabled={isSaving}>Cancel</button>
+              <button type="submit" className="em__btn em__btn--primary" disabled={!form.title.trim() || isSaving}>
+                {isSaving ? <Loader2 size={14} className="an-spin" /> : <Check size={14} strokeWidth={2.5} />}
+                {isSaving ? 'Saving...' : (isEdit ? 'Save' : 'Create')}
               </button>
             </div>
           </div>

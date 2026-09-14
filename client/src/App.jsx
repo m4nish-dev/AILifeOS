@@ -12,6 +12,7 @@ import Settings from './pages/Settings/Settings'
 import Profile from './pages/Profile/Profile'
 import Login from './pages/Auth/Login'
 import Register from './pages/Auth/Register'
+import ErrorBoundary from './components/common/ErrorBoundary/ErrorBoundary'
 
 // Simple auth guard — checks for JWT token in localStorage
 function PrivateRoute({ children }) {
@@ -21,28 +22,30 @@ function PrivateRoute({ children }) {
 
 export default function App() {
   return (
-    <Routes>
-      {/* Auth routes (no layout) */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+    <ErrorBoundary>
+      <Routes>
+        {/* Auth routes (no layout) */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-      {/* Protected app routes (with layout) */}
-      <Route element={<PrivateRoute><MainLayout /></PrivateRoute>}>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/tasks" element={<Tasks />} />
-        <Route path="/goals" element={<Goals />} />
-        <Route path="/calendar" element={<Calendar />} />
-        <Route path="/notes" element={<Notes />} />
-        <Route path="/study" element={<Study />} />
-        <Route path="/assistant" element={<AIAssistant />} />
-        <Route path="/analytics" element={<Analytics />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/profile" element={<Profile />} />
-      </Route>
+        {/* Protected app routes (with layout) */}
+        <Route element={<PrivateRoute><MainLayout /></PrivateRoute>}>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/tasks" element={<Tasks />} />
+          <Route path="/goals" element={<Goals />} />
+          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/notes" element={<Notes />} />
+          <Route path="/study" element={<Study />} />
+          <Route path="/assistant" element={<AIAssistant />} />
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/profile" element={<Profile />} />
+        </Route>
 
-      {/* Catch-all */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
-    </Routes>
+        {/* Catch-all */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </ErrorBoundary>
   )
 }

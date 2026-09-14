@@ -134,6 +134,38 @@ export const chatWithAI = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid request format. "messages" array is required.' });
     }
 
+    // Check for Slash Commands
+    const userMsgContent = messages[messages.length - 1].content.trim();
+    if (userMsgContent.startsWith('/')) {
+      const parts = userMsgContent.split(' ');
+      const command = parts[0].toLowerCase();
+      const payload = parts.slice(1).join(' ');
+
+      let responseText = '';
+      
+      if (command === '/task' && payload) {
+        await Task.create({ userId, title: payload });
+        responseText = `✅ Created task: "${payload}"`;
+      } else if (command === '/goal' && payload) {
+        await Goal.create({ userId, title: payload });
+        responseText = `✅ Created goal: "${payload}"`;
+      } else if (command === '/note' && payload) {
+        await Note.create({ userId, title: payload, content: '' });
+        responseText = `✅ Created note: "${payload}"`;
+      } else if (command === '/event' && payload) {
+        const start = new Date();
+        const end = new Date(start.getTime() + 60 * 60 * 1000); // +1 hour
+        await Event.create({ userId, title: payload, start, end });
+        responseText = `✅ Scheduled event: "${payload}" for now.`;
+      } else if (command === '/summarize') {
+        responseText = `To summarize a note, please open it in the Notes tab and use the AI summarize button there.`;
+      } else {
+        responseText = `Unknown command or missing title. Available: /task, /goal, /note, /event.`;
+      }
+
+      return res.status(200).json({ success: true, message: responseText });
+    }
+
     // 1. Build context & construct prompt
     const userContextStr = await buildUserContext(userId);
     
