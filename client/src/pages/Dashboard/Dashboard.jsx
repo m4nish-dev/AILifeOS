@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
 import { 
   CheckSquare, Calendar, Target, FileText, Sparkles, Flame, Loader2, AlertCircle, 
@@ -25,7 +25,9 @@ export default function Dashboard() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [planTab, setPlanTab] = useState('work')
   const prefersReducedMotion = useReducedMotion()
+  const navigate = useNavigate()
 
   const fetchData = async () => {
     try {
@@ -66,6 +68,11 @@ export default function Dashboard() {
 
   const { user, stats, todayFocus, upcomingEvents, activeGoalsList, recentNotes, streakDays, productivityScore, aiInsight } = data
   const todayStr = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
+  
+  const filteredFocus = todayFocus.filter(task => {
+    if (planTab === 'work') return task.category !== 'personal'
+    return task.category === 'personal'
+  })
 
   // Animation Variants
   const containerVariants = {
@@ -160,33 +167,33 @@ export default function Dashboard() {
               </div>
               <div className="dash-section__actions">
                 <div className="dash-tabs">
-                  <button className="dash-tab dash-tab--active">Work</button>
-                  <button className="dash-tab">Personal</button>
+                  <button className={`dash-tab ${planTab === 'work' ? 'dash-tab--active' : ''}`} onClick={() => setPlanTab('work')}>Work</button>
+                  <button className={`dash-tab ${planTab === 'personal' ? 'dash-tab--active' : ''}`} onClick={() => setPlanTab('personal')}>Personal</button>
                 </div>
-                <button className="dash-btn-primary">
+                <button className="dash-btn-primary" onClick={() => navigate('/tasks')}>
                   <Plus size={16} /> Add Task
                 </button>
               </div>
             </div>
             <div className="dash-task-list">
-              {todayFocus.length > 0 ? todayFocus.map((task, i) => (
+              {filteredFocus.length > 0 ? filteredFocus.map((task, i) => (
                 <div className="dash-task-row" key={task._id || i}>
-                  <div className={`dash-task-bar dash-task-bar--${task.priority.toLowerCase()}`}></div>
+                  <div className={`dash-task-bar dash-task-bar--${task.priority?.toLowerCase() || 'medium'}`}></div>
                   <div className="dash-task-checkbox"></div>
                   <div className="dash-task-content">
                     <div className="dash-task-title">{task.title}</div>
-                    <div className="dash-task-meta">10:00 AM · 45m</div>
+                    <div className="dash-task-meta">{task.time || '10:00 AM'} · {task.duration || 45}m</div>
                   </div>
                   <div className="dash-task-right">
-                    <span className={`dash-badge dash-badge--${task.priority.toLowerCase()}`}>{task.priority}</span>
+                    <span className={`dash-badge dash-badge--${task.priority?.toLowerCase() || 'medium'}`}>{task.priority || 'medium'}</span>
                     <button className="dash-icon-btn"><Play size={14} /></button>
                   </div>
                 </div>
               )) : (
                 <div className="dash-empty">
                   <CheckSquare size={32} color="var(--text-tertiary)" />
-                  <p>No tasks yet</p>
-                  <button className="dash-btn-primary" style={{marginTop: 8}}>Create one</button>
+                  <p>No {planTab} tasks yet</p>
+                  <button className="dash-btn-primary" style={{marginTop: 8}} onClick={() => navigate('/tasks')}>Create one</button>
                 </div>
               )}
             </div>
@@ -236,10 +243,10 @@ export default function Dashboard() {
             <div className="dash-card dash-card--actions">
               <div className="dash-card__header">Quick Actions</div>
               <div className="dash-quick-actions">
-                <button className="dash-qa-btn" style={{ '--qa-color': 'var(--blue-500)', '--qa-bg': 'var(--blue-50)' }}><FileText size={20} /><span>New Note</span></button>
-                <button className="dash-qa-btn" style={{ '--qa-color': 'var(--green-500)', '--qa-bg': 'var(--green-50)' }}><CheckSquare size={20} /><span>Add Task</span></button>
-                <button className="dash-qa-btn" style={{ '--qa-color': 'var(--purple-500)', '--qa-bg': 'var(--purple-50)' }}><Sparkles size={20} /><span>Ask AI</span></button>
-                <button className="dash-qa-btn" style={{ '--qa-color': 'var(--amber-500)', '--qa-bg': 'var(--amber-50)' }}><Target size={20} /><span>Log Goal</span></button>
+                <button className="dash-qa-btn" style={{ '--qa-color': 'var(--blue-500)', '--qa-bg': 'var(--blue-50)' }} onClick={() => navigate('/notes')}><FileText size={20} /><span>New Note</span></button>
+                <button className="dash-qa-btn" style={{ '--qa-color': 'var(--green-500)', '--qa-bg': 'var(--green-50)' }} onClick={() => navigate('/tasks')}><CheckSquare size={20} /><span>Add Task</span></button>
+                <button className="dash-qa-btn" style={{ '--qa-color': 'var(--purple-500)', '--qa-bg': 'var(--purple-50)' }} onClick={() => navigate('/ai-assistant')}><Sparkles size={20} /><span>Ask AI</span></button>
+                <button className="dash-qa-btn" style={{ '--qa-color': 'var(--amber-500)', '--qa-bg': 'var(--amber-50)' }} onClick={() => navigate('/goals')}><Target size={20} /><span>Log Goal</span></button>
               </div>
             </div>
 
