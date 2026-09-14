@@ -1,0 +1,11 @@
+{
+  "name": "ailifeos-root",
+  "version": "1.0.0",
+  "description": "Root workspace for AILifeOS",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix server\""
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
+}

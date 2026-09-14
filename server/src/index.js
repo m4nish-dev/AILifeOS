@@ -13,6 +13,11 @@ import analyticsRoutes from './routes/analytics.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import searchRoutes from './routes/search.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
+import agentRoutes from './routes/agent.routes.js';
+import thinkRoutes from './routes/think.js';
+import voiceRoutes from './routes/voice.js';
+import { WebSocketServer } from 'ws';
+import { handleVoiceAgentConnection } from './ws/voiceAgentBridge.js';
 
 dotenv.config();
 
@@ -39,6 +44,9 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/agent', agentRoutes);
+app.use('/think', thinkRoutes);
+app.use('/api/voice', voiceRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -65,8 +73,25 @@ app.use((err, req, res, next) => {
 });
 
 // ─── Start server + Connect DB ────────────────────────────
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
+});
+
+// Attach WebSocket Server for Voice Agent
+const wss = new WebSocketServer({ noServer: true });
+
+server.on('upgrade', (request, socket, head) => {
+  if (request.url === '/ws/voice') {
+    wss.handleUpgrade(request, socket, head, (ws) => {
+      wss.emit('connection', ws, request);
+    });
+  } else {
+    socket.destroy();
+  }
+});
+
+wss.on('connection', (ws, request) => {
+  handleVoiceAgentConnection(ws, request);
 });
 
 // Attempt DB connection (non-blocking)
