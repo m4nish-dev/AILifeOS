@@ -1,12 +1,18 @@
-import { Search, Bell, Flame, Command, Sun, Moon } from 'lucide-react'
+import { Search, Bell, Flame, Command, Sun, Moon, Menu } from 'lucide-react'
 import { useTheme } from '../../../context/ThemeContext'
+import { useAuth } from '../../../context/AuthContext'
 import './Topbar.css'
 
-export default function Topbar() {
+export default function Topbar({ toggleMobileMenu }) {
   const { theme, toggleTheme } = useTheme()
+  const { initials } = useAuth()
 
   return (
     <header className="topbar">
+      <button className="topbar__menu-toggle" onClick={toggleMobileMenu}>
+        <Menu size={20} />
+      </button>
+
       <div className="topbar__search">
         <Search size={17} className="topbar__search-icon" />
         <input
@@ -39,7 +45,7 @@ export default function Topbar() {
           <span className="topbar__dot" />
         </button>
 
-        <button className="topbar__avatar">MK</button>
+        <button className="topbar__avatar">{initials ? initials[0] : '?'}</button>
       </div>
     </header>
   )

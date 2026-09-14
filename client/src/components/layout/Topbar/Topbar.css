@@ -9,25 +9,40 @@
   position: sticky;
   top: 0;
   z-index: 20;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(var(--bg-surface-rgb, 255, 255, 255), 0.85); /* fallback */
+}
+[data-theme="dark"] .topbar {
+  background: rgba(26, 29, 34, 0.85);
+}
+
+.topbar__menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
 }
 
 /* Search */
 .topbar__search {
   flex: 1;
   max-width: 620px;
-  height: 40px;
+  height: 44px;
   display: flex;
   align-items: center;
   gap: var(--sp-3);
   padding: 0 var(--sp-4);
-  background: var(--bg-app);
+  background: var(--bg-surface-alt);
   border: 1px solid transparent;
-  border-radius: var(--r-lg);
-  transition: border-color var(--t-fast), background var(--t-fast);
+  border-radius: 12px;
+  transition: border-color var(--t-fast), background var(--t-fast), box-shadow var(--t-fast);
 }
 .topbar__search:focus-within {
   border-color: var(--green-600);
   background: var(--bg-surface);
+  box-shadow: 0 0 0 4px rgba(23, 164, 107, 0.2);
 }
 .topbar__search-icon {
   color: var(--text-tertiary);
@@ -37,6 +52,7 @@
   flex: 1;
   font-size: var(--fs-base);
   color: var(--text-primary);
+  background: transparent;
 }
 .topbar__search-input::placeholder { color: var(--text-tertiary); }
 .topbar__search-kbd {
@@ -66,13 +82,20 @@
   gap: var(--sp-2);
   padding: 7px 12px;
   border-radius: var(--r-full);
-  background: var(--coffee-50);
-  color: var(--coffee-700);
+  background: var(--amber-50);
+  color: var(--amber-600);
   font-size: var(--fs-sm);
   font-weight: var(--fw-semibold);
 }
 .topbar__streak-icon {
-  color: var(--coffee-600);
+  color: var(--amber-500);
+  animation: pulse-flame 2s infinite ease-in-out;
+}
+
+@keyframes pulse-flame {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
 }
 
 .topbar__icon-btn {
@@ -84,7 +107,10 @@
   color: var(--text-secondary);
   background: var(--bg-app);
   position: relative;
-  transition: background var(--t-fast), color var(--t-fast);
+  transition: transform 120ms ease, background var(--t-fast), color var(--t-fast);
+}
+.topbar__icon-btn:active {
+  transform: scale(0.97);
 }
 .topbar__icon-btn:hover {
   background: var(--bg-hover);
@@ -112,4 +138,24 @@
   display: grid;
   place-items: center;
   box-shadow: var(--shadow-glow-green);
+  transition: transform 120ms ease;
+}
+.topbar__avatar:active {
+  transform: scale(0.97);
+}
+
+@media (max-width: 767px) {
+  .topbar {
+    padding: 0 var(--sp-4);
+    gap: var(--sp-3);
+  }
+  .topbar__menu-toggle {
+    display: block;
+  }
+  .topbar__streak {
+    display: none;
+  }
+  .topbar__search-kbd {
+    display: none;
+  }
 }

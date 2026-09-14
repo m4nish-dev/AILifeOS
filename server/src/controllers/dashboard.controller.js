@@ -27,7 +27,7 @@ const computeProductivityScore = async (userId, todayStart) => {
   // 1 pt per 5 study mins (max 30)
   // 5 pts per active goal with progress (max 20) -> Simplified to just giving 20 if they have goals for performance.
   // We'll actually check active goals
-  const activeGoals = await Goal.find({ userId, status: 'active' });
+  const activeGoals = await Goal.find({ userId, status: { $ne: 'completed' } });
   const goalsWithProgress = activeGoals.filter(g => g.milestones.some(m => m.done)).length;
 
   let score = 0;
@@ -80,8 +80,8 @@ export const getDashboardSummary = async (req, res) => {
       .limit(5);
 
     // 3. Goals
-    const activeGoalsCount = await Goal.countDocuments({ userId, status: 'active' });
-    const activeGoalsRaw = await Goal.find({ userId, status: 'active' }).limit(3);
+    const activeGoalsCount = await Goal.countDocuments({ userId, status: { $ne: 'completed' } });
+    const activeGoalsRaw = await Goal.find({ userId, status: { $ne: 'completed' } }).limit(3);
     const activeGoalsList = activeGoalsRaw.map(g => {
       const total = g.milestones.length;
       const done = g.milestones.filter(m => m.done).length;
@@ -98,7 +98,7 @@ export const getDashboardSummary = async (req, res) => {
     const recentNotes = await Note.find({ userId }).sort({ updatedAt: -1 }).limit(3).select('title updatedAt tags');
 
     // 5. Events
-    const upcomingEvents = await Event.find({ userId, start: { $gte: now } })
+    const upcomingEvents = await Event.find({ userId, start: { $gte: todayStart } })
       .sort({ start: 1 })
       .limit(4);
     

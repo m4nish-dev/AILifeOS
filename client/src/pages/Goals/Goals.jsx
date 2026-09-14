@@ -121,7 +121,7 @@ export default function Goals() {
       ) : (
         <div className="goals-grid">
           {filtered.map(goal => (
-            <GoalCard key={goal.id || goal._id} goal={goal} onClick={() => openEdit(goal)} />
+            <GoalCard key={goal.id || goal._id} goal={goal} onClick={() => openEdit(goal)} onDelete={handleDelete} />
           ))}
         </div>
       )}

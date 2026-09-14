@@ -54,3 +54,28 @@
 .cs__del:hover { background: var(--red-50); color: var(--red-600); }
 
 .cs__empty { padding: var(--sp-6) var(--sp-3); text-align: center; color: var(--text-tertiary); font-size: var(--fs-xs); }
+
+.cs__section { display: flex; flex-direction: column; gap: 4px; }
+.cs__actions { position: relative; display: flex; align-items: center; opacity: 0; transition: opacity var(--t-fast); }
+.cs__item:hover .cs__actions { opacity: 1; }
+.cs__menu-btn { width: 22px; height: 22px; display: grid; place-items: center; border-radius: var(--r-sm); color: var(--text-tertiary); }
+.cs__menu-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+.cs__menu {
+  position: absolute; right: 0; top: 100%; margin-top: 4px; z-index: 100;
+  background: var(--bg-surface); border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md); box-shadow: var(--shadow-xl);
+  padding: 4px; width: 140px; display: flex; flex-direction: column; gap: 2px;
+}
+.cs__menu button {
+  display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
+  padding: 8px; font-size: var(--fs-xs); color: var(--text-secondary);
+  border-radius: var(--r-sm); transition: background var(--t-fast);
+}
+.cs__menu button:hover { background: var(--bg-hover); color: var(--text-primary); }
+.cs__menu-div { height: 1px; background: var(--border-subtle); margin: 2px 0; }
+.cs__menu .cs__menu-del { color: var(--red-500); }
+.cs__menu .cs__menu-del:hover { background: var(--red-50); color: var(--red-600); }
+.cs__rename-input {
+  width: 100%; font-size: var(--fs-xs); font-weight: var(--fw-semibold);
+  background: transparent; color: var(--text-primary); outline: none; border: none;
+}

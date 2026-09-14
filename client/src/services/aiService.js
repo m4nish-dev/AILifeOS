@@ -16,6 +16,11 @@ export const aiService = {
     return data.data;
   },
 
+  async updateConversation(id, data) {
+    const { data: responseData } = await api.put(`/ai/conversations/${id}`, data);
+    return responseData.data;
+  },
+
   async deleteConversation(id) {
     const { data } = await api.delete(`/ai/conversations/${id}`);
     return data;
@@ -34,6 +39,17 @@ export const aiService = {
   async generateQuiz(noteId) {
     const { data } = await api.post(`/ai/quiz/${noteId}`);
     return data.data;
+  },
+
+  uploadPdf: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const { data } = await api.post('/ai/upload-pdf', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return data;
   }
 };
 

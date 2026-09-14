@@ -12,6 +12,7 @@ export default function AIAssistant() {
   const [activeMessages, setActiveMessages] = useState([])
   const [loading, setLoading] = useState(false)
   const [editingValue, setEditingValue] = useState(null)
+  const [deleteModalId, setDeleteModalId] = useState(null)
 
   // Fetch sidebar conversations
   const fetchConversations = async () => {
@@ -89,7 +90,14 @@ export default function AIAssistant() {
     setActiveId(tempId)
   }
 
-  const deleteChat = async (id) => {
+  const deleteChat = (id) => {
+    setDeleteModalId(id)
+  }
+
+  const confirmDelete = async () => {
+    const id = deleteModalId
+    setDeleteModalId(null)
+    
     if (id.startsWith('new_')) {
       const remaining = conversations.filter(c => c._id !== id)
       setConversations(remaining)
@@ -97,7 +105,6 @@ export default function AIAssistant() {
       return
     }
 
-    if (!confirm('Delete this conversation?')) return
     try {
       await aiService.deleteConversation(id)
       const remaining = conversations.filter(c => c._id !== id)
@@ -108,14 +115,24 @@ export default function AIAssistant() {
     }
   }
 
+  const handleUpdateChat = async (id, data) => {
+    try {
+      await aiService.updateConversation(id, data)
+      fetchConversations()
+    } catch (err) {
+      console.error('Failed to update', err)
+    }
+  }
+
   return (
     <div className="ai-page">
       <ChatSidebar
-        conversations={conversations.map(c => ({ id: c._id, title: c.title, preview: c.preview }))}
+        conversations={conversations.map(c => ({ id: c._id, title: c.title, preview: c.preview, isPinned: c.isPinned, isArchived: c.isArchived }))}
         activeId={activeId}
         onSelect={setActiveId}
         onNew={newChat}
         onDelete={deleteChat}
+        onUpdate={handleUpdateChat}
       />
       <div className="ai-main">
         <div className="ai-main__chat">
@@ -130,6 +147,21 @@ export default function AIAssistant() {
           <p className="ai-main__hint">AI can make mistakes. Verify important information.</p>
         </div>
       </div>
+
+      {deleteModalId && (
+        <div className="sb-modal-overlay" onClick={() => setDeleteModalId(null)}>
+          <div className="sb-modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3 className="sb-modal-title">Delete Conversation</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--fs-sm)', marginBottom: 'var(--sp-4)' }}>
+              Are you sure you want to delete this chat? This action cannot be undone.
+            </p>
+            <div className="sb-modal-actions">
+              <button type="button" className="sb-btn sb-btn-ghost" onClick={() => setDeleteModalId(null)}>Cancel</button>
+              <button type="button" className="sb-btn sb-btn-primary" style={{ background: 'var(--red-600)' }} onClick={confirmDelete}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

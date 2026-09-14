@@ -12,6 +12,14 @@ const conversationSchema = new mongoose.Schema(
       type: String,
       default: 'New Conversation'
     },
+    isPinned: {
+      type: Boolean,
+      default: false
+    },
+    isArchived: {
+      type: Boolean,
+      default: false
+    },
     messages: [
       {
         role: {

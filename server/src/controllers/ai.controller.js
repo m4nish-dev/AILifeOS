@@ -1,11 +1,14 @@
 import Groq from 'groq-sdk';
 import dotenv from 'dotenv';
+import { PDFParse } from 'pdf-parse';
 import Conversation from '../models/Conversation.model.js';
 import Task from '../models/Task.model.js';
 import Goal from '../models/Goal.model.js';
 import Event from '../models/Event.model.js';
 import Note from '../models/Note.model.js';
 import StudySession from '../models/StudySession.model.js';
+import StudyGoal from '../models/StudyGoal.model.js';
+import Flashcard from '../models/Flashcard.model.js';
 
 dotenv.config();
 
@@ -61,6 +64,19 @@ const buildUserContext = async (userId) => {
     });
     const bestSubject = Object.keys(subjectCounts).sort((a,b) => subjectCounts[b] - subjectCounts[a])[0] || 'None';
 
+    // 6. Study Goals
+    const activeStudyGoals = await StudyGoal.find({ userId, active: true });
+    let goalProgressStr = '';
+    activeStudyGoals.forEach(g => {
+      const subjectSessions = studySessions.filter(s => s.subject === g.subject);
+      const actualMins = Math.round(subjectSessions.reduce((acc, s) => acc + s.duration, 0) / 60);
+      const progPct = Math.min(Math.round((actualMins / g.targetMinutesPerWeek) * 100), 100);
+      goalProgressStr += `  - ${g.subject}: ${progPct}% (${actualMins}/${g.targetMinutesPerWeek} min)\n`;
+    });
+
+    // 7. Flashcards
+    const dueCards = await Flashcard.countDocuments({ userId, nextReview: { $lte: new Date() } });
+
     // Build the string
     let contextStr = `USER CONTEXT (as of ${new Date().toLocaleDateString()}):\n`;
     contextStr += `Tasks: ${tasks.length} total, ${done} done, ${inProgress} in-progress, ${todo} todo\n`;
@@ -95,6 +111,12 @@ const buildUserContext = async (userId) => {
     }
 
     contextStr += `Study Stats (Last 7 days): ${Math.round(totalStudyMins / 60 * 10) / 10} hours total. Most studied: ${bestSubject}\n`;
+
+    if (activeStudyGoals.length > 0) {
+      contextStr += `Study Goals Progress:\n${goalProgressStr}`;
+    }
+    
+    contextStr += `Flashcards due for review: ${dueCards}\n`;
 
     return contextStr;
   } catch (err) {
@@ -184,13 +206,15 @@ export const getConversations = async (req, res) => {
   try {
     const convs = await Conversation.find({ userId: req.user._id })
       .sort({ updatedAt: -1 })
-      .select('_id title updatedAt messages'); // Need messages for preview
+      .select('_id title updatedAt messages isPinned isArchived'); // Need messages for preview
       
     const formatted = convs.map(c => {
       const lastMsg = c.messages.length > 0 ? c.messages[c.messages.length - 1].content : '';
       return {
         _id: c._id,
         title: c.title,
+        isPinned: c.isPinned || false,
+        isArchived: c.isArchived || false,
         updatedAt: c.updatedAt,
         preview: lastMsg.substring(0, 50) + (lastMsg.length > 50 ? '...' : '')
       };
@@ -222,6 +246,26 @@ export const deleteConversation = async (req, res) => {
     }
     await conv.deleteOne();
     res.status(200).json({ success: true, message: 'Deleted' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+export const updateConversation = async (req, res) => {
+  try {
+    const { title, isPinned, isArchived } = req.body;
+    const conv = await Conversation.findById(req.params.id);
+    
+    if (!conv || conv.userId.toString() !== req.user._id.toString()) {
+      return res.status(404).json({ success: false, message: 'Conversation not found' });
+    }
+
+    if (title !== undefined) conv.title = title;
+    if (isPinned !== undefined) conv.isPinned = isPinned;
+    if (isArchived !== undefined) conv.isArchived = isArchived;
+
+    await conv.save();
+    res.status(200).json({ success: true, data: conv });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -296,6 +340,26 @@ export const generateQuiz = async (req, res) => {
     const parsed = JSON.parse(completion.choices[0]?.message?.content || '{}');
     res.status(200).json({ success: true, data: parsed });
   } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+export const uploadPdf = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
+    
+    // Parse the PDF
+    const parser = new PDFParse({ data: req.file.buffer });
+    const textResult = await parser.getText();
+    const text = textResult.text;
+
+    if (!text || text.trim().length === 0) {
+      return res.status(400).json({ success: false, message: 'Could not extract text from this PDF.' });
+    }
+
+    res.status(200).json({ success: true, text });
+  } catch (err) {
+    console.error('PDF Parse error:', err);
     res.status(500).json({ success: false, message: err.message });
   }
 };

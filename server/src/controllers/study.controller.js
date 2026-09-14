@@ -33,6 +33,17 @@ export const endSession = async (req, res) => {
     session.completed = req.body.completed !== undefined ? req.body.completed : true;
     if (req.body.duration !== undefined) session.duration = req.body.duration;
     if (req.body.notes !== undefined) session.notes = req.body.notes;
+    if (req.body.mood) session.mood = req.body.mood;
+    if (req.body.environment) session.environment = req.body.environment;
+    
+    // Calculate simple focus score based on completion
+    if (session.completed && session.duration >= session.plannedDuration * 0.8) {
+      session.focusScore = 95;
+    } else if (session.completed) {
+      session.focusScore = 80;
+    } else {
+      session.focusScore = 40;
+    }
 
     await session.save();
     res.status(200).json({ success: true, message: 'Session ended', data: { session } });
@@ -213,6 +224,58 @@ export const getStats = async (req, res) => {
       }
     });
 
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getSubjectStats = async (req, res) => {
+  try {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const sessions = await StudySession.find({ 
+      userId: req.user._id, 
+      completed: true, 
+      startedAt: { $gte: thirtyDaysAgo } 
+    });
+
+    const subjectMap = {};
+    sessions.forEach(s => {
+      if (!subjectMap[s.subject]) subjectMap[s.subject] = 0;
+      subjectMap[s.subject] += Math.round(s.duration / 60);
+    });
+
+    const data = Object.keys(subjectMap).map(name => ({
+      name,
+      value: subjectMap[name]
+    })).sort((a, b) => b.value - a.value);
+
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getFocusPattern = async (req, res) => {
+  try {
+    const sessions = await StudySession.find({ 
+      userId: req.user._id, 
+      completed: true 
+    });
+
+    // We want a heatmap of hour-of-day
+    // Array of 24 elements representing hours 0-23
+    const hours = new Array(24).fill(0);
+    
+    sessions.forEach(s => {
+      const h = new Date(s.startedAt).getHours();
+      hours[h] += Math.round(s.duration / 60);
+    });
+
+    const data = hours.map((minutes, hour) => ({ hour, minutes }));
+
+    res.status(200).json({ success: true, data });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

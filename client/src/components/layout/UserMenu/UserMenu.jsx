@@ -47,7 +47,7 @@ export default function UserMenu() {
         {user.avatar ? (
           <img src={user.avatar} alt={user.name} className="user-menu-avatar-img" />
         ) : (
-          initials
+          initials ? initials[0] : '?'
         )}
       </button>
 

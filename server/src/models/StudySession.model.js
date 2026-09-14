@@ -42,6 +42,23 @@ const studySessionSchema = new mongoose.Schema(
       type: String,
       default: ''
     },
+    flashcardsReviewed: {
+      type: Number,
+      default: 0
+    },
+    focusScore: {
+      type: Number,
+      min: 0,
+      max: 100
+    },
+    environment: {
+      type: String,
+      enum: ['home', 'library', 'cafe', 'other']
+    },
+    mood: {
+      type: String,
+      enum: ['great', 'good', 'ok', 'struggling']
+    },
     startedAt: {
       type: Date,
       required: true

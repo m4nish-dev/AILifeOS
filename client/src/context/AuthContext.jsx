@@ -25,6 +25,10 @@ export function AuthProvider({ children }) {
       const res = await fetch(`${API}/auth/me`, {
         headers: { Authorization: `Bearer ${token}` },
       })
+      if (res.status === 401) {
+        logout()
+        return
+      }
       const data = await res.json()
       if (data.success && data.data?.user) {
         setUser(data.data.user)

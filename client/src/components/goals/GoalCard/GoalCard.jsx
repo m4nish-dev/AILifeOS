@@ -1,4 +1,5 @@
-import { Code2, Briefcase, Brain, BookOpen, Activity, Target, MoreVertical, Calendar, CheckCircle2 } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { Code2, Briefcase, Brain, BookOpen, Activity, Target, MoreVertical, Calendar, CheckCircle2, Edit2, Trash2 } from 'lucide-react'
 import './GoalCard.css'
 
 const ICONS = { code: Code2, briefcase: Briefcase, brain: Brain, book: BookOpen, activity: Activity }
@@ -19,7 +20,20 @@ const STATUS_COLOR = {
   'paused': 'coffee',
 }
 
-export default function GoalCard({ goal, onClick }) {
+export default function GoalCard({ goal, onClick, onDelete }) {
+  const [showMenu, setShowMenu] = useState(false)
+  const menuRef = useRef(null)
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setShowMenu(false)
+      }
+    }
+    if (showMenu) document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [showMenu])
+
   const Icon = ICONS[goal.icon] || Target
   const doneMilestones = goal.milestones?.filter(m => m.done).length || 0
   const totalMilestones = goal.milestones?.length || 0
@@ -35,9 +49,33 @@ export default function GoalCard({ goal, onClick }) {
         <span className={`gc__status gc__status--${STATUS_COLOR[goal.status]}`}>
           {STATUS_LABEL[goal.status]}
         </span>
-        <button className="gc__more" onClick={(e) => e.stopPropagation()}>
-          <MoreVertical size={14} />
-        </button>
+        
+        <div className="gc__more-container" ref={menuRef} style={{ position: 'relative', marginLeft: 'auto' }}>
+          <button className="gc__more" onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu) }}>
+            <MoreVertical size={14} />
+          </button>
+          
+          {showMenu && (
+            <div className="gc__dropdown" style={{
+              position: 'absolute', right: 0, top: 24, background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 8, boxShadow: 'var(--shadow-sm)', zIndex: 10, padding: 4, minWidth: 120
+            }}>
+              <button 
+                onClick={(e) => { e.stopPropagation(); setShowMenu(false); onClick(); }}
+                style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '6px 12px', fontSize: 13, background: 'transparent', cursor: 'pointer' }}
+              >
+                <Edit2 size={12} /> Edit
+              </button>
+              {onDelete && (
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setShowMenu(false); onDelete(goal.id || goal._id); }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '6px 12px', fontSize: 13, color: 'var(--red-500)', background: 'transparent', cursor: 'pointer' }}
+                >
+                  <Trash2 size={12} /> Delete
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       <h3 className="gc__title">{goal.title}</h3>

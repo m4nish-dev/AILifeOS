@@ -51,10 +51,16 @@ export default function Notes() {
     }
   }
 
-  const handleNewFolder = () => {
-    const name = prompt('Folder name?')
-    if (!name) return
-    setFolders([...folders, { id: `f${Date.now()}`, name, icon: '📁', color: 'green' }])
+  const [newFolderModal, setNewFolderModal] = useState(false)
+  const [newFolderName, setNewFolderName] = useState('')
+  const [deleteModalId, setDeleteModalId] = useState(null)
+
+  const handleNewFolderSubmit = (e) => {
+    e.preventDefault()
+    if (!newFolderName.trim()) return
+    setFolders([...folders, { id: `f${Date.now()}`, name: newFolderName.trim(), icon: '📁', color: 'green' }])
+    setNewFolderModal(false)
+    setNewFolderName('')
   }
 
   const handleSave = async (updatedNote) => {
@@ -72,15 +78,17 @@ export default function Notes() {
     }
   }
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this note?')) return
+  const confirmDelete = async () => {
+    if (!deleteModalId) return
     try {
-      await noteService.deleteNote(id)
-      const remaining = notes.filter(n => n.id !== id && n._id !== id)
+      await noteService.deleteNote(deleteModalId)
+      const remaining = notes.filter(n => n.id !== deleteModalId && n._id !== deleteModalId)
       setNotes(remaining)
       setSelectedNote(remaining[0] || null)
     } catch (err) {
       console.error('Failed to delete note', err)
+    } finally {
+      setDeleteModalId(null)
     }
   }
 
@@ -102,14 +110,14 @@ export default function Notes() {
         onSelectFolder={setSelectedFolder}
         onSelectNote={setSelectedNote}
         onNewNote={handleNewNote}
-        onNewFolder={handleNewFolder}
+        onNewFolder={() => setNewFolderModal(true)}
       />
       <NoteEditor
         note={selectedNote}
         folders={folders}
         saveStatus={saveStatus}
         onSave={handleSave}
-        onDelete={handleDelete}
+        onDelete={(id) => setDeleteModalId(id)}
         onSummarize={(note) => setAiModal({ open: true, mode: 'summary', note })}
         onQuiz={(note) => setAiModal({ open: true, mode: 'quiz', note })}
       />
@@ -119,6 +127,42 @@ export default function Notes() {
         note={aiModal.note}
         onClose={() => setAiModal({ open: false, mode: 'summary', note: null })}
       />
+
+      {newFolderModal && (
+        <div className="sb-modal-overlay" onClick={() => setNewFolderModal(false)}>
+          <form className="sb-modal-content" onClick={(e) => e.stopPropagation()} onSubmit={handleNewFolderSubmit}>
+            <h3 className="sb-modal-title">New Folder</h3>
+            <div className="sb-modal-body">
+              <input 
+                autoFocus
+                placeholder="Folder name" 
+                value={newFolderName} 
+                onChange={e => setNewFolderName(e.target.value)}
+                style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '6px', color: 'var(--text-primary)', outline: 'none' }}
+              />
+            </div>
+            <div className="sb-modal-actions">
+              <button type="button" className="sb-btn sb-btn-ghost" onClick={() => setNewFolderModal(false)}>Cancel</button>
+              <button type="submit" className="sb-btn sb-btn-primary">Create</button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {deleteModalId && (
+        <div className="sb-modal-overlay" onClick={() => setDeleteModalId(null)}>
+          <div className="sb-modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3 className="sb-modal-title">Delete Note</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--fs-sm)', marginBottom: 'var(--sp-4)' }}>
+              Are you sure you want to delete this note? This action cannot be undone.
+            </p>
+            <div className="sb-modal-actions">
+              <button type="button" className="sb-btn sb-btn-ghost" onClick={() => setDeleteModalId(null)}>Cancel</button>
+              <button type="button" className="sb-btn sb-btn-primary" style={{ background: 'var(--red-600)' }} onClick={confirmDelete}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
