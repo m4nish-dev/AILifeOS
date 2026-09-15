@@ -2,8 +2,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+if (process.env.NODE_ENV !== 'production') {
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
+  dotenv.config({ path: path.resolve(__dirname, '../.env') });
+}
 
 import express from 'express';
 import cors from 'cors';
@@ -44,13 +46,11 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/notifications', notificationRoutes);
 
-// Health check (matching requirements)
+// Health check
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'ok',
-    uptime: process.uptime(),
-    activeSessions: 0, // Mocked for now to avoid ReferenceError with wss
-    deepgramConnected: true
+    uptime: process.uptime()
   });
 });
 app.get('/api/health', (req, res) => res.redirect('/health'));
