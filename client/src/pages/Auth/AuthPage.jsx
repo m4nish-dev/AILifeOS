@@ -4,7 +4,7 @@ import { Eye, EyeOff, Mail, Lock, User, Sparkles, CheckCircle2, Brain, Target, C
 import { useAuth } from '../../context/AuthContext'
 import './Auth.css'
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5001/api'
+const API = '/api'
 
 const FEATURES = [
   { icon: Brain, label: 'AI-Powered Planning', desc: 'Your own intelligent life assistant' },
