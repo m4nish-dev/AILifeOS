@@ -10,9 +10,8 @@ import AIAssistant from './pages/AIAssistant/AIAssistant'
 import Analytics from './pages/Analytics/Analytics'
 import Settings from './pages/Settings/Settings'
 import Profile from './pages/Profile/Profile'
-import SignIn from './pages/Auth/SignIn'
-import SignUp from './pages/Auth/SignUp'
-import Landing from './pages/Landing/Landing'
+import Login from './pages/Auth/Login'
+import Register from './pages/Auth/Register'
 import ErrorBoundary from './components/common/ErrorBoundary/ErrorBoundary'
 
 // Simple auth guard — checks for JWT token in localStorage
@@ -25,12 +24,16 @@ export default function App() {
   return (
     <ErrorBoundary>
       <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Landing />} />
+        {/* Root redirect to sign in */}
+        <Route path="/" element={<Navigate to="/signin" replace />} />
 
         {/* Auth routes (no layout) */}
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="/signin" element={<Login />} />
+        <Route path="/signup" element={<Register />} />
+
+        {/* Legacy route aliases — keep working */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         {/* Protected app routes (with layout) */}
         <Route element={<PrivateRoute><MainLayout /></PrivateRoute>}>

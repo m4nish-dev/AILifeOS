@@ -230,7 +230,7 @@ export default function AuthPage({ mode }) {
           {/* Switch mode */}
           <p className="auth__switch">
             {isLogin ? "Don't have an account? " : 'Already have an account? '}
-            <Link to={isLogin ? '/register' : '/login'} className="auth__switch-link">
+            <Link to={isLogin ? '/signup' : '/signin'} className="auth__switch-link">
               {isLogin ? 'Create one free' : 'Sign in'}
             </Link>
           </p>
