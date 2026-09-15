@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import Sidebar from '../Sidebar/Sidebar'
 import Topbar from '../Topbar/Topbar'
-import { VoiceMount } from '../../../voice/components/VoiceMount'
 import './MainLayout.css'
 
 export default function MainLayout() {
@@ -17,7 +16,6 @@ export default function MainLayout() {
           <Outlet />
         </main>
       </div>
-      <VoiceMount />
     </div>
   )
 }

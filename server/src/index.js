@@ -1,6 +1,12 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import dotenv from 'dotenv';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import aiRoutes from './routes/ai.routes.js';
 import authRoutes from './routes/auth.routes.js';
@@ -13,13 +19,6 @@ import analyticsRoutes from './routes/analytics.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import searchRoutes from './routes/search.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
-import agentRoutes from './routes/agent.routes.js';
-import thinkRoutes from './routes/think.js';
-import voiceRoutes from './routes/voice.js';
-import { WebSocketServer } from 'ws';
-import { handleVoiceAgentConnection } from './ws/voiceAgentBridge.js';
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -44,9 +43,6 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/notifications', notificationRoutes);
-app.use('/api/agent', agentRoutes);
-app.use('/think', thinkRoutes);
-app.use('/api/voice', voiceRoutes);
 
 // Health check (matching requirements)
 app.get('/health', (req, res) => {
@@ -78,23 +74,6 @@ app.use((err, req, res, next) => {
 // ─── Start server + Connect DB ────────────────────────────
 const server = app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
-
-// Attach WebSocket Server for Voice Agent
-const wss = new WebSocketServer({ noServer: true });
-
-server.on('upgrade', (request, socket, head) => {
-  if (request.url === '/ws/voice') {
-    wss.handleUpgrade(request, socket, head, (ws) => {
-      wss.emit('connection', ws, request);
-    });
-  } else {
-    socket.destroy();
-  }
-});
-
-wss.on('connection', (ws, request) => {
-  handleVoiceAgentConnection(ws, request);
 });
 
 // Attempt DB connection (non-blocking)
