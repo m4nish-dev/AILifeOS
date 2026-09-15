@@ -1,6 +1,5 @@
 import Groq from 'groq-sdk';
-import dotenv from 'dotenv';
-import { PDFParse } from 'pdf-parse';
+import pdfParse from 'pdf-parse';
 import Conversation from '../models/Conversation.model.js';
 import Task from '../models/Task.model.js';
 import Goal from '../models/Goal.model.js';
@@ -10,8 +9,7 @@ import StudySession from '../models/StudySession.model.js';
 import StudyGoal from '../models/StudyGoal.model.js';
 import Flashcard from '../models/Flashcard.model.js';
 
-dotenv.config();
-
+// Groq client — reads GROQ_API_KEY from process.env (injected by Vercel in production)
 const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY
 });
@@ -379,11 +377,10 @@ export const generateQuiz = async (req, res) => {
 export const uploadPdf = async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
-    
-    // Parse the PDF
-    const parser = new PDFParse({ data: req.file.buffer });
-    const textResult = await parser.getText();
-    const text = textResult.text;
+
+    // pdfParse is the default export — call it as a function with the file buffer
+    const result = await pdfParse(req.file.buffer);
+    const text = result.text;
 
     if (!text || text.trim().length === 0) {
       return res.status(400).json({ success: false, message: 'Could not extract text from this PDF.' });
