@@ -10,15 +10,15 @@ import AIAssistant from './pages/AIAssistant/AIAssistant'
 import Analytics from './pages/Analytics/Analytics'
 import Settings from './pages/Settings/Settings'
 import Profile from './pages/Profile/Profile'
-import Login from './pages/Auth/Login'
-import Register from './pages/Auth/Register'
+import SignIn from './pages/Auth/SignIn'
+import SignUp from './pages/Auth/SignUp'
 import Landing from './pages/Landing/Landing'
 import ErrorBoundary from './components/common/ErrorBoundary/ErrorBoundary'
 
 // Simple auth guard — checks for JWT token in localStorage
 function PrivateRoute({ children }) {
   const token = localStorage.getItem('ailifeos-token')
-  return token ? children : <Navigate to="/login" replace />
+  return token ? children : <Navigate to="/signin" replace />
 }
 
 export default function App() {
@@ -29,8 +29,8 @@ export default function App() {
         <Route path="/" element={<Landing />} />
 
         {/* Auth routes (no layout) */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
 
         {/* Protected app routes (with layout) */}
         <Route element={<PrivateRoute><MainLayout /></PrivateRoute>}>
@@ -47,7 +47,7 @@ export default function App() {
         </Route>
 
         {/* Catch-all */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        <Route path="*" element={<Navigate to="/signin" replace />} />
       </Routes>
     </ErrorBoundary>
   )

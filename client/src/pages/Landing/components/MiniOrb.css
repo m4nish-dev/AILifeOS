@@ -1,0 +1,26 @@
+.mini-orb-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-orb-core {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+}
+
+.mini-orb-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1px solid;
+  z-index: 1;
+  pointer-events: none;
+}

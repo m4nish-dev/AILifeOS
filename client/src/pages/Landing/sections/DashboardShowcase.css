@@ -1,0 +1,90 @@
+.showcase-section {
+  padding: 100px var(--sp-8);
+}
+
+.showcase-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.showcase-device {
+  background: var(--bg-surface);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.4);
+  margin-bottom: var(--sp-6);
+}
+
+.showcase-chrome {
+  height: 48px;
+  background: rgba(0,0,0,0.2);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.showcase-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.showcase-dots span {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+}
+
+.showcase-screen-container {
+  aspect-ratio: 16/9;
+  position: relative;
+  overflow: hidden;
+}
+
+.showcase-screen {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.showcase-mock-ui {
+  text-align: center;
+  color: rgba(255,255,255,0.7);
+}
+
+.showcase-icon {
+  font-size: 64px;
+  display: block;
+  margin-bottom: var(--sp-4);
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+}
+
+.showcase-mock-ui h3 {
+  font-size: 32px;
+  color: #fff;
+  margin-bottom: var(--sp-2);
+}
+
+.showcase-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.pagination-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.1);
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.pagination-dot.active {
+  background: var(--green-500);
+  transform: scale(1.2);
+  box-shadow: 0 0 10px var(--green-500);
+}

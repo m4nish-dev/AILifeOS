@@ -1,0 +1,33 @@
+.ambient-background-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ambient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.15;
+}
+
+.ambient-orb--green, .ambient-orb--green-static {
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, var(--green-500), transparent 70%);
+  top: -200px;
+  left: -200px;
+}
+
+.ambient-orb--coffee, .ambient-orb--coffee-static {
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, var(--coffee-500), transparent 70%);
+  bottom: -100px;
+  right: -200px;
+}

@@ -1,0 +1,37 @@
+.logo-strip-section {
+  padding: var(--sp-6) 0;
+  border-top: 1px solid rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  background: rgba(11, 13, 16, 0.4);
+}
+
+.logo-strip-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.logo-strip-label {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: var(--fw-semibold);
+}
+
+.logo-item {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: var(--fw-bold);
+  color: rgba(255,255,255,0.3);
+  margin: 0 40px;
+  transition: color var(--t-base);
+  cursor: default;
+}
+
+.logo-item:hover {
+  color: rgba(255,255,255,0.7);
+}
