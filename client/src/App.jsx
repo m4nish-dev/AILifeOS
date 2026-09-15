@@ -12,6 +12,7 @@ import Settings from './pages/Settings/Settings'
 import Profile from './pages/Profile/Profile'
 import Login from './pages/Auth/Login'
 import Register from './pages/Auth/Register'
+import Landing from './pages/Landing/Landing'
 import ErrorBoundary from './components/common/ErrorBoundary/ErrorBoundary'
 
 // Simple auth guard — checks for JWT token in localStorage
@@ -24,13 +25,15 @@ export default function App() {
   return (
     <ErrorBoundary>
       <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<Landing />} />
+
         {/* Auth routes (no layout) */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
         {/* Protected app routes (with layout) */}
         <Route element={<PrivateRoute><MainLayout /></PrivateRoute>}>
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/tasks" element={<Tasks />} />
           <Route path="/goals" element={<Goals />} />
