@@ -1,74 +1,39 @@
 import React, { useState } from 'react';
-import ScrollReveal from '../components/ScrollReveal';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import './FAQ.css';
 
+const FAQS = [
+  { q: "Is my data private?", a: "Yes. All your data is encrypted. Your goals, tasks, and notes are strictly private and never used to train AI models without your consent." },
+  { q: "Does the AI really understand Hinglish?", a: "Yes. Jarvis is tuned for Indian conversational patterns. Mix Hindi and English exactly like you talk with friends — it understands naturally." },
+  { q: "Can I use it without an account?", a: "You need a free account to save progress and retain AI memory. Signing up takes under 30 seconds and is completely free." },
+  { q: "What if I already use Notion / Todoist?", a: "AI LifeOS is an active AI assistant, not just a database. Use Notion for static storage, AI LifeOS for daily planning, focus tracking, and AI conversations." },
+  { q: "Is there a mobile app?", a: "The web app is fully responsive on mobile. A native iOS and Android app is on our roadmap for later this year." },
+  { q: "How does the AI know my context?", a: "Jarvis securely reads your active goals, recent tasks, and study notes to give highly personalised recommendations in every conversation." },
+];
+
 export default function FAQ() {
-  const [openIdx, setOpenIdx] = useState(null);
-  
-  const faqs = [
-    {
-      q: "Is my data private?",
-      a: "Yes. We use industry-standard encryption for all your data. Your goals, tasks, and journal entries are strictly private and never used to train global AI models without your explicit consent."
-    },
-    {
-      q: "Does the voice AI really understand Hinglish?",
-      a: "Absolutely. Jarvis is specifically fine-tuned on Indian contexts and conversational patterns. You can mix Hindi and English exactly how you speak with your friends, and it will understand perfectly."
-    },
-    {
-      q: "Can I use it without signing up?",
-      a: "You need an account to save your progress, track streaks, and retain AI memory. However, signing up takes less than 30 seconds and the core features are completely free forever."
-    },
-    {
-      q: "What if I already use Notion / Todoist?",
-      a: "AI LifeOS isn't just a database, it's an active assistant. You can continue using Notion for static storage, but use AI LifeOS for your active daily planning, focus tracking, and voice-assisted journaling."
-    },
-    {
-      q: "Is there a mobile app?",
-      a: "Our web application is fully responsive and works beautifully on mobile browsers. A dedicated native app for iOS and Android is currently on our roadmap for later this year."
-    },
-    {
-      q: "How does the AI know my context?",
-      a: "Jarvis securely analyzes your recent tasks, active goals, and notes. When you ask 'what should I do next?', it factors in your upcoming deadlines and current focus streaks to give a highly personalized recommendation."
-    }
-  ];
+  const [open, setOpen] = useState(null);
 
   return (
     <section id="faq" className="faq-section">
       <div className="faq-inner">
-        <ScrollReveal className="section-header-centered">
-          <h2 className="section-title">Frequently asked.</h2>
-        </ScrollReveal>
-
+        <div className="faq-header">
+          <span className="faq-section-label">FAQ</span>
+          <h2 className="faq-section-title">Frequently asked.</h2>
+        </div>
         <div className="faq-list">
-          {faqs.map((faq, idx) => (
-            <ScrollReveal key={idx} delay={idx * 0.1}>
-              <div 
-                className={`faq-item ${openIdx === idx ? 'open' : ''}`}
-                onClick={() => setOpenIdx(openIdx === idx ? null : idx)}
-              >
-                <div className="faq-question">
-                  <h3>{faq.q}</h3>
-                  <ChevronDown 
-                    size={20} 
-                    className={`faq-icon ${openIdx === idx ? 'rotated' : ''}`} 
-                  />
-                </div>
-                <AnimatePresence>
-                  {openIdx === idx && (
-                    <motion.div 
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="faq-answer"
-                    >
-                      <p>{faq.a}</p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+          {FAQS.map((f, i) => (
+            <div key={i} className={`faq-item ${open === i ? 'open' : ''}`} onClick={() => setOpen(open === i ? null : i)}>
+              <div className="faq-question">
+                <h3>{f.q}</h3>
+                <ChevronDown size={18} className={`faq-icon ${open === i ? 'rotated' : ''}`} />
               </div>
-            </ScrollReveal>
+              {open === i && (
+                <div className="faq-answer">
+                  <p>{f.a}</p>
+                </div>
+              )}
+            </div>
           ))}
         </div>
       </div>

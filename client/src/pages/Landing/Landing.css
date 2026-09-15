@@ -1,55 +1,120 @@
+/* ============================================================
+   LANDING PAGE — SELF-CONTAINED DARK THEME
+   Hardcoded dark values so the page is always dark, independent
+   of the app's ThemeContext which may not wrap this page.
+   ============================================================ */
+
+/* Scoped dark tokens for landing */
 .landing-page-root {
+  --l-bg: #0B0D10;
+  --l-surface: #14171C;
+  --l-surface-alt: #1A1E26;
+  --l-border: rgba(255,255,255,0.07);
+  --l-border-hover: rgba(255,255,255,0.15);
+  --l-green: #16A46B;
+  --l-green-dim: rgba(22, 164, 107, 0.12);
+  --l-green-glow: rgba(22, 164, 107, 0.25);
+  --l-coffee: #A0714A;
+  --l-text: #F1F3F5;
+  --l-text-2: #A8B0BB;
+  --l-text-3: #6B7280;
+  --l-blue: #3B82F6;
+  --l-purple: #8B5CF6;
+  --l-amber: #F5A524;
+
   min-height: 100vh;
-  background-color: var(--bg-app);
-  color: var(--text-primary);
-  font-family: var(--font-sans);
+  background-color: #0B0D10;
+  color: #F1F3F5;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   overflow-x: hidden;
 }
 
-/* Base button styles for landing page */
-.btn-primary {
+/* ── Shared button styles ── */
+.landing-page-root .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--sp-2);
-  height: 48px;
-  padding: 0 24px;
-  background: var(--green-600);
+  gap: 8px;
+  height: 46px;
+  padding: 0 22px;
+  background: #16A46B;
   color: #fff;
-  border-radius: var(--r-full);
-  font-weight: var(--fw-semibold);
+  border-radius: 999px;
+  font-weight: 600;
   font-size: 15px;
   text-decoration: none;
   border: none;
   cursor: pointer;
-  transition: all var(--t-fast);
+  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
 }
-
-.btn-primary:hover {
-  background: var(--green-500);
+.landing-page-root .btn-primary:hover {
+  background: #13916)0;
   transform: scale(1.02);
-  box-shadow: 0 0 20px rgba(22, 164, 107, 0.4);
+  box-shadow: 0 0 20px rgba(22, 164, 107, 0.35);
 }
 
-.btn-secondary {
+.landing-page-root .btn-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--sp-2);
-  height: 48px;
-  padding: 0 24px;
-  background: rgba(255,255,255,0.05);
-  color: #fff;
+  gap: 8px;
+  height: 46px;
+  padding: 0 22px;
+  background: rgba(255,255,255,0.06);
+  color: #F1F3F5;
   border: 1px solid rgba(255,255,255,0.1);
-  border-radius: var(--r-full);
-  font-weight: var(--fw-medium);
+  border-radius: 999px;
+  font-weight: 500;
   font-size: 15px;
   text-decoration: none;
   cursor: pointer;
-  transition: all var(--t-fast);
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
 }
-
-.btn-secondary:hover {
+.landing-page-root .btn-secondary:hover {
   background: rgba(255,255,255,0.1);
   border-color: rgba(255,255,255,0.2);
+}
+
+/* ── Shared section layout ── */
+.landing-page-root .section-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.landing-page-root .section-label {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #16A46B;
+  margin-bottom: 16px;
+}
+
+.landing-page-root .section-heading {
+  font-size: clamp(30px, 4vw, 48px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #F1F3F5;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+
+.landing-page-root .section-sub {
+  font-size: 17px;
+  color: #A8B0BB;
+  line-height: 1.65;
+  max-width: 560px;
+  font-weight: 400;
+}
+
+.landing-page-root .centered {
+  text-align: center;
+}
+
+.landing-page-root .centered .section-sub {
+  margin: 0 auto;
 }

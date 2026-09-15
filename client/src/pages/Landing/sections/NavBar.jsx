@@ -32,9 +32,7 @@ export default function NavBar() {
 
         <div className="landing-nav-links desktop-only">
           <button onClick={() => scrollTo('features')}>Features</button>
-          <button onClick={() => scrollTo('how-it-works')}>How it works</button>
-          <button onClick={() => scrollTo('voice')}>Voice AI</button>
-          <button onClick={() => scrollTo('pricing')}>Pricing</button>
+          <button onClick={() => scrollTo('ai-assistant')}>AI Assistant</button>
           <button onClick={() => scrollTo('faq')}>FAQ</button>
         </div>
 
@@ -49,8 +47,8 @@ export default function NavBar() {
           )}
         </div>
 
-        <button 
-          className="mobile-menu-btn mobile-only" 
+        <button
+          className="mobile-menu-btn mobile-only"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
         >
@@ -61,17 +59,15 @@ export default function NavBar() {
       {mobileMenuOpen && (
         <div className="mobile-menu">
           <button onClick={() => scrollTo('features')}>Features</button>
-          <button onClick={() => scrollTo('how-it-works')}>How it works</button>
-          <button onClick={() => scrollTo('voice')}>Voice AI</button>
-          <button onClick={() => scrollTo('pricing')}>Pricing</button>
+          <button onClick={() => scrollTo('ai-assistant')}>AI Assistant</button>
           <button onClick={() => scrollTo('faq')}>FAQ</button>
           <div className="mobile-menu-actions">
             {isLoggedIn ? (
-              <Link to="/dashboard" className="btn-primary full-width">Dashboard</Link>
+              <Link to="/dashboard" className="btn-primary">Dashboard</Link>
             ) : (
               <>
-                <Link to="/signin" className="btn-secondary full-width">Sign in</Link>
-                <Link to="/signup" className="btn-primary full-width">Get Started free</Link>
+                <Link to="/signin" className="btn-secondary">Sign in</Link>
+                <Link to="/signup" className="btn-primary">Get Started free</Link>
               </>
             )}
           </div>
