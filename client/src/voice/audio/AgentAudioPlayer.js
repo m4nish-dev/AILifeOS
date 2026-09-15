@@ -66,6 +66,8 @@ export class AgentAudioPlayer {
 
     // Cleanup node after playback
     source.onended = () => {
+      if (this.onAudioPlayed) this.onAudioPlayed();
+      
       const idx = this.activeNodes.indexOf(nodeRef);
       if (idx > -1) {
         this.activeNodes.splice(idx, 1);

@@ -1,12 +1,14 @@
 import React, { useContext, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Play } from 'lucide-react';
+import { X, Play, Trash2, Download } from 'lucide-react';
 import { UserProfileContext } from '../../context/UserProfileContext';
-import { AVAILABLE_VOICES } from '../../config';
+import { useVoiceAgent } from '../../hooks/useVoiceAgent';
+import { AVAILABLE_VOICES, API_BASE } from '../../config';
 import './VoiceSettingsModal.css';
 
 export const VoiceSettingsModal = ({ isOpen, onClose }) => {
   const { profile, updateProfile } = useContext(UserProfileContext);
+  const { clearTranscript, transcript, connect, state } = useVoiceAgent();
   
   // Local state for immediate form UI
   const [userName, setUserName] = useState(profile.userName);
@@ -14,6 +16,7 @@ export const VoiceSettingsModal = ({ isOpen, onClose }) => {
   const [selectedVoice, setSelectedVoice] = useState(profile.preferences?.voice || AVAILABLE_VOICES[0].id);
   const [languageMix, setLanguageMix] = useState(profile.preferences?.languageMix || 0.5);
   const [wakeWordEnabled, setWakeWordEnabled] = useState(profile.preferences?.wakeWordEnabled || false);
+  const [showLatencyHUD, setShowLatencyHUD] = useState(profile.preferences?.showLatencyHUD || false);
 
   const handleSave = () => {
     updateProfile({
@@ -23,26 +26,41 @@ export const VoiceSettingsModal = ({ isOpen, onClose }) => {
         ...profile.preferences,
         voice: selectedVoice,
         languageMix,
-        wakeWordEnabled
+        wakeWordEnabled,
+        showLatencyHUD
       }
     });
     onClose();
   };
 
-  const testVoice = () => {
-    // For Phase 3 MVP, use browser speech synthesis as a quick mock to verify settings UI works
-    if ('speechSynthesis' in window) {
-      const msg = new SpeechSynthesisUtterance("Namaste, I am ready to assist you.");
-      // Try to find a Hindi voice if available
-      const voices = window.speechSynthesis.getVoices();
-      const hiVoice = voices.find(v => v.lang.includes('hi'));
-      if (hiVoice) msg.voice = hiVoice;
-      window.speechSynthesis.speak(msg);
+  const testVoice = async () => {
+    if (state === 'idle' || state === 'error') {
+      await connect();
     }
+    // Deepgram injection
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('test-voice-injection', {
+        detail: "Namaste, main Nova hoon — kya haal hai?"
+      }));
+    }, 1000);
+  };
+
+  const exportTranscript = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(transcript, null, 2));
+    const dlAnchorElem = document.createElement('a');
+    dlAnchorElem.setAttribute("href", dataStr);
+    dlAnchorElem.setAttribute("download", `jarvis_transcript_${new Date().toISOString()}.json`);
+    dlAnchorElem.click();
   };
 
   const testConnection = async () => {
-    alert("Connection test initiated... (Check console)");
+    try {
+      const res = await fetch(`${API_BASE}/health`);
+      if (res.ok) alert("Connection test successful! Backend is healthy.");
+      else alert("Connection test failed. Backend returned error.");
+    } catch (e) {
+      alert("Connection test failed. Backend unreachable.");
+    }
   };
 
   return (
@@ -110,13 +128,8 @@ export const VoiceSettingsModal = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              <div className="form-group">
-                <label>Speech Rate (Deepgram Aura API Pending)</label>
-                <input type="range" disabled value="0.5" min="0" max="1" />
-              </div>
-
               <div className="form-group toggle-group">
-                <label>Wake Word ("Jarvis")</label>
+                <label>Wake Word ("Nova")</label>
                 <label className="switch">
                   <input 
                     type="checkbox" 
@@ -127,8 +140,26 @@ export const VoiceSettingsModal = ({ isOpen, onClose }) => {
                 </label>
               </div>
 
+              <div className="form-group toggle-group">
+                <label>Show Latency HUD</label>
+                <label className="switch">
+                  <input 
+                    type="checkbox" 
+                    checked={showLatencyHUD}
+                    onChange={e => setShowLatencyHUD(e.target.checked)}
+                  />
+                  <span className="slider round"></span>
+                </label>
+              </div>
+
               <div className="modal-actions-secondary">
                 <button className="btn-secondary" onClick={testConnection}>Test Connection</button>
+                <button className="btn-secondary" onClick={clearTranscript}>
+                  <Trash2 size={16} /> Clear Conversation
+                </button>
+                <button className="btn-secondary" onClick={exportTranscript}>
+                  <Download size={16} /> Export Transcript
+                </button>
               </div>
             </div>
 

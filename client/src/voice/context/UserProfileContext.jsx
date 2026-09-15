@@ -14,7 +14,7 @@ export const UserProfileProvider = ({ children }) => {
     }
     return {
       userName: "Dhruv",
-      agentName: "Jarvis",
+      agentName: "Nova",
       firstLoginDone: false,
       preferences: {}
     };

@@ -19,7 +19,7 @@ const getGenAI = () => {
 export const handleThinkProviderRequest = async (req, res) => {
   const startTime = startTimer();
   try {
-    const { messages = [], tools = [], model = "gemini-2.0-flash", stream = false } = req.body;
+    const { messages = [], tools = [], model = process.env.GEMINI_MODEL || "gemini-flash-latest", stream = false } = req.body;
     
     // Map OpenAI messages to Gemini contents
     // Deepgram/OpenAI roles: 'system', 'user', 'assistant', 'tool'

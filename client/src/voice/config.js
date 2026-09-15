@@ -1,4 +1,4 @@
-export const AGENT_NAME_DEFAULT = "Jarvis";
+export const AGENT_NAME_DEFAULT = "Nova";
 
 export const WS_URL = import.meta.env.VITE_VOICE_WS_URL || "ws://localhost:5001/ws/voice";
 export const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5001";

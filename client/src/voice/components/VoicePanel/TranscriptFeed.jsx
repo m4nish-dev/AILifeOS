@@ -4,7 +4,7 @@ import { useVoiceAgent } from '../../hooks/useVoiceAgent';
 import { ToolCallChip } from './ToolCallChip';
 
 export const TranscriptFeed = () => {
-  const { transcript, state } = useVoiceAgent();
+  const { transcript, state, undoToolAction } = useVoiceAgent();
   const feedRef = useRef(null);
   
   // Auto-scroll logic
@@ -28,11 +28,21 @@ export const TranscriptFeed = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.14 }}
         >
-          {msg.role === 'agent' ? (
-            <TypewriterText text={msg.text} />
-          ) : (
-            msg.text
+          {msg.role === 'agent' && <TypewriterText text={msg.text} />}
+          {msg.role === 'user' && msg.text}
+          
+          {msg.role === 'tool' && (
+            <div className="tool-chip">
+              <span>⚡ Executed: {msg.name}</span>
+              {msg.actionId && !msg.result?.undone && Date.now() - msg.ts < 15000 && (
+                <button className="undo-btn" onClick={() => undoToolAction(msg.actionId)}>
+                  Undo
+                </button>
+              )}
+              {msg.result?.undone && <span className="undone-tag">(Undone)</span>}
+            </div>
           )}
+
           {msg.toolCalls && msg.toolCalls.map(tc => (
             <ToolCallChip key={tc.id} toolName={tc.name} />
           ))}

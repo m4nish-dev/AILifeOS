@@ -16,7 +16,7 @@ const getGenAI = () => {
  */
 export const chatWithAgent = async ({ history = [], systemInstruction, message, tools = [] }) => {
   const modelOptions = {
-    model: tools.length > 0 ? 'gemini-2.0-flash-exp' : 'gemini-2.0-flash',
+    model: process.env.GEMINI_MODEL || 'gemini-flash-latest',
     systemInstruction,
   };
 

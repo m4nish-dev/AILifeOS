@@ -5,6 +5,7 @@ import { chatWithAgent, streamChatWithAgent } from '../services/gemini.service.j
 import { getSession, appendTurn, appendToolResult, setUserProfile } from '../services/memory.service.js';
 import { buildSystemPrompt } from '../utils/prompt.js';
 import { AGENT_TOOLS_OPENAI_FORMAT as AGENT_TOOLS } from '../tools/registry.js';
+import { lastSessionDebug } from '../ws/voiceAgentBridge.js';
 
 const router = express.Router();
 
@@ -150,6 +151,50 @@ router.get('/session/:sessionId', (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch session' });
   }
+});
+
+/**
+ * POST /api/agent/text
+ * Fallback endpoint for text-based interaction (bypasses Deepgram).
+ */
+router.post('/text', async (req, res) => {
+  try {
+    const { userId, sessionId, message, context, userName = 'Dost' } = req.body;
+    
+    if (!sessionId) {
+      return res.status(400).json({ error: 'sessionId is required' });
+    }
+
+    const session = getSession(sessionId);
+    const systemInstruction = buildSystemPrompt({ userName, currentDashboardState: context || {} });
+
+    const result = await chatWithAgent({
+      history: session.history,
+      systemInstruction,
+      message,
+      tools: AGENT_TOOLS
+    });
+
+    appendTurn(sessionId, message, result.text, result.toolCalls);
+
+    res.json({
+      reply: result.text,
+      toolCalls: result.toolCalls
+    });
+  } catch (error) {
+    console.error('Agent Text Fallback Error:', error);
+    res.status(500).json({ error: 'Failed to process text fallback' });
+  }
+});
+
+router.get('/debug/last-session', (req, res) => {
+  if (process.env.NODE_ENV === 'production') {
+    return res.status(403).json({ error: 'Debug endpoints disabled in production' });
+  }
+  if (!lastSessionDebug) {
+    return res.json({ message: 'No session data available yet' });
+  }
+  res.json(lastSessionDebug);
 });
 
 export default router;

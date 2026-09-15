@@ -11,7 +11,7 @@
 }
 
 .note-overlay-panel {
-  background: var(--bg-primary);
+  background: var(--bg-surface);
   width: 100%;
   max-width: 720px;
   height: 80vh;

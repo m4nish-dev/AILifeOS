@@ -19,8 +19,14 @@ export const executeTool = async (clientWs, functionCallEvent, sessionId) => {
     // 1. SERVER-SIDE TOOLS
     if (name === 'generate_study_notes') {
       const { topic, depth } = args;
-      const prompt = `Generate ${depth} study notes about ${topic} in markdown format with clear headings and bullet points.`;
-      const result = await chatWithAgent({ message: prompt, systemInstruction: 'You are an expert tutor writing concise markdown notes.' });
+      const prompt = `Generate comprehensive ${depth} study notes about "${topic}". The output MUST be in structured markdown with the following specific sections:
+      - TL;DR
+      - Core Concepts
+      - Analogies
+      - Common Pitfalls
+      - Quick Recall
+      Write the content in natural Hinglish (using Roman script). Make it engaging and easy to understand.`;
+      const result = await chatWithAgent({ message: prompt, systemInstruction: 'You are an expert tutor writing structured, high-quality markdown notes in Hinglish.' });
       return { success: true, markdown: result.text };
     }
 

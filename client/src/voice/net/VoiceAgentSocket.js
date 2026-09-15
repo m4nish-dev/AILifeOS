@@ -5,13 +5,16 @@ export class VoiceAgentSocket extends EventTarget {
     super();
     this.ws = null;
     this.reconnectAttempts = 0;
-    this.maxRetries = 3;
+    this.maxRetries = 4;
     this.keepAliveInterval = null;
+    this.pingInterval = null;
     this.intentionalClose = false;
+    this.lastPong = Date.now();
   }
 
   connect(initialSettingsPayload = null) {
     this.intentionalClose = false;
+    this.lastPong = Date.now();
     
     try {
       this.ws = new WebSocket(WS_URL);
@@ -21,10 +24,21 @@ export class VoiceAgentSocket extends EventTarget {
         this.reconnectAttempts = 0;
         this.emit('connected');
         
-        // Start keep alive
+        // Start Deepgram KeepAlive
         this.keepAliveInterval = setInterval(() => {
           this.sendJSON({ type: 'KeepAlive' });
         }, 8000);
+
+        // Start Client-Server Ping
+        this.pingInterval = setInterval(() => {
+          if (Date.now() - this.lastPong > 35000) {
+            // Stale connection detected (>35s without pong)
+            console.warn('[VoiceAgentSocket] Stale connection, forcing reconnect');
+            this.ws.close();
+          } else {
+            this.sendJSON({ type: 'ping' });
+          }
+        }, 15000);
 
         // If we have an initial payload (e.g. from /session), send it now
         if (initialSettingsPayload) {
@@ -38,7 +52,11 @@ export class VoiceAgentSocket extends EventTarget {
         } else {
           try {
             const msg = JSON.parse(event.data);
-            this.handleJSONMessage(msg);
+            if (msg.type === 'pong') {
+              this.lastPong = Date.now();
+            } else {
+              this.handleJSONMessage(msg);
+            }
           } catch (e) {
             console.error('[VoiceAgentSocket] Failed to parse message', e);
           }
@@ -54,7 +72,7 @@ export class VoiceAgentSocket extends EventTarget {
           this.reconnectAttempts++;
           setTimeout(() => this.connect(initialSettingsPayload), backoff);
         } else if (!this.intentionalClose) {
-          this.emit('error', new Error('Connection lost after maximum retries.'));
+          this.emit('error', new Error('WS_CONNECT_FAILED'));
         }
       };
 
@@ -133,6 +151,10 @@ export class VoiceAgentSocket extends EventTarget {
     if (this.keepAliveInterval) {
       clearInterval(this.keepAliveInterval);
       this.keepAliveInterval = null;
+    }
+    if (this.pingInterval) {
+      clearInterval(this.pingInterval);
+      this.pingInterval = null;
     }
   }
 

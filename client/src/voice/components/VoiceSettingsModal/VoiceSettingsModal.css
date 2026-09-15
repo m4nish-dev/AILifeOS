@@ -10,8 +10,8 @@
 }
 
 .settings-modal {
-  background: var(--bg-primary);
-  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 16px;
   width: 90%;
   max-width: 480px;
