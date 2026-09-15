@@ -72,9 +72,13 @@ app.use((err, req, res, next) => {
 });
 
 // ─── Start server + Connect DB ────────────────────────────
-const server = app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  });
+}
 
 // Attempt DB connection (non-blocking)
 connectDB();
+
+export default app;
