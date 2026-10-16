@@ -1,5 +1,5 @@
 import Groq from 'groq-sdk';
-import pdfParse from 'pdf-parse';
+import pdfParse from 'pdf-parse/lib/pdf-parse.js';
 import Conversation from '../models/Conversation.model.js';
 import Task from '../models/Task.model.js';
 import Goal from '../models/Goal.model.js';
@@ -9,9 +9,12 @@ import StudySession from '../models/StudySession.model.js';
 import StudyGoal from '../models/StudyGoal.model.js';
 import Flashcard from '../models/Flashcard.model.js';
 
-// Groq client — reads GROQ_API_KEY from process.env (injected by Vercel in production)
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY
+// Groq client — lazy initialization so server never crashes on startup if key is pending
+const getGroqClient = () => new Groq({
+  apiKey: process.env.GROQ_API_KEY || "missing_key"
+});
+const groq = new Proxy({}, {
+  get: (target, prop) => getGroqClient()[prop]
 });
 
 // Helper: Build context string for the AI based on live user data

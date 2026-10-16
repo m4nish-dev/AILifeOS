@@ -1,12 +1,4 @@
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-// Only load dotenv in local development — Vercel injects env vars directly
-if (process.env.NODE_ENV !== 'production') {
-  const { default: dotenv } = await import('dotenv');
-  const __dirname = path.dirname(fileURLToPath(import.meta.url));
-  dotenv.config({ path: path.resolve(__dirname, '../.env') });
-}
+import './config/env.js';
 
 import express from 'express';
 import cors from 'cors';
@@ -62,7 +54,6 @@ const corsOptions = {
 };
 
 // Handle preflight for ALL routes FIRST — must be before any route/middleware
-app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
 
 app.use(express.json());
