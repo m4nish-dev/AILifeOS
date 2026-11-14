@@ -2,9 +2,8 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, Mail, Lock, User, Sparkles, CheckCircle2, Brain, Target, Calendar, Zap, Hand, Rocket, AlertTriangle } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
+import { API_BASE_URL as API } from '../../services/api'
 import './Auth.css'
-
-const API = '/api'
 
 const FEATURES = [
   { icon: Brain, label: 'AI-Powered Planning', desc: 'Your own intelligent life assistant' },
