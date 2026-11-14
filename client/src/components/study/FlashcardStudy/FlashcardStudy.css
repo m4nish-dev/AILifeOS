@@ -28,10 +28,7 @@
   border-radius: 6px;
 }
 
-.fc-study__back:hover {
-  background: var(--surface-200);
-  color: var(--text-primary);
-}
+.fc-study__back:hover { background: var(--surface-200); color: var(--text-primary); }
 
 .fc-study__progress {
   display: flex;
@@ -84,11 +81,11 @@
   backface-visibility: hidden;
   background: var(--surface-100);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
+  border-radius: 6px;
   padding: 32px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  box-shadow: none;
 }
 
 .fc-card__face--back {
@@ -142,7 +139,7 @@
   justify-content: center;
   gap: 8px;
   padding: 16px;
-  border-radius: 12px;
+  border-radius: 6px;
   font-weight: 600;
   font-size: 15px;
   border: none;
@@ -160,17 +157,13 @@
   background: rgba(var(--red-500-rgb), 0.1);
   color: var(--red-500);
 }
-.fc-btn--wrong:not(:disabled):hover {
-  background: rgba(var(--red-500-rgb), 0.2);
-}
+.fc-btn--wrong:not(:disabled):hover { background: rgba(var(--red-500-rgb), 0.2); }
 
 .fc-btn--correct {
   background: var(--green-500);
   color: white;
 }
-.fc-btn--correct:not(:disabled):hover {
-  background: var(--green-600);
-}
+.fc-btn--correct:not(:disabled):hover { background: var(--green-600); }
 
 .fc-btn--primary {
   background: var(--blue-500);

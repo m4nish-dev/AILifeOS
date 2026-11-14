@@ -1,6 +1,10 @@
 .layout {
+  /* App shell: the window never scrolls. Sidebar and top bar stay fixed;
+     only .layout__content scrolls (no rubber-banding of the chrome). */
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
   background: var(--bg-app);
 }
 .layout__main {
@@ -8,15 +12,28 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
 }
+/* The single scroll container for page content. Pages must not add their own
+   padding or a second overflow here, or the viewport gets nested scrollbars
+   and doubled gutters. */
 .layout__content {
   flex: 1;
-  padding: var(--sp-6) var(--sp-8);
+  padding: 24px 28px;
   overflow: auto;
+  overscroll-behavior: contain;
+  min-width: 0;
+  min-height: 0;
 }
 
 .layout__backdrop {
   display: none;
+}
+
+@media (max-width: 1023px) {
+  .layout__content {
+    padding: var(--sp-6);
+  }
 }
 
 @media (max-width: 768px) {
@@ -26,7 +43,7 @@
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
     z-index: 40;
-    backdrop-filter: blur(2px);
+    backdrop-filter: none;
   }
   .layout__content {
     padding: var(--sp-4);

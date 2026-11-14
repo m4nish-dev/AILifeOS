@@ -37,8 +37,7 @@ export default function CursorGlow({ children, className = '', color = 'rgba(255
       <div 
         className="cursor-glow-overlay" 
         style={{
-          opacity: isHovered ? 1 : 0,
-          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, ${color}, transparent 40%)`
+          display: 'none'
         }} 
       />
       <div className="cursor-glow-content">

@@ -42,7 +42,7 @@ export default function DashboardShowcase() {
                 transition={{ duration: 0.5, ease: 'easeOut' }}
                 className="showcase-screen"
                 style={{
-                  background: `radial-gradient(circle at center, color-mix(in srgb, ${screens[currentIndex].color} 20%, transparent), var(--bg-app))`
+                  background: 'var(--bg-app)'
                 }}
               >
                 <div className="showcase-mock-ui">

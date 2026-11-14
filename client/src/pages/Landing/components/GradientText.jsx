@@ -5,10 +5,7 @@ export default function GradientText({ children, className = '' }) {
     <span 
       className={className} 
       style={{
-        background: 'linear-gradient(90deg, #17A46B, #7CB4FB, #A78BFA)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        backgroundClip: 'text',
+        color: '#AB562F',
         display: 'inline-block'
       }}
     >

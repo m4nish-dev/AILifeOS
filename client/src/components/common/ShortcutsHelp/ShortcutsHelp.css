@@ -2,7 +2,7 @@
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
+  backdrop-filter: none;
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -34,7 +34,7 @@
 
 .sh__header h2 {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   color: var(--text-primary);
   margin: 0;
 }
@@ -50,10 +50,7 @@
   align-items: center;
   justify-content: center;
 }
-.sh__close:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-}
+.sh__close:hover { background: var(--bg-hover); color: var(--text-primary); }
 
 .sh__body {
   padding: 24px;
@@ -70,7 +67,7 @@
   color: var(--text-tertiary);
   letter-spacing: 0.05em;
   margin: 0 0 12px 0;
-  font-weight: 600;
+  font-weight: var(--fw-bold);
 }
 
 .sh__group ul {

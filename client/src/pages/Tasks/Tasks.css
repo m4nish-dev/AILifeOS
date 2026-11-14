@@ -2,3 +2,13 @@
   max-width: 1600px;
   margin: 0 auto;
 }
+
+/* One panel holds the toolbar and the current view (list or kanban). */
+.tasks__panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.tasks__alert { color: var(--red-600); font-weight: 600; }

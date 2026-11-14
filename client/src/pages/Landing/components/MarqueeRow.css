@@ -19,12 +19,12 @@
 
 .marquee-container::before {
   left: 0;
-  background: linear-gradient(to right, var(--bg-app), transparent);
+  background: transparent;
 }
 
 .marquee-container::after {
   right: 0;
-  background: linear-gradient(to left, var(--bg-app), transparent);
+  background: transparent;
 }
 
 .marquee-track {

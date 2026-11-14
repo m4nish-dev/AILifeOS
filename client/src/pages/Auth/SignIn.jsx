@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import MiniOrb from '../Landing/components/MiniOrb';
 import './AuthV2.css';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+import { API_BASE_URL as API } from '../../services/api';
 
 export default function SignIn() {
   const navigate = useNavigate();

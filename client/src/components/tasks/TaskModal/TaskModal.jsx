@@ -35,13 +35,21 @@ export default function TaskModal({ open, task, initialStatus, isSaving, onClose
 
   useEffect(() => {
     if (open) {
-      api.get('/goals').then(res => setGoals(res.data.data)).catch(console.error)
+      // GET /goals responds with { data: { goals, count } } — store the array,
+      // not the wrapper object (which made goals.map throw and crash the modal).
+      api.get('/goals')
+        .then(res => {
+          const payload = res.data?.data
+          setGoals(Array.isArray(payload) ? payload : (payload?.goals ?? []))
+        })
+        .catch(console.error)
     }
   }, [open])
 
   useEffect(() => {
     if (task) {
-      setForm({ ...emptyTask, ...task })
+      // Same as GoalModal: trim the ISO timestamp so the date input can show it.
+      setForm({ ...emptyTask, ...task, dueDate: task.dueDate ? String(task.dueDate).slice(0, 10) : '' })
     } else {
       setForm({ ...emptyTask, status: initialStatus || 'todo' })
     }

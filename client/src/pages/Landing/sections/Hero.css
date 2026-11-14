@@ -11,7 +11,7 @@
   padding-right: 32px;
   padding-bottom: 80px;
   overflow: hidden;
-  background: #0B0D10;
+  background: #1B1612;
 }
 
 /* Radial glow behind hero */
@@ -23,7 +23,7 @@
   transform: translateX(-50%);
   width: 900px;
   height: 600px;
-  background: radial-gradient(ellipse at 50% 0%, rgba(22, 164, 107, 0.12) 0%, transparent 70%);
+  background: transparent;
   pointer-events: none;
 }
 
@@ -44,19 +44,17 @@
   align-items: center;
   gap: 6px;
   padding: 5px 14px;
-  background: rgba(22, 164, 107, 0.1);
-  border: 1px solid rgba(22, 164, 107, 0.22);
+  background: rgba(171, 86, 47, 0.1);
+  border: 1px solid rgba(171, 86, 47, 0.22);
   border-radius: 999px;
-  color: #16A46B;
+  color: #AB562F;
   font-size: 12px;
   font-weight: 500;
   text-decoration: none;
   margin-bottom: 36px;
   transition: background 0.15s;
 }
-.hero-badge:hover {
-  background: rgba(22, 164, 107, 0.16);
-}
+.hero-badge:hover { background: rgba(171, 86, 47, 0.16); }
 
 /* Title — thinner weight */
 .hero-title {
@@ -69,10 +67,10 @@
 }
 
 .hero-gradient-word {
-  background: linear-gradient(90deg, #16A46B, #3B82F6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  background: none;
+  background-clip: border-box;
+  -webkit-text-fill-color: currentColor;
+  background-clip: border-box;
   font-weight: 600;
 }
 
@@ -115,10 +113,7 @@
   transition: background 0.15s, border-color 0.15s;
   font-family: inherit;
 }
-.btn-ghost:hover {
-  background: rgba(255,255,255,0.05);
-  border-color: rgba(255,255,255,0.2);
-}
+.btn-ghost:hover { background: rgba(255,255,255,0.05); }
 
 .hero-social-strip {
   display: flex;
@@ -140,8 +135,8 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #0E8C5A, #7A4E2D);
-  border: 2px solid #0B0D10;
+  background: #AB562F;
+  border: 2px solid #1B1612;
   display: grid;
   place-items: center;
   font-size: 11px;
@@ -163,9 +158,9 @@
 .live-dot {
   width: 7px;
   height: 7px;
-  background: #16A46B;
+  background: #AB562F;
   border-radius: 50%;
-  box-shadow: 0 0 8px #16A46B;
+  box-shadow: none;
   animation: livePulse 2s infinite;
 }
 .live-text {

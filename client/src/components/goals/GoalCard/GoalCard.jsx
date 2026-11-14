@@ -12,12 +12,13 @@ const STATUS_LABEL = {
   'paused': 'Paused',
 }
 
-const STATUS_COLOR = {
-  'active': 'blue',
-  'on-track': 'green',
+// Status identity: a small square + the label (never colour alone).
+const STATUS_MARK = {
+  'active': 'orange',
+  'on-track': 'brown',
   'at-risk': 'red',
-  'completed': 'green-dark',
-  'paused': 'coffee',
+  'completed': 'dark',
+  'paused': 'taupe',
 }
 
 export default function GoalCard({ goal, onClick, onDelete }) {
@@ -38,39 +39,51 @@ export default function GoalCard({ goal, onClick, onDelete }) {
   const doneMilestones = goal.milestones?.filter(m => m.done).length || 0
   const totalMilestones = goal.milestones?.length || 0
 
-  const daysLeft = Math.round((new Date(goal.dueDate) - new Date()) / (1000 * 60 * 60 * 24))
+  // No due date -> NaN, which previously fell through to "Overdue".
+  const due = goal.dueDate ? new Date(goal.dueDate) : null
+  const daysLeft = due && !Number.isNaN(due.getTime())
+    ? Math.round((due - new Date()) / (1000 * 60 * 60 * 24))
+    : null
+  const dueLabel = goal.status === 'completed'
+    ? 'Completed'
+    : daysLeft === null
+      ? 'No due date'
+      : daysLeft > 0 ? `${daysLeft}d left` : daysLeft === 0 ? 'Due today' : 'Overdue'
+
+  const dueTone = goal.status !== 'completed' && daysLeft !== null
+    ? (daysLeft < 0 ? 'danger' : daysLeft <= 7 ? 'warn' : '')
+    : ''
 
   return (
-    <div className={`gc gc--${goal.color}`} onClick={onClick}>
-      <div className="gc__accent" />
-
+    <article
+      className="gc"
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') onClick() }}
+    >
       <div className="gc__head">
-        <div className="gc__icon"><Icon size={20} strokeWidth={2} /></div>
-        <span className={`gc__status gc__status--${STATUS_COLOR[goal.status]}`}>
-          {STATUS_LABEL[goal.status]}
+        <span className="gc__status">
+          <span className={`ui-mark ui-mark--${STATUS_MARK[goal.status] || 'taupe'}`} />
+          {STATUS_LABEL[goal.status] || goal.status}
         </span>
-        
-        <div className="gc__more-container" ref={menuRef} style={{ position: 'relative', marginLeft: 'auto' }}>
-          <button className="gc__more" onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu) }}>
+        <div className="gc__menu-wrap" ref={menuRef}>
+          <button
+            className="gc__more"
+            onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu) }}
+            aria-label="Goal actions"
+            aria-expanded={showMenu}
+          >
             <MoreVertical size={14} />
           </button>
-          
           {showMenu && (
-            <div className="gc__dropdown" style={{
-              position: 'absolute', right: 0, top: 24, background: 'var(--bg-surface)', border: '1px solid var(--border-color)', borderRadius: 8, boxShadow: 'var(--shadow-sm)', zIndex: 10, padding: 4, minWidth: 120
-            }}>
-              <button 
-                onClick={(e) => { e.stopPropagation(); setShowMenu(false); onClick(); }}
-                style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '6px 12px', fontSize: 13, background: 'transparent', cursor: 'pointer' }}
-              >
-                <Edit2 size={12} /> Edit
+            <div className="gc__menu" role="menu">
+              <button role="menuitem" onClick={(e) => { e.stopPropagation(); setShowMenu(false); onClick() }}>
+                <Edit2 size={13} /> Edit
               </button>
               {onDelete && (
-                <button 
-                  onClick={(e) => { e.stopPropagation(); setShowMenu(false); onDelete(goal.id || goal._id); }}
-                  style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '6px 12px', fontSize: 13, color: 'var(--red-500)', background: 'transparent', cursor: 'pointer' }}
-                >
-                  <Trash2 size={12} /> Delete
+                <button role="menuitem" className="gc__menu-danger" onClick={(e) => { e.stopPropagation(); setShowMenu(false); onDelete(goal.id || goal._id) }}>
+                  <Trash2 size={13} /> Delete
                 </button>
               )}
             </div>
@@ -78,29 +91,32 @@ export default function GoalCard({ goal, onClick, onDelete }) {
         </div>
       </div>
 
-      <h3 className="gc__title">{goal.title}</h3>
-      <p className="gc__desc">{goal.description}</p>
+      <div className="gc__body">
+        <span className="gc__icon"><Icon size={16} strokeWidth={1.8} /></span>
+        <div className="gc__text">
+          <h3 className="gc__title">{goal.title}</h3>
+          {goal.description && <p className="gc__desc">{goal.description}</p>}
+        </div>
+      </div>
 
       <div className="gc__progress">
         <div className="gc__progress-row">
-          <span className="gc__progress-label">Progress</span>
+          <span className="ui-label">Progress</span>
           <span className="gc__progress-value">{goal.progress}%</span>
         </div>
-        <div className="gc__progress-bar">
-          <div className="gc__progress-fill" style={{ width: `${goal.progress}%` }} />
-        </div>
+        <div className="gc__bar"><span style={{ width: `${goal.progress}%` }} /></div>
       </div>
 
-      <div className="gc__meta">
-        <div className="gc__meta-item">
-          <CheckCircle2 size={12} />
-          <span>{doneMilestones}/{totalMilestones} milestones</span>
-        </div>
-        <div className="gc__meta-item">
-          <Calendar size={12} />
-          <span>{daysLeft > 0 ? `${daysLeft}d left` : daysLeft === 0 ? 'Due today' : 'Overdue'}</span>
-        </div>
+      <div className="gc__foot">
+        <span className="gc__meta">
+          <CheckCircle2 size={13} />
+          {doneMilestones}/{totalMilestones} milestones
+        </span>
+        <span className={`gc__meta${dueTone ? ` gc__meta--${dueTone}` : ''}`}>
+          <Calendar size={13} />
+          {dueLabel}
+        </span>
       </div>
-    </div>
+    </article>
   )
 }

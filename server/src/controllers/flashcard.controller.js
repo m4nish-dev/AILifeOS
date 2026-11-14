@@ -38,12 +38,26 @@ export const getFlashcardsByDeck = async (req, res) => {
   }
 };
 
+// Only content fields are client-writable. userId and the spaced-repetition
+// state (nextReview, reviewCount, correctCount, lastReviewed) are owned by the
+// server; previously the whole body was spread in, so an update could even
+// move a card to another user's account by sending a different userId.
+const FLASHCARD_WRITABLE_FIELDS = ['deckName', 'front', 'back', 'noteId', 'difficulty'];
+const pickFlashcardFields = (body = {}) =>
+  FLASHCARD_WRITABLE_FIELDS.reduce((acc, f) => {
+    if (body[f] !== undefined) acc[f] = body[f];
+    return acc;
+  }, {});
+
+// Bad input is the client's fault (400), not a server failure (500).
+const isClientError = (error) => error?.name === 'ValidationError' || error?.name === 'CastError';
+
 export const createFlashcard = async (req, res) => {
   try {
-    const card = await Flashcard.create({ ...req.body, userId: req.user._id });
+    const card = await Flashcard.create({ ...pickFlashcardFields(req.body), userId: req.user._id });
     res.status(201).json({ success: true, data: card });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(isClientError(error) ? 400 : 500).json({ success: false, message: error.message });
   }
 };
 
@@ -51,21 +65,23 @@ export const updateFlashcard = async (req, res) => {
   try {
     const card = await Flashcard.findOneAndUpdate(
       { _id: req.params.id, userId: req.user._id },
-      req.body,
-      { new: true }
+      pickFlashcardFields(req.body),
+      { new: true, runValidators: true }
     );
+    if (!card) return res.status(404).json({ success: false, message: 'Flashcard not found.' });
     res.status(200).json({ success: true, data: card });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(isClientError(error) ? 400 : 500).json({ success: false, message: error.message });
   }
 };
 
 export const deleteFlashcard = async (req, res) => {
   try {
-    await Flashcard.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
+    const card = await Flashcard.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
+    if (!card) return res.status(404).json({ success: false, message: 'Flashcard not found.' });
     res.status(200).json({ success: true, message: 'Flashcard deleted' });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(isClientError(error) ? 400 : 500).json({ success: false, message: error.message });
   }
 };
 

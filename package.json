@@ -3,9 +3,15 @@
   "version": "1.0.0",
   "description": "Root workspace for AILifeOS",
   "scripts": {
-    "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix server\""
+    "install:all": "npm install && npm install --prefix server && npm install --prefix client",
+    "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix server\"",
+    "build": "npm run build --prefix client",
+    "start": "npm start --prefix server"
   },
   "devDependencies": {
     "concurrently": "^10.0.5"
+  },
+  "engines": {
+    "node": ">=20.19.0"
   }
 }

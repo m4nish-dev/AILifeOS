@@ -253,7 +253,7 @@ function PasswordStrength({ password }) {
   ]
   const score = checks.filter(c => c.ok).length
 
-  const color = score === 0 ? '#E23B3B' : score === 1 ? '#F5A524' : score === 2 ? '#F5A524' : '#0E8C5A'
+  const color = score === 0 ? '#E23B3B' : score === 1 ? '#F5A524' : score === 2 ? '#F5A524' : '#AB562F'
   const label = ['', 'Weak', 'Fair', 'Strong'][score]
 
   return (

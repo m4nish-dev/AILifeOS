@@ -1,284 +1,116 @@
-.study-os {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 32px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
+/* Study — same page frame as every other page (no private padding or width). */
+.study-os { max-width: 1600px; margin: 0 auto; }
+.study-os__bar { margin-bottom: 16px; border-bottom: 1px solid var(--border-subtle); }
+.study-os__content { min-width: 0; }
 
-.study-os__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
-}
-
-.study-os__header h1 {
-  font-size: 24px;
-  font-weight: 700;
-}
-
-.study-os__tabs {
-  display: flex;
-  background: var(--surface-200);
-  border-radius: 8px;
-  padding: 4px;
-  gap: 4px;
-}
-
-.study-os__tab {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border: none;
-  background: transparent;
-  color: var(--text-secondary);
-  font-weight: 600;
-  font-size: 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.study-os__tab:hover {
-  color: var(--text-primary);
-}
-
-.study-os__tab--active {
-  background: var(--surface-100);
-  color: var(--blue-500);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-/* Tab contents */
-.study-os__content {
-  flex: 1;
-}
-
-/* Focus Tab */
+/* ─── Focus tab ─────────────────────────────────────────────── */
 .study-os__focus {
-  display: flex;
-  gap: 32px;
-  height: 100%;
-}
-
-.study-os__timer-panel {
-  flex: 2;
-  background: var(--surface-100);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-}
-
-.study-os__sidebar {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
   gap: 16px;
+  align-items: start;
 }
-
-.study-timer__circle {
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  border: 8px solid var(--surface-300);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 40px;
-  transition: border-color 0.3s ease;
-}
-
-.study-timer__circle--active {
-  border-color: var(--blue-500);
-  box-shadow: 0 0 40px rgba(var(--blue-500-rgb), 0.2);
-}
-
-.study-timer__time {
-  font-size: 64px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-}
-
-.study-timer__mode {
-  font-size: 14px;
-  color: var(--text-tertiary);
-  font-weight: 500;
-  margin-top: 8px;
-}
-
-.study-timer__controls {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 32px;
-}
-
-.study-btn {
-  display: flex;
+.study-timer__status {
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 24px;
-  border-radius: 8px;
+  font-size: 12.5px;
   font-weight: 600;
-  font-size: 14px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  color: var(--text-secondary);
 }
-
-.study-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.study-btn--primary {
-  background: var(--blue-500);
-  color: white;
-}
-
-.study-btn--secondary {
-  background: var(--surface-300);
-  color: var(--text-primary);
-}
-
-.study-btn--stop {
-  background: rgba(var(--red-500-rgb), 0.1);
-  color: var(--red-500);
-}
-
-.study-timer__setup {
+.study-timer__body {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 32px 24px;
+}
+.study-timer__ring { position: relative; width: 240px; height: 240px; }
+.study-timer__ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.study-timer__track { fill: none; stroke: var(--beige); stroke-width: 6; }
+.study-timer__progress { fill: none; stroke: var(--orange-base); stroke-width: 6; stroke-linecap: round; }
+.study-timer__readout {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.study-timer__time {
+  font-family: var(--font-serif);
+  font-size: 52px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.study-timer__mode { font-size: 12.5px; color: var(--text-secondary); }
+.study-timer__controls { display: flex; gap: 8px; }
+.study-timer__setup {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
   width: 100%;
-  max-width: 400px;
+  max-width: 560px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-subtle);
 }
 
-.study-field {
+.study-os__sidebar { display: flex; flex-direction: column; gap: 16px; }
+.study-os__sidebar .sg { margin-bottom: 0; }
+.study-note {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.study-field label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-}
-
-.study-field input {
-  background: var(--surface-200);
-  border: 1px solid var(--border-color);
-  padding: 12px 16px;
-  border-radius: 8px;
-  color: var(--text-primary);
-  font-size: 14px;
-}
-
-.study-field input:focus {
-  border-color: var(--blue-500);
-}
-
-/* Stat Cards */
-.study-stat-card {
-  background: var(--surface-100);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 20px;
-}
-
-.study-stat__header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: 12px;
-}
-
-.study-stat__big-num {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-.study-stat__big-num span {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-tertiary);
-}
-
-.study-ai-insight {
-  background: rgba(var(--purple-500-rgb), 0.1);
-  border: 1px solid rgba(var(--purple-500-rgb), 0.2);
-  border-radius: 12px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
   gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-left: 2px solid var(--orange-base);
+  border-radius: 6px;
+  color: var(--orange-base);
 }
+.study-note svg { flex-shrink: 0; margin-top: 2px; }
+.study-note p { font-size: 13px; line-height: 1.5; color: var(--text-secondary); }
+.study-note strong { color: var(--ink); font-weight: 600; }
 
-.study-ai-insight p {
-  color: var(--text-primary);
-  font-size: 14px;
-  line-height: 1.5;
-  margin: 0;
-}
-
-/* Flashcards Tab */
+/* ─── Flashcards + insights ────────────────────────────────── */
 .study-os__toolbar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
 }
-
-.study-os__toolbar h2 {
-  font-size: 20px;
-  font-weight: 600;
-}
-
 .study-decks-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-}
-
-.study-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 64px 0;
-  color: var(--text-tertiary);
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 16px;
 }
-
-/* Insights Tab */
 .study-goals-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
 }
-
-.study-subtitle {
+.study-empty-text {
+  grid-column: 1 / -1;
+  padding: 16px 20px;
+  border: 1px dashed var(--border-default);
+  border-radius: 6px;
+  font-size: 13px;
   color: var(--text-secondary);
-  font-size: 14px;
-  margin-bottom: 20px;
 }
+.study-heatmap-panel { margin-top: 24px; }
+.study-subtitle { font-size: 12.5px; color: var(--text-tertiary); }
+.study-heatmap-container { padding: 20px; overflow-x: auto; }
+.study-goal-form { display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; }
 
-.study-heatmap-container {
-  background: var(--surface-100);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 24px;
+@media (max-width: 1023px) {
+  .study-os__focus { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 599px) {
+  .study-timer__setup { grid-template-columns: minmax(0, 1fr); }
+  .study-timer__ring { width: 208px; height: 208px; }
+  .study-timer__time { font-size: 44px; }
 }

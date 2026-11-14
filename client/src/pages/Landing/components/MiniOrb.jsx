@@ -43,8 +43,7 @@ export default function MiniOrb({ size = 80, color = 'var(--coffee-500)', iconCo
       <div 
         className="mini-orb-core"
         style={{ 
-          background: `radial-gradient(circle at 30% 30%, ${color}, #0B0D10)`,
-          boxShadow: `0 0 20px ${color}`
+          background: color
         }}
       >
         <Mic size={size * 0.4} color={iconColor} />

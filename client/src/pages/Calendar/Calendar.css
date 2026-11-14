@@ -1,1 +1,13 @@
 .cal-page { max-width: 1600px; margin: 0 auto; }
+
+/* Quiet note above the grid when the period is empty. */
+.cal-note {
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--border-subtle);
+  border-left: 2px solid var(--orange-base);
+  border-radius: 4px;
+  background: var(--bg-surface);
+  font-size: 13px;
+  color: var(--text-secondary);
+}

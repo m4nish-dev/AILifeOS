@@ -1,4 +1,5 @@
 @import './variables.css';
+@import './ui.css';
 @import './typography.css';
 @import './animations.css';
 
@@ -67,9 +68,7 @@ img, svg {
   background: var(--border-default);
   border-radius: var(--r-full);
 }
-::-webkit-scrollbar-thumb:hover {
-  background: var(--border-strong);
-}
+::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
 
 /* Selection */
 ::selection {
@@ -81,4 +80,16 @@ img, svg {
 *:focus-visible {
   outline: 2px solid var(--green-500);
   outline-offset: 2px;
+}
+
+/* ─── No motion, app-wide ─────────────────────────────────────
+   AI LifeOS is a static, solid interface: no keyframe animations, no
+   transitions, no smooth scrolling. One rule here instead of editing every
+   stylesheet; JS animations (framer-motion) are disabled in main.jsx. */
+*,
+*::before,
+*::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
 }

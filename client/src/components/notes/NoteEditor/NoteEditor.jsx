@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Pin, Trash2, Sparkles, FileQuestion, BookOpen, Copy, Eye, EyeOff, Tag as TagIcon, X, BookMarked, FileText } from 'lucide-react'
 import AINoteActions from '../AINoteActions/AINoteActions'
 import EmptyState from '../../common/EmptyState/EmptyState'
@@ -10,7 +11,8 @@ export default function NoteEditor({ note, folders, saveStatus, onSave, onDelete
   const [tags, setTags] = useState([])
   const [newTag, setNewTag] = useState('')
   const [pinned, setPinned] = useState(false)
-  const [folderId, setFolderId] = useState('')
+  // null = unfiled. Kept as null internally; the <select> maps it to ''.
+  const [folderId, setFolderId] = useState(null)
   const [preview, setPreview] = useState(false)
   const navigate = useNavigate()
 
@@ -20,14 +22,14 @@ export default function NoteEditor({ note, folders, saveStatus, onSave, onDelete
       setContent(note.content)
       setTags(note.tags || [])
       setPinned(note.pinned || false)
-      setFolderId(note.folderId)
+      setFolderId(note.folderId ?? null)
     }
   }, [note])
 
   useEffect(() => {
     if (!note) return
     const timeout = setTimeout(() => {
-      if (title !== note.title || content !== note.content || pinned !== note.pinned || folderId !== note.folderId || JSON.stringify(tags) !== JSON.stringify(note.tags)) {
+      if (title !== note.title || content !== note.content || pinned !== note.pinned || (folderId ?? null) !== (note.folderId ?? null) || JSON.stringify(tags) !== JSON.stringify(note.tags)) {
         onSave({ ...note, title, content, tags, pinned, folderId })
       }
     }, 600)
@@ -56,10 +58,12 @@ export default function NoteEditor({ note, folders, saveStatus, onSave, onDelete
     <div className="ne">
       <div className="ne__toolbar">
         <div className="ne__toolbar-left">
-          <select className="ne__folder-select" value={folderId} onChange={(e) => setFolderId(e.target.value)}>
-            {folders.map(f => <option key={f.id} value={f.id}>{f.icon} {f.name}</option>)}
+          <select className="ne__folder-select" value={folderId ?? ''} onChange={(e) => setFolderId(e.target.value || null)}>
+            {/* Without this, an unfiled note displayed the first folder as if it were in it. */}
+            <option value="">Unfiled</option>
+            {folders.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
           </select>
-          <span className="ne__saved" style={{ color: saveStatus === 'saving' ? 'var(--blue-500)' : saveStatus === 'error' ? 'var(--red-500)' : 'var(--text-tertiary)' }}>
+          <span className={`ne__saved ne__saved--${saveStatus || 'saved'}`}>
             {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'error' ? 'Error saving' : `Saved · ${new Date(note.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
           </span>
         </div>

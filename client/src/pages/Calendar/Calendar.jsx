@@ -126,6 +126,7 @@ export default function Calendar() {
         currentDate={currentDate} onNavigate={navigate}
         onToday={() => setCurrentDate(new Date())}
         onCreate={openCreate}
+        eventCount={events.length}
       />
 
       {apiLoading && events.length === 0 ? (
@@ -135,8 +136,8 @@ export default function Calendar() {
       ) : (
         <>
           {events.length === 0 && (
-            <div style={{ padding: '12px 24px', background: 'rgba(var(--blue-500-rgb), 0.1)', color: 'var(--blue-600)', textAlign: 'center', fontSize: 13, borderBottom: '1px solid var(--border-subtle)' }}>
-              No events scheduled for this period. Click any slot to add one.
+            <div className="cal-note">
+              No events in this period. Click any day or time slot to add one.
             </div>
           )}
           {view === 'month' && (

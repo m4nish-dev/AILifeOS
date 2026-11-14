@@ -13,6 +13,13 @@ import Folder from '../models/Folder.model.js';
 
 // Helper: generate a signed JWT
 const generateToken = (userId) => {
+  if (!process.env.JWT_SECRET) {
+    // Readable server-side error instead of jsonwebtoken's
+    // "secretOrPrivateKey must have a value".
+    const err = new Error('Server misconfigured: JWT_SECRET is not set.');
+    err.statusCode = 500;
+    throw err;
+  }
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
     algorithm: 'HS256',
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
@@ -51,9 +58,11 @@ export const registerUser = async (req, res) => {
     }
 
     // Create user (password hashed via pre-save hook)
-    const user = await User.create({ name, email, password });
-
+    // Sign the token BEFORE saving: if signing fails (e.g. missing JWT_SECRET)
+    // no half-created account is left behind that blocks a retry.
+    const user = new User({ name, email, password });
     const token = generateToken(user._id);
+    await user.save();
 
     res.status(201).json({
       success: true,

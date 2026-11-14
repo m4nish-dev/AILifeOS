@@ -114,13 +114,14 @@ export default function ChatSidebar({ conversations, activeId, onSelect, onNew, 
 
   return (
     <aside className="cs">
-      <button className="cs__new" onClick={onNew}>
-        <Plus size={14} strokeWidth={2.5} /> New Chat
-      </button>
-
-      <div className="cs__search">
-        <Search size={13} />
-        <input placeholder="Search chats…" value={search} onChange={(e) => setSearch(e.target.value)} />
+      <div className="cs__head">
+        <button className="ui-btn ui-btn--primary" onClick={onNew}>
+          <Plus size={14} strokeWidth={2.4} /> New Chat
+        </button>
+        <label className="ui-search">
+          <Search size={14} />
+          <input placeholder="Search chats…" value={search} onChange={(e) => setSearch(e.target.value)} aria-label="Search chats" />
+        </label>
       </div>
 
       <div className="cs__list">

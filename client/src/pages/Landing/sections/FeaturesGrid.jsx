@@ -23,8 +23,8 @@ function TypewriterText({ text, delay = 45 }) {
 const FEATURES = [
   {
     icon: '🤖',
-    accent: '#16A46B',
-    accentDim: 'rgba(22,164,107,0.1)',
+    accent: '#AB562F',
+    accentDim: 'rgba(171, 86, 47,0.1)',
     title: 'AI Chat Assistant',
     desc: 'Your personal AI that plans, schedules, and adapts to your life in real Hinglish.',
     span: 2,
@@ -39,36 +39,36 @@ const FEATURES = [
   },
   {
     icon: '🎯',
-    accent: '#16A46B',
-    accentDim: 'rgba(22,164,107,0.1)',
+    accent: '#AB562F',
+    accentDim: 'rgba(171, 86, 47,0.1)',
     title: 'Goal Tracking',
     desc: 'Set audacious goals. Break them into milestones. Watch progress compound weekly.',
     preview: (
       <div className="fg-progress-wrap">
         <div className="fg-progress-bar">
-          <div className="fg-progress-fill" style={{ width: '68%', background: '#16A46B' }} />
+          <div className="fg-progress-fill" style={{ width: '68%', background: '#AB562F' }} />
         </div>
-        <span className="fg-progress-label" style={{ color: '#16A46B' }}>68%</span>
+        <span className="fg-progress-label" style={{ color: '#AB562F' }}>68%</span>
       </div>
     ),
   },
   {
     icon: '📅',
-    accent: '#3B82F6',
+    accent: '#AB562F',
     accentDim: 'rgba(59,130,246,0.1)',
     title: 'Smart Calendar',
     desc: 'AI-scheduled focus blocks that respect your energy levels and top priorities.',
     preview: (
       <div className="fg-cal-strip">
         {[20,60,30,80,40,70,50].map((h, i) => (
-          <div key={i} className={`fg-cal-bar ${i === 3 ? 'active' : ''}`} style={{ height: h * 0.8 + 'px', background: i === 3 ? '#3B82F6' : 'rgba(59,130,246,0.2)' }} />
+          <div key={i} className={`fg-cal-bar ${i === 3 ? 'active' : ''}`} style={{ height: h * 0.8 + 'px', background: i === 3 ? '#AB562F' : 'rgba(59,130,246,0.2)' }} />
         ))}
       </div>
     ),
   },
   {
     icon: '⏱️',
-    accent: '#8B5CF6',
+    accent: '#AB562F',
     accentDim: 'rgba(139,92,246,0.1)',
     title: 'Deep Focus Mode',
     desc: 'Pomodoro reimagined. Track streaks. Build the deep work habit that changes careers.',
@@ -76,7 +76,7 @@ const FEATURES = [
       <div className="fg-focus-ring-wrap">
         <svg width="72" height="72" viewBox="0 0 72 72">
           <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(139,92,246,0.15)" strokeWidth="5" />
-          <circle cx="36" cy="36" r="28" fill="none" stroke="#8B5CF6" strokeWidth="5"
+          <circle cx="36" cy="36" r="28" fill="none" stroke="#AB562F" strokeWidth="5"
             strokeDasharray="176" strokeDashoffset="44" strokeLinecap="round"
             transform="rotate(-90 36 36)" />
         </svg>
@@ -86,14 +86,14 @@ const FEATURES = [
   },
   {
     icon: '📓',
-    accent: '#F5A524',
+    accent: '#EFD9CB',
     accentDim: 'rgba(245,165,36,0.1)',
     title: 'Smart Notes',
     desc: "Jarvis writes structured Hinglish notes on any topic — DBMS, system design, whatever's blocking you.",
     preview: (
       <div className="fg-note-preview">
         <div className="fg-note-top">SystemDesign.md</div>
-        <div className="fg-note-body" style={{ color: '#F5A524' }}>
+        <div className="fg-note-body" style={{ color: '#EFD9CB' }}>
           <TypewriterText text="# Consistent Hashing — Notes for FAANG prep..." delay={70} />
         </div>
       </div>

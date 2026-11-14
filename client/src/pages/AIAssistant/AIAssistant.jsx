@@ -152,12 +152,12 @@ export default function AIAssistant() {
         <div className="sb-modal-overlay" onClick={() => setDeleteModalId(null)}>
           <div className="sb-modal-content" onClick={(e) => e.stopPropagation()}>
             <h3 className="sb-modal-title">Delete Conversation</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--fs-sm)', marginBottom: 'var(--sp-4)' }}>
+            <p className="ai-confirm">
               Are you sure you want to delete this chat? This action cannot be undone.
             </p>
             <div className="sb-modal-actions">
               <button type="button" className="sb-btn sb-btn-ghost" onClick={() => setDeleteModalId(null)}>Cancel</button>
-              <button type="button" className="sb-btn sb-btn-primary" style={{ background: 'var(--red-600)' }} onClick={confirmDelete}>Delete</button>
+              <button type="button" className="ui-btn ui-btn--danger" onClick={confirmDelete}>Delete</button>
             </div>
           </div>
         </div>

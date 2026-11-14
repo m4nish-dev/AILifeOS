@@ -1,5 +1,6 @@
 import StudySession from '../models/StudySession.model.js';
 import mongoose from 'mongoose';
+import { readTzOffset, localDayKey, localMidnightUtc, recentDayKeys, streakFromDates, localHour } from '../utils/analytics.utils.js';
 
 // @desc   Start a new session
 // @route  POST /api/study/sessions
@@ -136,10 +137,13 @@ export const getStats = async (req, res) => {
     const userId = req.user._id;
     const now = new Date();
     
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    // "Today" and the 7-day window on the user's calendar, not the server's.
+    // totalMinutesToday drives the dashboard's Daily Focus gauge.
+    const tz = readTzOffset(req);
+    const last7 = recentDayKeys(7, tz);
+    const todayStart = localMidnightUtc(last7[6], tz);
     
-    const weekStart = new Date(now);
-    weekStart.setDate(weekStart.getDate() - 7);
+    const weekStart = localMidnightUtc(last7[0], tz);
 
     // Get all completed sessions for this user
     const sessions = await StudySession.find({ userId, completed: true, duration: { $gt: 0 } }).sort({ startedAt: 1 });
@@ -150,11 +154,7 @@ export const getStats = async (req, res) => {
     const daysMap = {}; // Format: YYYY-MM-DD
     
     // Initialize last 7 days map
-    for(let i = 6; i >= 0; i--) {
-      const d = new Date(now);
-      d.setDate(d.getDate() - i);
-      daysMap[d.toISOString().slice(0,10)] = 0;
-    }
+    last7.forEach(key => { daysMap[key] = 0; });
 
     const uniqueStudyDays = new Set();
     let completedCount = 0;
@@ -163,7 +163,7 @@ export const getStats = async (req, res) => {
     sessions.forEach(s => {
       completedCount++;
       const durationMins = Math.round(s.duration / 60);
-      const sDateStr = s.startedAt.toISOString().slice(0, 10);
+      const sDateStr = localDayKey(s.startedAt, tz);
       uniqueStudyDays.add(sDateStr);
 
       if (s.startedAt >= todayStart) {
@@ -185,40 +185,10 @@ export const getStats = async (req, res) => {
     
     const byDayLast7 = Object.keys(daysMap).map(date => ({ date, minutes: daysMap[date] }));
 
-    // Calculate Streak
-    let currentStreak = 0;
+    // Current streak on the user's calendar (shared helper; the old inline loop
+    // compared against UTC 'today').
+    const currentStreak = streakFromDates([...uniqueStudyDays], tz);
     let longestStreak = 0;
-    let tempStreak = 0;
-    
-    const sortedDays = Array.from(uniqueStudyDays).sort().reverse();
-    let expectedDate = new Date(); // Start checking from today
-    let checkedToday = false;
-
-    for (let i = 0; i < sortedDays.length; i++) {
-      const dayStr = sortedDays[i];
-      const todayStr = new Date().toISOString().slice(0,10);
-      const yesterdayStr = new Date(Date.now() - 86400000).toISOString().slice(0,10);
-      
-      if (i === 0) {
-        // If first day is today or yesterday, streak is alive
-        if (dayStr === todayStr || dayStr === yesterdayStr) {
-          tempStreak = 1;
-        } else {
-          break; // Streak broken
-        }
-      } else {
-        const prevDay = new Date(sortedDays[i-1]);
-        const currDay = new Date(dayStr);
-        const diffDays = Math.round((prevDay - currDay) / 86400000);
-        
-        if (diffDays === 1) {
-          tempStreak++;
-        } else {
-          break;
-        }
-      }
-    }
-    currentStreak = tempStreak;
 
     // A simple longest streak logic over all unique days
     const allSortedDays = Array.from(uniqueStudyDays).sort();
@@ -282,6 +252,7 @@ export const getSubjectStats = async (req, res) => {
 
 export const getFocusPattern = async (req, res) => {
   try {
+    const tz = readTzOffset(req);
     const sessions = await StudySession.find({ 
       userId: req.user._id, 
       completed: true 
@@ -292,7 +263,7 @@ export const getFocusPattern = async (req, res) => {
     const hours = new Array(24).fill(0);
     
     sessions.forEach(s => {
-      const h = new Date(s.startedAt).getHours();
+      const h = localHour(tz, s.startedAt);
       hours[h] += Math.round(s.duration / 60);
     });
 

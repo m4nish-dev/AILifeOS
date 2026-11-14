@@ -14,7 +14,7 @@
   transform: translateY(-50%);
   width: 800px;
   height: 800px;
-  background: radial-gradient(circle, rgba(160, 113, 74, 0.08), transparent 70%);
+  background: transparent;
   border-radius: 50%;
   pointer-events: none;
 }
@@ -88,7 +88,7 @@
 .voice-transcript-box {
   margin-top: 60px;
   background: rgba(0,0,0,0.5);
-  border: 1px solid rgba(160, 113, 74, 0.3);
+  border: 1px solid rgba(27, 22, 18, 0.3);
   padding: 16px 24px;
   border-radius: var(--r-full);
   min-width: 300px;

@@ -19,7 +19,7 @@
   transform: translate(-50%, -50%);
   width: 80%;
   height: 80%;
-  background: radial-gradient(ellipse, rgba(22, 164, 107, 0.15), transparent 70%);
+  background: transparent;
   filter: blur(80px);
   z-index: 0;
   pointer-events: none;
@@ -29,7 +29,7 @@
   position: relative;
   z-index: 10;
   background: var(--bg-surface);
-  border-radius: 12px;
+  border-radius: 8px;
   border: 1px solid rgba(255,255,255,0.1);
   box-shadow: 0 40px 100px rgba(0,0,0,0.6);
   overflow: hidden;
@@ -87,13 +87,7 @@
   height: 100%;
   display: grid;
   place-items: center;
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(255,255,255,0.02),
-    rgba(255,255,255,0.02) 10px,
-    transparent 10px,
-    transparent 20px
-  );
+  background: rgba(255,255,255,0.02);
 }
 
 .placeholder-text {
@@ -109,8 +103,8 @@
   position: absolute;
   z-index: 20;
   background: rgba(20, 23, 28, 0.9);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(22, 164, 107, 0.3);
+  backdrop-filter: none;
+  border: 1px solid rgba(171, 86, 47, 0.3);
   padding: 8px 16px;
   border-radius: var(--r-full);
   font-size: 13px;
@@ -125,7 +119,7 @@
   width: 6px; height: 6px;
   background: var(--green-500);
   border-radius: 50%;
-  box-shadow: 0 0 8px var(--green-500);
+  box-shadow: none;
 }
 
 .top-left { top: 15%; left: -5%; }

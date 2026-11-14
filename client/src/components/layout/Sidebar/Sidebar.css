@@ -1,11 +1,11 @@
 .sidebar {
   width: var(--sidebar-w);
   height: 100vh;
-  background: var(--bg-surface);
+  background: var(--bg-sidebar);
   border-right: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
-  padding: var(--sp-5) var(--sp-4);
+  padding: var(--sp-5) var(--sp-3);
   position: sticky;
   top: 0;
   flex-shrink: 0;
@@ -13,8 +13,14 @@
 }
 
 .sidebar--collapsed {
-  width: 80px;
+  width: var(--sidebar-w-collapsed);
   padding: var(--sp-5) var(--sp-2);
+}
+.sidebar--collapsed .sidebar__link,
+.sidebar--collapsed .sidebar__ws {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .sidebar--collapsed .sidebar__logo-text,
@@ -29,7 +35,7 @@
 
 /* Brand */
 .sidebar__brand {
-  padding: var(--sp-2) var(--sp-2) var(--sp-6);
+  padding: var(--sp-1) var(--sp-2) var(--sp-6);
 }
 .sidebar__logo {
   display: flex;
@@ -37,15 +43,19 @@
   gap: var(--sp-3);
 }
 .sidebar__logo-mark {
-  width: 34px;
-  height: 34px;
-  background: linear-gradient(135deg, var(--green-600), var(--green-500));
-  color: #fff;
+  width: 28px;
+  height: 28px;
+  background: var(--accent-grad);
+  color: var(--on-accent);
   display: grid;
   place-items: center;
-  border-radius: var(--r-md);
-  box-shadow: var(--shadow-glow-green);
+  border-radius: 6px;
+  flex-shrink: 0;
+  border: 1px solid var(--accent-border);
+  box-shadow: var(--shadow-xs);
+  transition: background 170ms ease, transform 170ms ease;
 }
+.sidebar__logo-mark:hover { background: var(--accent-hover); }
 .sidebar__logo-text {
   display: flex;
   align-items: center;
@@ -54,19 +64,22 @@
 .sidebar__logo-title {
   font-family: var(--font-display);
   font-weight: var(--fw-bold);
-  font-size: var(--fs-lg);
+  font-size: var(--fs-md);
   color: var(--text-primary);
   letter-spacing: -0.02em;
+  white-space: nowrap;
 }
 .sidebar__logo-badge {
-  background: var(--coffee-50);
-  color: var(--coffee-600);
-  font-size: 10px;
-  font-weight: var(--fw-semibold);
-  padding: 2px 6px;
-  border-radius: var(--r-sm);
+  background: var(--bg-surface-alt);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+  font-size: 9px;
+  font-weight: var(--fw-bold);
+  padding: 1px 5px;
+  border-radius: 5px;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
 }
 
 /* Nav */
@@ -79,40 +92,53 @@
 .sidebar__link {
   display: flex;
   align-items: center;
-  gap: var(--sp-3);
-  padding: 10px 12px;
-  border-radius: var(--r-md);
-  font-size: var(--fs-base);
+  gap: 10px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 6px;
+  font-size: 13.5px;
   font-weight: var(--fw-medium);
   color: var(--text-secondary);
-  transition: background var(--t-fast), color var(--t-fast);
+  transition: background 170ms ease, color 170ms ease, box-shadow 170ms ease;
   position: relative;
 }
-.sidebar__link:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-}
+.sidebar__link svg { flex-shrink: 0; width: 16px; height: 16px; }
+.sidebar__link:hover { background: var(--bg-hover); color: var(--text-primary); }
 .sidebar__link--active {
-  background: linear-gradient(135deg, var(--green-600), var(--green-500));
-  color: #fff;
-  box-shadow: var(--shadow-glow-green);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-weight: var(--fw-semibold);
+  box-shadow: inset 0 0 0 1px var(--border-subtle);
 }
-.sidebar__link--active:hover {
-  background: linear-gradient(135deg, var(--green-600), var(--green-500));
-  color: #fff;
+.sidebar__link--active svg { color: var(--accent-ink); }
+/* A 3px rail reads as "you are here" without a filled slab competing with
+   the page content for attention. */
+.sidebar__link--active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 16px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent);
+  box-shadow: none;
 }
+.sidebar--collapsed .sidebar__link--active::before { left: 0; }
+.sidebar__link--active:hover { background: var(--bg-hover); color: var(--text-primary); }
 
 /* Section */
 .sidebar__section {
   margin-bottom: var(--sp-6);
 }
 .sidebar__section-title {
-  font-size: var(--fs-xs);
+  font-size: 10px;
   color: var(--text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-weight: var(--fw-semibold);
-  padding: 0 12px var(--sp-2);
+  letter-spacing: 0.08em;
+  font-weight: var(--fw-bold);
+  padding: 0 11px var(--sp-2);
 }
 .sidebar__workspaces {
   display: flex;
@@ -122,23 +148,23 @@
 .sidebar__ws {
   display: flex;
   align-items: center;
-  gap: var(--sp-3);
-  padding: 8px 12px;
-  border-radius: var(--r-md);
-  font-size: var(--fs-sm);
+  gap: 10px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 9px;
+  font-size: 13px;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: background var(--t-fast);
+  transition: background var(--t-fast), color var(--t-fast);
 }
-.sidebar__ws:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-}
+.sidebar__ws svg { flex-shrink: 0; width: 15px; height: 15px; color: var(--text-tertiary); }
+.sidebar__ws:hover { background: var(--bg-hover); color: var(--text-primary); }
 .sidebar__ws--active {
   background: var(--bg-hover);
   color: var(--text-primary);
   font-weight: var(--fw-medium);
 }
+.sidebar__ws--active svg { color: var(--text-primary); }
 .sidebar__ws--add {
   color: var(--text-tertiary);
 }
@@ -149,6 +175,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--sp-3);
+  border-top: 1px solid var(--border-subtle);
 }
 .sidebar__settings {
   display: flex;
@@ -161,10 +188,7 @@
   font-size: var(--fs-base);
   transition: background var(--t-fast);
 }
-.sidebar__settings:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-}
+.sidebar__settings:hover { background: var(--bg-hover); color: var(--text-primary); }
 .sidebar__user {
   display: flex;
   align-items: center;
@@ -175,15 +199,12 @@
   cursor: pointer;
   transition: border-color var(--t-fast), background var(--t-fast);
 }
-.sidebar__user:hover {
-  border-color: var(--border-strong);
-  background: var(--bg-surface-alt);
-}
+.sidebar__user:hover { background: var(--bg-surface-alt); }
 .sidebar__user-avatar {
   width: 34px;
   height: 34px;
   border-radius: var(--r-full);
-  background: linear-gradient(135deg, var(--coffee-600), var(--coffee-500));
+  background: var(--coffee-600);
   color: #fff;
   display: grid;
   place-items: center;
@@ -220,11 +241,11 @@
 
 /* Custom Workspace Modal */
 .sb-modal-overlay {
-  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px);
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: none;
   display: grid; place-items: center; z-index: 1000;
 }
 .sb-modal-content {
-  background: var(--bg-surface); border: 1px solid var(--border-subtle);
+  background: var(--bg-surface-alt); border: 1px solid var(--border-default);
   border-radius: var(--r-lg); width: 100%; max-width: 320px; padding: var(--sp-5);
   box-shadow: var(--shadow-xl); animation: sbModalSlide 0.2s ease-out forwards;
 }
@@ -238,13 +259,13 @@
   border: 1px solid var(--border-subtle); background: var(--bg-app);
   color: var(--text-primary); font-size: var(--fs-sm); margin-bottom: var(--sp-4); outline: none; transition: border-color var(--t-fast);
 }
-.sb-modal-input:focus { border-color: var(--coffee-500); }
+.sb-modal-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .sb-modal-actions { display: flex; justify-content: flex-end; gap: var(--sp-3); }
 .sb-btn { padding: 8px 16px; border-radius: var(--r-md); font-size: var(--fs-sm); font-weight: var(--fw-semibold); transition: all var(--t-fast); cursor: pointer; border: none; }
-.sb-btn-ghost { background: transparent; color: var(--text-secondary); }
+.sb-btn-ghost { background: transparent; color: var(--text-secondary); border: 1px solid var(--border-strong); }
 .sb-btn-ghost:hover { background: var(--bg-hover); color: var(--text-primary); }
-.sb-btn-primary { background: linear-gradient(135deg, var(--coffee-600), var(--coffee-500)); color: #fff; box-shadow: var(--shadow-glow-coffee); }
-.sb-btn-primary:hover:not(:disabled) { transform: translateY(-1px); }
+.sb-btn-primary { background: var(--accent-grad); color: var(--on-accent); border: 1px solid var(--accent-border); }
+.sb-btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
 .sb-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
 
 @media (max-width: 767px) {
@@ -261,3 +282,112 @@
     box-shadow: 0 0 0 10000px rgba(0, 0, 0, 0.5);
   }
 }
+
+/* Shortcut hint: revealed on hover, mirrors useKeyboardShortcuts. */
+.sidebar__kbd {
+  margin-left: auto;
+  padding: 1px 5px;
+  border-radius: 5px;
+  border: 1px solid var(--border-default);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.4;
+  color: var(--text-tertiary);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+.sidebar__link:hover .sidebar__kbd,
+.sidebar__link:focus-visible .sidebar__kbd { opacity: 1; transform: none; }
+.sidebar--collapsed .sidebar__kbd { display: none; }
+@media (hover: none) { .sidebar__kbd { display: none; } }
+
+/* The footer no longer needs to push itself down — the tip does. */
+
+
+/* ─── Dark sidebar (#1B1612) ──────────────────────────────────
+   Colour tokens are re-scoped here so every child reads correctly on
+   the dark panel. The active page is a solid burnt-orange item. */
+.sidebar {
+  --text-primary: #FAF3ED;
+  --text-secondary: #EDE4DC;
+  --text-tertiary: #A8988D;
+  --bg-hover: #2A221D;
+  --bg-surface-alt: #2A221D;
+  --bg-elevated: #2A221D;
+  --border-subtle: #2F2621;
+  --border-default: #3B312B;
+  --border-strong: #4D4038;
+  --accent-ink: #E3A27F;
+  border-right: 0;
+}
+.sidebar__brand { padding-bottom: 6px; }
+.sidebar__logo-mark,
+.sidebar__logo-mark:hover {
+  width: 28px; height: 28px;
+  border-radius: 4px;
+  border: 0;
+  background: #AB562F;
+  color: #FFFFFF;
+  box-shadow: none;
+}
+.sidebar__logo-title { font-size: 16px; font-weight: 700; color: #FAF3ED; letter-spacing: -0.01em; }
+.sidebar__logo-badge {
+  background: #3A2A20; border: 0; color: #E3A27F;
+  border-radius: 3px; font-weight: 800; letter-spacing: 0.04em;
+}
+.sidebar__nav { gap: 2px; }
+.sidebar__link {
+  min-height: 36px;
+  padding: 0 12px;
+  gap: 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #EDE4DC;
+}
+.sidebar__link svg { width: 17px; height: 17px; stroke-width: 1.8; }
+.sidebar__link:hover { background: #2A221D; color: #FFFFFF; }
+.sidebar__link--active,
+.sidebar__link--active:hover {
+  background: #AB562F;
+  color: #FFFFFF;
+  font-weight: 600;
+  box-shadow: none;
+}
+.sidebar__link--active svg { color: #FFFFFF; }
+.sidebar__link--active::before { display: none; }
+.sidebar__link--active .sidebar__kbd { color: #FFFFFF; border-color: rgba(255, 255, 255, 0.45); }
+.sidebar__section-title {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: #A8988D;
+}
+.sidebar__ws {
+  min-height: 34px; padding: 0 12px; gap: 12px;
+  border-radius: 6px; font-size: 13.5px; font-weight: 500; color: #EDE4DC;
+}
+.sidebar__ws svg { width: 16px; height: 16px; color: #EDE4DC; }
+.sidebar__ws:hover { background: #2A221D; color: #FFFFFF; }
+.sidebar__ws--active,
+.sidebar__ws--active:hover { background: #2E2620; color: #FFFFFF; font-weight: 600; }
+.sidebar__ws--active svg { color: #FFFFFF; }
+.sidebar__ws--add, .sidebar__ws--add svg { color: #EDE4DC; }
+.sidebar__footer { border-top-color: #2F2621; }
+.sidebar__user-avatar { background: #AB562F; }
+.sidebar__user-plan em { color: #E3A27F; }
+
+/* The workspace modal is rendered inside the sidebar: give it back the
+   light-surface tokens so it matches every other dialog. */
+.sb-modal-overlay {
+  --text-primary: #191411;
+  --text-secondary: #4A3F38;
+  --text-tertiary: #7A6A60;
+  --bg-hover: #F4EAE2;
+  --bg-surface-alt: #FFFDFB;
+  --bg-elevated: #FFFDFB;
+  --border-subtle: #E7DED6;
+  --border-default: #DDD0C6;
+  --border-strong: #C1B0A6;
+  --accent-ink: #AB562F;
+}
+.sidebar__logo-badge { font-size: 10px; padding: 2px 6px; }
+.sidebar__brand { padding-top: 6px; }

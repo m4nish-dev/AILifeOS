@@ -48,10 +48,10 @@ export default function AIAssistantSpotlight() {
             Jarvis understands natural Hinglish, knows your goals, and can schedule, plan, and summarise — all in one conversation.
           </p>
           <ul className="ais-features">
-            <li><CheckCircle2 size={16} color="#16A46B" /><span>Natural Hinglish — mix Hindi and English freely</span></li>
-            <li><Brain size={16} color="#16A46B" /><span>Knows your goals, tasks, and study schedule</span></li>
-            <li><Zap size={16} color="#16A46B" /><span>Executes actions — creates tasks, starts focus blocks</span></li>
-            <li><BookOpen size={16} color="#16A46B" /><span>Generates structured study notes on demand</span></li>
+            <li><CheckCircle2 size={16} color="#AB562F" /><span>Natural Hinglish — mix Hindi and English freely</span></li>
+            <li><Brain size={16} color="#AB562F" /><span>Knows your goals, tasks, and study schedule</span></li>
+            <li><Zap size={16} color="#AB562F" /><span>Executes actions — creates tasks, starts focus blocks</span></li>
+            <li><BookOpen size={16} color="#AB562F" /><span>Generates structured study notes on demand</span></li>
           </ul>
           <a href="/signup" className="ais-cta">
             Try AI Chat Assistant

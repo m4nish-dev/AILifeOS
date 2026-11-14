@@ -4,11 +4,12 @@ import { STATUSES, STATUS_LABEL } from '../../../data/mockTasksFull'
 import TaskCard from '../TaskCard/TaskCard'
 import './TasksKanbanView.css'
 
+// Column marker colours (status identity; the label is always shown too).
 const COLUMN_ACCENTS = {
-  'todo':        'grey',
-  'in-progress': 'blue',
-  'review':      'coffee',
-  'done':        'green',
+  'todo':        'todo',
+  'in-progress': 'progress',
+  'review':      'review',
+  'done':        'done',
 }
 
 export default function TasksKanbanView({ tasks, onEdit, onStatusChange, onCreate }) {
@@ -47,7 +48,7 @@ export default function TasksKanbanView({ tasks, onEdit, onStatusChange, onCreat
           >
             <div className="kb__col-head">
               <div className="kb__col-title">
-                <span className="kb__col-dot" />
+                <span className="kb__col-mark" />
                 <span>{STATUS_LABEL[status]}</span>
                 <span className="kb__col-count">{items.length}</span>
               </div>
@@ -56,7 +57,7 @@ export default function TasksKanbanView({ tasks, onEdit, onStatusChange, onCreat
                 onClick={() => onCreate(status)}
                 aria-label="Add task to column"
               >
-                <Plus size={14} />
+                <Plus size={13} />
               </button>
             </div>
 

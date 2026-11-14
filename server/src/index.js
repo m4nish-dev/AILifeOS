@@ -4,6 +4,10 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import mongoose from 'mongoose';
 import connectDB from './config/db.js';
 import aiRoutes from './routes/ai.routes.js';
 import authRoutes from './routes/auth.routes.js';
@@ -34,55 +38,71 @@ app.use(helmet({
 }));
 
 // ─── CORS ─────────────────────────────────────────────────
-// In the unified Vercel deployment the SPA and the API share one origin, so
-// most real traffic is same-origin and never hits CORS at all. We therefore
-// keep the allow-list strict instead of trusting every *.vercel.app host
-// (which previously let any third-party Vercel site call this API).
+// Browsers send an Origin header on every POST/PUT/PATCH/DELETE — including
+// same-origin ones — so the SPA's own writes DO pass through this check. An
+// earlier version only allowed VERCEL_URL (the per-deployment hostname), which
+// is not the production alias the site is actually served from; every login and
+// save from the live site was rejected with 403.
+//
+// Rule: same-origin is always allowed (the Origin's host equals the host the
+// request was sent to), plus an explicit allow-list for genuinely cross-origin
+// clients. Foreign sites are still refused.
 const buildAllowedOrigins = () => {
   const listed = (process.env.CLIENT_URL || '')
     .split(',')
-    .map((o) => o.trim())
+    .map((o) => o.trim().replace(/\/$/, ''))
     .filter(Boolean);
 
   const origins = [...listed];
-
-  // Vercel injects VERCEL_URL with this deployment's own host (no protocol).
-  if (process.env.VERCEL_URL) origins.push(`https://${process.env.VERCEL_URL}`);
-
-  // Local dev servers — only outside production.
-  if (process.env.NODE_ENV !== 'production') {
-    origins.push('http://localhost:5173', 'http://localhost:3000');
+  // Vercel system variables (hostnames without protocol).
+  for (const host of [process.env.VERCEL_URL, process.env.VERCEL_BRANCH_URL, process.env.VERCEL_PROJECT_PRODUCTION_URL]) {
+    if (host) origins.push(`https://${host}`);
   }
-
   return [...new Set(origins)];
 };
 
 const allowedOrigins = buildAllowedOrigins();
+const isDev = process.env.NODE_ENV !== 'production';
 
 // Opt-in escape hatch for Vercel preview deployments on separate origins.
 const allowVercelPreviews = process.env.ALLOW_VERCEL_PREVIEWS === 'true';
 
-const corsOptions = {
-  origin: (origin, callback) => {
-    // No Origin header = same-origin navigation, curl, or server-to-server.
-    if (!origin) return callback(null, true);
+const isSameOrigin = (origin, req) => {
+  try {
+    const originHost = new URL(origin).host;
+    const requestHost = (req.headers['x-forwarded-host'] || req.headers.host || '').split(',')[0].trim();
+    return Boolean(requestHost) && originHost === requestHost;
+  } catch {
+    return false;
+  }
+};
 
-    if (allowedOrigins.includes(origin)) return callback(null, true);
+const isAllowedOrigin = (origin, req) => {
+  if (allowedOrigins.includes(origin)) return true;
+  if (isSameOrigin(origin, req)) return true;
+  // Any local dev server, any port (Vite, CRA, previews) — never in production.
+  if (isDev && /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return true;
+  if (allowVercelPreviews && /^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(origin)) return true;
+  return false;
+};
 
-    if (allowVercelPreviews && /^https:\/\/[a-z0-9-]+\.vercel\.app$/.test(origin)) {
-      return callback(null, true);
-    }
-
-    callback(new Error(`CORS: Origin ${origin} not allowed`));
-  },
+const corsBase = {
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   optionsSuccessStatus: 200, // Some legacy browsers choke on 204
 };
 
+// Delegate form so the decision can see the request's own Host header.
+const corsOptionsDelegate = (req, callback) => {
+  const origin = req.header('Origin');
+  // No Origin header = same-origin GET, navigation, curl, or server-to-server.
+  if (!origin || isAllowedOrigin(origin, req)) return callback(null, { ...corsBase, origin: true });
+  callback(new Error(`CORS: Origin ${origin} not allowed`));
+};
+
 // Handle preflight for ALL routes FIRST — must be before any route/middleware
-app.use(cors(corsOptions));
+app.use(cors(corsOptionsDelegate));
 
 // ─── Body parsers (size-capped to avoid memory-exhaustion DoS) ──
 app.use(express.json({ limit: '1mb' }));
@@ -125,7 +145,18 @@ const apiIndex = (_req, res) =>
     },
   });
 
-app.get('/', apiIndex);
+// ─── Built frontend (single-server deployments) ───────────
+// On hosts that run one Node process (Render, Railway, Fly, Docker, a VPS),
+// serve the built SPA from client/dist when it exists, so one service runs the
+// whole app with no CORS setup. On Vercel the SPA is served by the static
+// build instead, and in local dev Vite serves it, so this stays inactive there.
+const CLIENT_DIST = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../client/dist');
+const serveClient = !process.env.VERCEL && fs.existsSync(path.join(CLIENT_DIST, 'index.html'));
+if (serveClient) {
+  app.use(express.static(CLIENT_DIST, { index: false, maxAge: '1h' }));
+} else {
+  app.get('/', apiIndex);
+}
 app.get('/api', apiIndex);
 
 // ─── Rate limiting ────────────────────────────────────────
@@ -200,6 +231,15 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/notifications', notificationRoutes);
 
+// SPA fallback: any non-API GET that wants HTML gets index.html, so deep links
+// and page refreshes (e.g. /tasks) work on single-server deployments.
+if (serveClient) {
+  app.get(/^\/(?!api(\/|$)).*/, (req, res, next) => {
+    if (!req.accepts('html')) return next();
+    res.sendFile(path.join(CLIENT_DIST, 'index.html'));
+  });
+}
+
 // ─── 404 Handler ──────────────────────────────────────────
 app.use((req, res) => {
   res.status(404).json({ success: false, message: `Route ${req.originalUrl} not found` });
@@ -237,21 +277,35 @@ app.use((err, req, res, next) => {
   res.status(statusCode).json({ success: false, message });
 });
 
-// ─── Start server (local dev only) ────────────────────────
-// On Vercel (NODE_ENV === 'production') we export the app as a serverless
-// handler and must NOT call app.listen. The DB connection is established
-// lazily per-request by the middleware above.
+// ─── Start server ─────────────────────────────────────────
+// Vercel imports this module as a serverless handler, so it must NOT listen.
+// Everywhere else (local dev, Render, Railway, Fly, Docker, a VPS) we listen —
+// including NODE_ENV=production. The check is Vercel's own VERCEL variable,
+// not NODE_ENV: gating on NODE_ENV made `NODE_ENV=production npm start` exit
+// immediately on every non-Vercel host.
 const PORT = process.env.PORT || 5001;
-if (process.env.NODE_ENV !== 'production') {
-  // Eagerly connect in local dev for faster first request + clear startup logs.
-  // Never crash the dev server if the DB is unreachable — just log it.
+if (!process.env.VERCEL) {
+  // Eager connect for a fast first request + clear startup logs.
+  // Never crash if the DB is unreachable: requests return 503 until it is up.
   connectDB().catch((err) => {
     console.error(`[DB] Initial connection failed: ${err.message}`);
   });
 
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  const server = app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT} (${process.env.NODE_ENV || 'development'})`);
   });
+
+  // Graceful shutdown: container platforms send SIGTERM on every redeploy.
+  const shutdown = (signal) => {
+    console.log(`[server] ${signal} received, shutting down…`);
+    server.close(async () => {
+      try { await mongoose.connection.close(); } catch { /* already closed */ }
+      process.exit(0);
+    });
+    setTimeout(() => process.exit(1), 10_000).unref();
+  };
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
 }
 
 export default app;

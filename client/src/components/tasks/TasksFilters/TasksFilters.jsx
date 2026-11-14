@@ -1,4 +1,4 @@
-import { X } from 'lucide-react'
+import { X, ChevronDown } from 'lucide-react'
 import { STATUSES, STATUS_LABEL, CATEGORIES } from '../../../data/mockTasksFull'
 import './TasksFilters.css'
 
@@ -8,75 +8,54 @@ const PRIORITIES = [
   { id: 'low',    label: 'Low' },
 ]
 
+const SORTS = [
+  { id: 'dueDate',  label: 'Due date' },
+  { id: 'priority', label: 'Priority' },
+  { id: 'title',    label: 'Title' },
+  { id: 'created',  label: 'Recently added' },
+]
+
+/**
+ * Toolbar at the top of the task panel: status as underline tabs (with
+ * counts), and priority / category / sort as compact dropdowns.
+ */
 export default function TasksFilters({
   filterStatus, setFilterStatus,
   filterPriority, setFilterPriority,
   filterCategory, setFilterCategory,
   sortBy, setSortBy,
   hasActive, onClear,
+  statusCounts = {},
 }) {
+  const tabs = [{ id: 'all', label: 'All' }, ...STATUSES.map(s => ({ id: s, label: STATUS_LABEL[s] }))]
+
   return (
     <div className="tf">
-      <FilterGroup label="Status">
-        <Chip active={filterStatus === 'all'} onClick={() => setFilterStatus('all')}>All</Chip>
-        {STATUSES.map(s => (
-          <Chip
-            key={s}
-            active={filterStatus === s}
-            onClick={() => setFilterStatus(s)}
+      <div className="tf__tabs" role="tablist" aria-label="Filter by status">
+        {tabs.map(t => (
+          <button
+            key={t.id}
+            role="tab"
+            aria-selected={filterStatus === t.id}
+            className={`tf__tab${filterStatus === t.id ? ' tf__tab--active' : ''}`}
+            onClick={() => setFilterStatus(t.id)}
           >
-            {STATUS_LABEL[s]}
-          </Chip>
+            {t.label}
+            <span className="tf__count">{statusCounts[t.id] ?? 0}</span>
+          </button>
         ))}
-      </FilterGroup>
+      </div>
 
-      <div className="tf__divider" />
-
-      <FilterGroup label="Priority">
-        <Chip active={filterPriority === 'all'} onClick={() => setFilterPriority('all')}>All</Chip>
-        {PRIORITIES.map(p => (
-          <Chip
-            key={p.id}
-            active={filterPriority === p.id}
-            onClick={() => setFilterPriority(p.id)}
-            tone={p.id}
-          >
-            {p.label}
-          </Chip>
-        ))}
-      </FilterGroup>
-
-      <div className="tf__divider" />
-
-      <FilterGroup label="Category">
-        <Chip active={filterCategory === 'all'} onClick={() => setFilterCategory('all')}>All</Chip>
-        {CATEGORIES.map(c => (
-          <Chip
-            key={c.id}
-            active={filterCategory === c.id}
-            onClick={() => setFilterCategory(c.id)}
-          >
-            {c.label}
-          </Chip>
-        ))}
-      </FilterGroup>
-
-      <div className="tf__right">
-        <label className="tf__sort-label">Sort by</label>
-        <select
-          className="tf__sort"
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-        >
-          <option value="dueDate">Due Date</option>
-          <option value="priority">Priority</option>
-          <option value="title">Title</option>
-          <option value="created">Recently Added</option>
-        </select>
+      <div className="tf__tools">
+        <Select label="Priority" value={filterPriority} onChange={setFilterPriority}
+          options={[{ id: 'all', label: 'All' }, ...PRIORITIES]} />
+        <Select label="Category" value={filterCategory} onChange={setFilterCategory}
+          options={[{ id: 'all', label: 'All' }, ...CATEGORIES]} />
+        <Select label="Sort" value={sortBy} onChange={setSortBy} options={SORTS} />
 
         {hasActive && (
           <button className="tf__clear" onClick={onClear}>
-            <X size={12} /> Clear filters
+            <X size={12} /> Clear
           </button>
         )}
       </div>
@@ -84,22 +63,15 @@ export default function TasksFilters({
   )
 }
 
-function FilterGroup({ label, children }) {
+function Select({ label, value, onChange, options }) {
+  const active = value !== 'all' && label !== 'Sort'
   return (
-    <div className="tf__group">
-      <span className="tf__label">{label}</span>
-      <div className="tf__chips">{children}</div>
-    </div>
-  )
-}
-
-function Chip({ active, onClick, children, tone }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`tf__chip${active ? ` tf__chip--active tf__chip--${tone || 'default'}` : ''}`}
-    >
-      {children}
-    </button>
+    <label className={`tf__select${active ? ' tf__select--active' : ''}`}>
+      <span className="tf__select-label">{label}</span>
+      <select value={value} onChange={(e) => onChange(e.target.value)} aria-label={label}>
+        {options.map(o => <option key={o.id} value={o.id}>{o.label}</option>)}
+      </select>
+      <ChevronDown size={12} className="tf__select-caret" />
+    </label>
   )
 }

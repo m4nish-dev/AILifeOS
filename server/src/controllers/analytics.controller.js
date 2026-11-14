@@ -1,18 +1,11 @@
 import Task from '../models/Task.model.js';
 import StudySession from '../models/StudySession.model.js';
 import Goal from '../models/Goal.model.js';
-import { getStartOfDay, percentChange, streakFromDates } from '../utils/analytics.utils.js';
+import {
+  percentChange, streakFromDates, readTzOffset, localDayKey, recentDayKeys, localMidnightUtc, weekdayLabel,
+  localWeekday, localHour,
+} from '../utils/analytics.utils.js';
 
-// Helper to get dates
-const getDates = (daysBack) => {
-  const dates = [];
-  for (let i = daysBack - 1; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    dates.push(d.toISOString().slice(0, 10));
-  }
-  return dates;
-};
 
 export const getOverviewStats = async (req, res) => {
   try {
@@ -70,12 +63,13 @@ export const getOverviewStats = async (req, res) => {
     const allSessions = await StudySession.find({ userId, completed: true }).select('startedAt');
     const allTaskDone = await Task.find({ userId, status: 'done' }).select('completedAt');
     
+    const tz = readTzOffset(req);
     const allDates = [
-      ...allSessions.map(s => s.startedAt.toISOString().slice(0, 10)),
-      ...allTaskDone.filter(t => t.completedAt).map(t => t.completedAt.toISOString().slice(0, 10))
+      ...allSessions.map(s => localDayKey(s.startedAt, tz)),
+      ...allTaskDone.filter(t => t.completedAt).map(t => localDayKey(t.completedAt, tz))
     ];
-    
-    const streakDays = streakFromDates(allDates);
+
+    const streakDays = streakFromDates(allDates, tz);
 
     res.status(200).json({
       success: true,
@@ -96,9 +90,11 @@ export const getOverviewStats = async (req, res) => {
 export const getWeeklyProductivity = async (req, res) => {
   try {
     const userId = req.user._id;
-    const dates = getDates(7);
-    
-    const startDate = getStartOfDay(new Date(dates[0]));
+    // Rolling 7 days on the USER's calendar (was UTC: work done after midnight
+    // local time but before UTC midnight landed on the previous day).
+    const tz = readTzOffset(req);
+    const dates = recentDayKeys(7, tz);
+    const startDate = localMidnightUtc(dates[0], tz);
     
     const tasks = await Task.find({
       userId,
@@ -113,11 +109,9 @@ export const getWeeklyProductivity = async (req, res) => {
     });
 
     const data = dates.map(dateStr => {
-      const dayDate = new Date(dateStr);
-      const dayStr = dayDate.toLocaleDateString('en-US', { weekday: 'short' });
-      
-      const dayTasks = tasks.filter(t => t.completedAt && t.completedAt.toISOString().slice(0, 10) === dateStr).length;
-      const daySessions = sessions.filter(s => s.startedAt.toISOString().slice(0, 10) === dateStr);
+      const dayStr = weekdayLabel(dateStr);
+      const dayTasks = tasks.filter(t => t.completedAt && localDayKey(t.completedAt, tz) === dateStr).length;
+      const daySessions = sessions.filter(s => localDayKey(s.startedAt, tz) === dateStr);
       const focusHrs = daySessions.reduce((acc, s) => acc + s.duration, 0) / 3600;
       
       return {
@@ -133,7 +127,15 @@ export const getWeeklyProductivity = async (req, res) => {
   }
 };
 
-const colors = ['#F5A524', '#0E8C5A', '#006FEE', '#F31260', '#7A4E2D', '#9353D3'];
+// Category donut colours, from the app palette (#AB562F burnt orange,
+// #1B1612 dark, #C1B0A6 taupe). Orange and dark are the only pair that stays
+// distinguishable for colour-blind readers, so the donut shows the top two
+// categories in those and folds everything else into a taupe "Other" slice.
+// Legend labels carry the names, so identity never relies on colour alone.
+const SERIES_COLORS = ['#AB562F', '#1B1612'];
+const OTHER_COLOR = '#C1B0A6';
+// Goal progress bars are a single series: one colour.
+const PROGRESS_COLOR = '#AB562F';
 
 export const getCategoryBreakdown = async (req, res) => {
   try {
@@ -167,11 +169,16 @@ export const getCategoryBreakdown = async (req, res) => {
       return res.status(200).json({ success: true, data: [] });
     }
 
-    const data = Object.keys(catMap).map((name, i) => ({
-      name: name.charAt(0).toUpperCase() + name.slice(1),
-      value: Math.round((catMap[name] / totalMinutes) * 100),
-      color: colors[i % colors.length]
-    })).sort((a,b) => b.value - a.value); // Sort by highest
+    const label = (name) => name.charAt(0).toUpperCase() + name.slice(1);
+    const pct = (mins) => Math.round((mins / totalMinutes) * 100);
+    const ranked = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
+    const data = ranked.slice(0, SERIES_COLORS.length).map(([name, mins], i) => ({
+      name: label(name),
+      value: pct(mins),
+      color: SERIES_COLORS[i],
+    }));
+    const otherMins = ranked.slice(SERIES_COLORS.length).reduce((sum, [, mins]) => sum + mins, 0);
+    if (otherMins > 0) data.push({ name: 'Other', value: pct(otherMins), color: OTHER_COLOR });
 
     res.status(200).json({ success: true, data });
   } catch (error) {
@@ -183,7 +190,7 @@ export const getGoalsProgress = async (req, res) => {
   try {
     const activeGoals = await Goal.find({ userId: req.user._id, status: 'active' });
     
-    const data = activeGoals.map((g, i) => {
+    const data = activeGoals.map((g) => {
       const total = g.milestones.length;
       const done = g.milestones.filter(m => m.done).length;
       const progress = total > 0 ? Math.round((done / total) * 100) : 0;
@@ -191,7 +198,7 @@ export const getGoalsProgress = async (req, res) => {
         name: g.title,
         progress,
         target: 100,
-        color: colors[i % colors.length]
+        color: PROGRESS_COLOR
       };
     });
 
@@ -205,8 +212,9 @@ export const getActivityHeatmap = async (req, res) => {
   try {
     const days = parseInt(req.query.days) || 84;
     const userId = req.user._id;
-    const dates = getDates(days);
-    const startDate = new Date(dates[0]);
+    const tz = readTzOffset(req);
+    const dates = recentDayKeys(days, tz);
+    const startDate = localMidnightUtc(dates[0], tz);
 
     const tasks = await Task.find({ userId, status: 'done', completedAt: { $gte: startDate } }).select('completedAt');
     const sessions = await StudySession.find({ userId, completed: true, startedAt: { $gte: startDate } }).select('startedAt');
@@ -216,13 +224,13 @@ export const getActivityHeatmap = async (req, res) => {
 
     tasks.forEach(t => {
       if (t.completedAt) {
-        const dStr = t.completedAt.toISOString().slice(0,10);
+        const dStr = localDayKey(t.completedAt, tz);
         if (activityMap[dStr] !== undefined) activityMap[dStr]++;
       }
     });
 
     sessions.forEach(s => {
-      const dStr = s.startedAt.toISOString().slice(0,10);
+      const dStr = localDayKey(s.startedAt, tz);
       if (activityMap[dStr] !== undefined) activityMap[dStr]++;
     });
 
@@ -262,8 +270,9 @@ export const getAIInsights = async (req, res) => {
 
     // Most productive day of week
     const dayCounts = { 0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0 }; // Sun - Sat
-    tasks.forEach(t => dayCounts[t.completedAt.getDay()]++);
-    sessions.forEach(s => dayCounts[s.startedAt.getDay()]++);
+    const tz = readTzOffset(req);
+    tasks.forEach(t => dayCounts[localWeekday(t.completedAt, tz)]++);
+    sessions.forEach(s => dayCounts[localWeekday(s.startedAt, tz)]++);
     
     const totalActivity = tasks.length + sessions.length;
 
@@ -292,7 +301,7 @@ export const getAIInsights = async (req, res) => {
       // Best focus window (most common hour)
       const hourCounts = {};
       sessions.forEach(s => {
-        const h = s.startedAt.getHours();
+        const h = localHour(tz, s.startedAt);
         hourCounts[h] = (hourCounts[h] || 0) + 1;
       });
       

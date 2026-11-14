@@ -1,41 +1,52 @@
 import { Plus, Sparkles, Search } from 'lucide-react'
+import PageHeader from '../../common/PageHeader/PageHeader'
 import './GoalsHeader.css'
 
-export default function GoalsHeader({ search, onSearch, onCreate, onAIGenerate, count, filter, onFilterChange }) {
-  return (
-    <div className="gh">
-      <div className="gh__top">
-        <div>
-          <h1 className="gh__title">Goals</h1>
-          <p className="gh__sub">{count} active goals · Turn intentions into outcomes.</p>
-        </div>
-        <div className="gh__actions">
-          <div className="gh__search">
-            <Search size={15} />
-            <input placeholder="Search goals…" value={search} onChange={(e) => onSearch(e.target.value)} />
-          </div>
-          <button className="gh__ai" onClick={onAIGenerate}>
-            <Sparkles size={14} strokeWidth={2.4} />
-            <span>AI Roadmap</span>
-          </button>
-          <button className="gh__create" onClick={onCreate}>
-            <Plus size={15} strokeWidth={2.5} />
-            <span>New Goal</span>
-          </button>
-        </div>
-      </div>
+const FILTERS = [
+  { id: 'all',       label: 'All' },
+  { id: 'active',    label: 'Active' },
+  { id: 'on-track',  label: 'On track' },
+  { id: 'at-risk',   label: 'At risk' },
+  { id: 'completed', label: 'Completed' },
+]
 
-      <div className="gh__tabs">
-        {['all', 'active', 'on-track', 'at-risk', 'completed'].map((f) => (
-          <button
-            key={f}
-            className={`gh__tab${filter === f ? ' gh__tab--active' : ''}`}
-            onClick={() => onFilterChange(f)}
-          >
-            {f === 'all' ? 'All Goals' : f.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ')}
-          </button>
-        ))}
+export default function GoalsHeader({ search, onSearch, onCreate, onAIGenerate, count, filter, onFilterChange, counts = {}, summary }) {
+  return (
+    <>
+      <PageHeader
+        title="Goals"
+        subtitle={summary || `${count} goal${count !== 1 ? 's' : ''}`}
+      >
+        <label className="ui-search">
+          <Search size={14} />
+          <input placeholder="Search goals…" value={search} onChange={(e) => onSearch(e.target.value)} aria-label="Search goals" />
+        </label>
+        <button className="ui-btn ui-btn--dark" onClick={onAIGenerate}>
+          <Sparkles size={14} />
+          AI Roadmap
+        </button>
+        <button className="ui-btn ui-btn--primary" onClick={onCreate}>
+          <Plus size={14} strokeWidth={2.4} />
+          New Goal
+        </button>
+      </PageHeader>
+
+      <div className="gh__bar">
+        <div className="ui-tabs" role="tablist" aria-label="Filter goals">
+          {FILTERS.map((f) => (
+            <button
+              key={f.id}
+              role="tab"
+              aria-selected={filter === f.id}
+              className={`ui-tab${filter === f.id ? ' ui-tab--active' : ''}`}
+              onClick={() => onFilterChange(f.id)}
+            >
+              {f.label}
+              <span className="ui-count">{counts[f.id] ?? 0}</span>
+            </button>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   )
 }

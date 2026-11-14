@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Plus, X, Search, MoreVertical, FolderPlus, Pin, FileText, Folder } from 'lucide-react'
-import EmptyState from '../../common/EmptyState/EmptyState'
 import './NotesSidebar.css'
 
 export default function NotesSidebar({
@@ -23,12 +22,12 @@ export default function NotesSidebar({
   return (
     <aside className="ns">
       <div className="ns__head">
-        <div className="ns__search">
+        <label className="ui-search ns__search">
           <Search size={14} />
-          <input placeholder="Search notes…" value={search} onChange={(e) => setSearch(e.target.value)} />
-        </div>
-        <button className="ns__new" onClick={onNewNote}>
-          <Plus size={14} strokeWidth={2.5} /> New Note
+          <input placeholder="Search notes…" value={search} onChange={(e) => setSearch(e.target.value)} aria-label="Search notes" />
+        </label>
+        <button className="ui-btn ui-btn--primary" onClick={onNewNote}>
+          <Plus size={14} strokeWidth={2.4} /> New Note
         </button>
       </div>
 
@@ -42,9 +41,7 @@ export default function NotesSidebar({
             className={`ns__folder${!selectedFolder ? ' ns__folder--active' : ''}`}
             onClick={() => onSelectFolder(null)}
           >
-            <span className="ns__folder-icon">
-              <Folder size={16} />
-            </span>
+            <Folder size={15} strokeWidth={1.8} className="ns__folder-icon" />
             <span>All Notes</span>
             <span className="ns__folder-count">{notes.length}</span>
           </button>
@@ -56,9 +53,7 @@ export default function NotesSidebar({
                 className={`ns__folder${selectedFolder === folder.id ? ' ns__folder--active' : ''}`}
                 onClick={() => onSelectFolder(folder.id)}
               >
-                <span className="ns__folder-icon">
-                  {typeof folder.icon === 'string' && folder.icon.includes('size=') ? folder.icon : (folder.icon || <Folder size={16} />)}
-                </span>
+                <Folder size={15} strokeWidth={1.8} className="ns__folder-icon" />
                 <span>{folder.name}</span>
                 <span className="ns__folder-count">{count}</span>
               </button>
@@ -93,12 +88,9 @@ export default function NotesSidebar({
             </div>
           )}
           {filteredNotes.length === 0 && (
-            <div style={{ padding: '0 16px' }}>
-              <EmptyState 
-                icon={FileText} 
-                title="No notes here" 
-                description="Create a new note to get started." 
-              />
+            <div className="ns__empty">
+              <FileText size={18} strokeWidth={1.6} />
+              <span>{search ? 'No notes match your search.' : 'No notes here yet.'}</span>
             </div>
           )}
         </div>

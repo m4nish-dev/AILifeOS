@@ -35,10 +35,7 @@
   border-radius: 4px;
 }
 
-.toast__close:hover {
-  background: var(--surface-200);
-  color: var(--text-secondary);
-}
+.toast__close:hover { background: var(--surface-200); color: var(--text-secondary); }
 
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(20px); }

@@ -32,6 +32,7 @@ const goalSchema = new mongoose.Schema(
       enum: ['active', 'paused', 'completed', 'on-track'],
       default: 'active'
     },
+    startDate: { type: Date },
     dueDate: { type: Date },
     color: {
       type: String,

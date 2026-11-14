@@ -1,15 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import TasksHeader from '../../components/tasks/TasksHeader/TasksHeader'
-import TaskStats from '../../components/tasks/TaskStats/TaskStats'
 import TasksFilters from '../../components/tasks/TasksFilters/TasksFilters'
 import TasksListView from '../../components/tasks/TasksListView/TasksListView'
 import TasksKanbanView from '../../components/tasks/TasksKanbanView/TasksKanbanView'
 import TaskModal from '../../components/tasks/TaskModal/TaskModal'
-import EmptyState from '../../components/common/EmptyState/EmptyState'
+import EmptyState from '../../components/tasks/EmptyState/EmptyState'
 import Skeleton from '../../components/common/Skeleton/Skeleton'
 import { taskService } from '../../services/taskService'
 import { useToast } from '../../context/ToastContext'
-import { CheckSquare, AlertTriangle, Sparkles } from 'lucide-react'
+import { AlertTriangle } from 'lucide-react'
+import { daysUntil } from '../../utils/taskDate'
 import './Tasks.css'
 
 const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 }
@@ -57,6 +57,28 @@ export default function Tasks() {
     search !== '' || filterStatus !== 'all' ||
     filterPriority !== 'all' || filterCategory !== 'all'
 
+  // Everything except the status filter; feeds both the list and the
+  // per-status counts on the toolbar tabs.
+  const matchesOtherFilters = useCallback((t) => {
+    if (search.trim()) {
+      const q = search.toLowerCase()
+      const hit = t.title.toLowerCase().includes(q) ||
+        t.description?.toLowerCase().includes(q) ||
+        t.tags?.some(tag => tag.toLowerCase().includes(q))
+      if (!hit) return false
+    }
+    if (filterPriority !== 'all' && t.priority !== filterPriority) return false
+    if (filterCategory !== 'all' && t.category !== filterCategory) return false
+    return true
+  }, [search, filterPriority, filterCategory])
+
+  const statusCounts = useMemo(() => {
+    const base = tasks.filter(matchesOtherFilters)
+    const counts = { all: base.length }
+    for (const t of base) counts[t.status] = (counts[t.status] || 0) + 1
+    return counts
+  }, [tasks, matchesOtherFilters])
+
   const filtered = useMemo(() => {
     let list = tasks
     if (search.trim()) {
@@ -77,7 +99,13 @@ export default function Tasks() {
         case 'title':    return a.title.localeCompare(b.title)
         case 'created':  return new Date(b.createdAt) - new Date(a.createdAt)
         case 'dueDate':
-        default:         return new Date(a.dueDate || 0) - new Date(b.dueDate || 0)
+        default: {
+          // Undated tasks go last, not first.
+          if (!a.dueDate && !b.dueDate) return 0
+          if (!a.dueDate) return 1
+          if (!b.dueDate) return -1
+          return new Date(a.dueDate) - new Date(b.dueDate)
+        }
       }
     })
     return list
@@ -151,6 +179,18 @@ export default function Tasks() {
     setSearch(''); setFilterStatus('all'); setFilterPriority('all'); setFilterCategory('all')
   }
 
+  // One plain sentence instead of a row of KPI cards.
+  const doneCount = tasks.filter(t => t.status === 'done').length
+  const overdueCount = tasks.filter(t => t.status !== 'done' && daysUntil(t.dueDate) < 0).length
+  const taskSummary = (
+    <>
+      {tasks.length} task{tasks.length !== 1 ? 's' : ''} · {doneCount} completed ·{' '}
+      {overdueCount
+        ? <span className="tasks__alert">{overdueCount} overdue</span>
+        : 'nothing overdue'}
+    </>
+  )
+
   // ── Loading / error states ────────────────────────────────
   if (apiLoading) {
     return (
@@ -189,10 +229,10 @@ export default function Tasks() {
         onSearchChange={setSearch}
         onCreate={() => openCreate()}
         totalCount={tasks.length}
+        summary={taskSummary}
       />
 
-      <TaskStats tasks={tasks} />
-
+      <section className="tasks__panel">
       <TasksFilters
         filterStatus={filterStatus}     setFilterStatus={setFilterStatus}
         filterPriority={filterPriority} setFilterPriority={setFilterPriority}
@@ -200,15 +240,14 @@ export default function Tasks() {
         sortBy={sortBy} setSortBy={setSortBy}
         hasActive={hasActiveFilters}
         onClear={clearFilters}
+        statusCounts={statusCounts}
       />
 
       {filtered.length === 0 ? (
         <EmptyState
-          icon={CheckSquare}
-          title={hasActiveFilters ? 'No tasks found' : <>Your task list is clear! <Sparkles size={16} style={{ display: 'inline', marginLeft: 4, verticalAlign: 'text-bottom' }} /></>}
-          description={hasActiveFilters ? 'Try adjusting your filters to see more tasks.' : 'Enjoy the peace or start adding new to-dos.'}
-          actionLabel={hasActiveFilters ? 'Clear Filters' : 'Create Task'}
-          onAction={hasActiveFilters ? clearFilters : () => openCreate()}
+          hasFilters={hasActiveFilters}
+          onClear={clearFilters}
+          onCreate={() => openCreate()}
         />
       ) : view === 'list' ? (
         <TasksListView
@@ -225,6 +264,7 @@ export default function Tasks() {
           onCreate={openCreate}
         />
       )}
+      </section>
 
       <TaskModal
         open={modalOpen}

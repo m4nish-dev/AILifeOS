@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import MiniOrb from '../Landing/components/MiniOrb';
 import './AuthV2.css';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+import { API_BASE_URL as API } from '../../services/api';
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -67,7 +67,7 @@ export default function SignUp() {
   };
 
   const strength = getStrength(form.password);
-  const strengthColor = strength === 0 ? '#E23B3B' : strength === 1 ? '#F5A524' : strength === 2 ? '#F5A524' : '#0E8C5A';
+  const strengthColor = strength === 0 ? '#E23B3B' : strength === 1 ? '#F5A524' : strength === 2 ? '#F5A524' : '#AB562F';
 
   return (
     <div className="auth-split">

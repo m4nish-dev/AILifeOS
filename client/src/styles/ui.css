@@ -1,0 +1,189 @@
+/* ============================================================
+   UI primitives — the warm editorial system, shared by every page.
+   One control height (30px), 4px corners on controls, 6px on panels,
+   1px beige hairlines, no shadows. Pages compose these instead of
+   restyling buttons, tabs and inputs one by one.
+   ============================================================ */
+
+/* ─── Buttons ──────────────────────────────────────────────── */
+.ui-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ui-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.ui-btn svg { flex-shrink: 0; }
+.ui-btn--primary { background: var(--orange-base); border-color: var(--orange-base); color: #FFFFFF; }
+.ui-btn--primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+.ui-btn--dark { background: var(--dark); border-color: var(--dark); color: #FFFFFF; }
+.ui-btn--dark:hover:not(:disabled) { background: #2A221D; }
+.ui-btn--secondary { background: var(--bg-surface); border-color: var(--border-default); color: var(--ink); }
+.ui-btn--secondary:hover:not(:disabled) { border-color: var(--border-strong); }
+.ui-btn--ghost { background: transparent; color: var(--text-secondary); }
+.ui-btn--ghost:hover:not(:disabled) { background: var(--bg-hover); color: var(--ink); }
+.ui-btn--danger { background: var(--bg-surface); border-color: var(--border-default); color: var(--red-600); }
+.ui-btn--danger:hover:not(:disabled) { border-color: var(--red-600); background: var(--red-50); }
+.ui-btn--lg { height: 36px; padding: 0 16px; font-size: 13.5px; }
+.ui-btn--icon { width: 30px; padding: 0; }
+
+/* ─── Search field ─────────────────────────────────────────── */
+.ui-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 30px;
+  padding: 0 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  color: var(--text-tertiary);
+  cursor: text;
+}
+.ui-search:focus-within { border-color: var(--orange-base); }
+.ui-search input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+  color: var(--ink);
+}
+.ui-search input::placeholder { color: var(--text-tertiary); }
+
+/* ─── Underline tabs (with optional count) ─────────────────── */
+.ui-tabs {
+  display: flex;
+  gap: 20px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.ui-tabs::-webkit-scrollbar { display: none; }
+.ui-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.ui-tab:hover { color: var(--ink); }
+.ui-tab--active { color: var(--ink); }
+.ui-tab--active::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 2px;
+  background: var(--orange-base);
+}
+.ui-tab svg { width: 14px; height: 14px; }
+
+/* ─── Count tag ────────────────────────────────────────────── */
+.ui-count {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 3px;
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.ui-tab--active .ui-count { background: var(--dark); color: #FFFFFF; }
+
+/* ─── Segmented control ────────────────────────────────────── */
+.ui-seg {
+  display: inline-flex;
+  height: 30px;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  background: var(--bg-surface);
+  overflow: hidden;
+}
+.ui-seg__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.ui-seg__btn + .ui-seg__btn { border-left: 1px solid var(--border-default); }
+.ui-seg__btn:hover { background: var(--bg-hover); }
+.ui-seg__btn--active,
+.ui-seg__btn--active:hover { background: var(--dark); color: #FFFFFF; }
+
+/* ─── Panel ────────────────────────────────────────────────── */
+.ui-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+}
+.ui-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 52px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.ui-panel__title {
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+/* ─── Small uppercase label ────────────────────────────────── */
+.ui-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* ─── Status / identity mark: a small square ───────────────── */
+.ui-mark { display: inline-block; width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; background: var(--taupe); }
+.ui-mark--orange { background: var(--orange-base); }
+.ui-mark--dark { background: var(--dark); }
+.ui-mark--brown { background: var(--blue-500); }
+.ui-mark--red { background: var(--red-600); }
+
+/* ─── Form field: label above a 36px input ─────────────────── */
+.ui-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.ui-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  font-size: 13.5px;
+  color: var(--ink);
+  outline: none;
+}
+.ui-input::placeholder { color: var(--text-tertiary); }
+.ui-input:focus { border-color: var(--orange-base); }
+.ui-input:disabled { background: var(--bg-surface-alt); color: var(--text-tertiary); }
+.ui-seg__btn svg { flex-shrink: 0; }

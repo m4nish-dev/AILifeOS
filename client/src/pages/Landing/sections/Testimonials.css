@@ -18,7 +18,7 @@
   position: relative;
   background: var(--bg-surface);
   border: 1px solid rgba(255,255,255,0.05);
-  border-radius: 20px;
+  border-radius: 10px;
   padding: 32px;
   transition: all var(--t-base);
   z-index: 1;
@@ -28,22 +28,17 @@
   content: '';
   position: absolute;
   top: 0; left: 0; width: 100%; height: 100%;
-  background: radial-gradient(circle at top left, rgba(22, 164, 107, 0.1), transparent 60%);
+  background: transparent;
   opacity: 0;
   transition: opacity var(--t-base);
-  border-radius: 20px;
+  border-radius: 10px;
   pointer-events: none;
   z-index: -1;
 }
 
-.testimonial-card:hover {
-  transform: translateY(-8px);
-  border-color: rgba(22, 164, 107, 0.2);
-}
 
-.testimonial-card:hover::before {
-  opacity: 1;
-}
+
+
 
 .t-quote {
   font-size: 17px;
@@ -70,7 +65,7 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--green-500), var(--blue-500));
+  background: var(--green-500);
   display: grid;
   place-items: center;
   font-family: var(--font-display);

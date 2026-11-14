@@ -1,62 +1,141 @@
+/* ============================================================
+   AI LifeOS — single theme, warm solid design
+   ------------------------------------------------------------
+   Palette
+     #1B1612  dark        sidebar and dark surfaces
+     #FAF3ED  warm ivory  main background
+     #AB562F  burnt orange primary buttons and accents
+     #E7DED6  soft beige  card borders
+     #C1B0A6  muted taupe dividers and secondary UI
+     #191411  ink         headings and body text
+   Red is kept for destructive actions and errors only.
+   Flat fills only — no gradients, glows, blur or animation.
+   Every other value below is a tint or shade of the palette.
+   ============================================================ */
 :root {
-  /* ============ LIGHT THEME (default) ============ */
-  --bg-app: #F5F6F8;
-  --bg-surface: #FFFFFF;
-  --bg-surface-alt: #FAFBFC;
-  --bg-hover: #F0F2F5;
-  --bg-active: #E8ECF1;
+  /* ---- Palette ---- */
+  --dark: #1B1612;
+  --ivory: #FAF3ED;
+  --orange-base: #AB562F;
+  --beige: #E7DED6;
+  --taupe: #C1B0A6;
+  --ink: #191411;
+  --white: #FFFFFF;
+  /* Old names kept so existing stylesheets resolve onto the new palette */
+  --navy: #1B1612;
+  --teal: #AB562F;
+  --teal-dark: #924822;
+  --aqua: #EFD9CB;
+  --aqua-soft: #F6E9DF;
+  --grey: #F1E8E0;
 
-  --green-50:  #E7F5EE;
-  --green-100: #C9E9D6;
-  --green-200: #94D3AE;
-  --green-500: #16A46B;
-  --green-600: #0E8C5A;
-  --green-700: #0A6E47;
-  --green-800: #075436;
+  /* ---- Surfaces ---- */
+  --bg-app: #FAF3ED;
+  --bg-sidebar: #1B1612;
+  --bg-chrome: #1B1612;
+  --bg-topbar: #FAF3ED;
+  --bg-surface: #FFFDFB;
+  --bg-surface-alt: #F7EFE8;
+  --bg-elevated: #FFFDFB;
+  --bg-input: #FFFDFB;
+  --bg-hover: #F4EAE2;
+  --bg-active: #EFD9CB;
 
-  --coffee-50:  #F5EFE8;
-  --coffee-100: #E8DAC7;
-  --coffee-200: #D2B492;
-  --coffee-500: #A0714A;
-  --coffee-600: #7A4E2D;
-  --coffee-700: #5E3B21;
-  --coffee-800: #442A17;
+  /* ---- Text ---- */
+  --text-primary: #191411;
+  --text-body: #191411;
+  --text-secondary: #4A3F38;
+  --text-tertiary: #7A6A60;
+  --text-inverse: #FFFFFF;
 
-  --red-50:  #FDECEC;
-  --red-100: #F9CFCF;
-  --red-500: #EF5B5B;
-  --red-600: #E23B3B;
-  --red-700: #B92A2A;
+  /* ---- Borders ---- */
+  --border-subtle: #E7DED6;   /* card borders */
+  --border-default: #DDD0C6;
+  --border-strong: #C1B0A6;   /* dividers, secondary UI */
+  --border-bright: #8F7F74;
 
-  --amber-50:  #FEF3E2;
-  --amber-100: #FCE1B6;
-  --amber-500: #F5A524;
-  --amber-600: #D98A0F;
+  /* ---- Interactive accent (burnt orange) ---- */
+  --accent: #AB562F;
+  --accent-hover: #924822;
+  --accent-ink: #AB562F;          /* 5.4:1 on ivory */
+  --accent-soft: #F6E9DF;
+  --accent-strong: #EFD9CB;
+  --accent-border: #DDB29B;
+  --accent-grad: #AB562F;         /* kept as a token; a flat colour */
+  --on-accent: #FFFFFF;
 
-  --blue-50:  #E8F1FE;
-  --blue-100: #C7DDFC;
-  --blue-500: #3B82F6;
-  --blue-600: #2563EB;
+  /* ---- Emphasis ---- */
+  --orange: #AB562F;
+  --orange-2: #AB562F;
+  --orange-ink: #AB562F;
+  --orange-soft: #F6E9DF;
+  --orange-border: #DDB29B;
+  --orange-grad: #AB562F;
+  --focus-from: #AB562F;
+  --focus-to: #AB562F;
+  --violet: #AB562F;
+  --violet-ink: #AB562F;
+  --violet-soft: #F6E9DF;
+  --violet-border: #DDB29B;
+  --cyan: #AB562F;
+  --cyan-soft: #F6E9DF;
+  --cyan-border: #DDB29B;
 
-  --purple-50: #F3EBFE;
-  --purple-500: #8B5CF6;
-  --purple-600: #7C3AED;
+  /* ---- Retired effects, neutralised ---- */
+  --card-grad: #FFFDFB;
+  --glass-bg: #FFFDFB;
+  --glass-tint: none;
+  --glass-border: #E7DED6;
+  --glass-border-hover: #C1B0A6;
+  --glass-highlight: 0 0 #0000;
+  --glass-shadow: 0 0 #0000;
+  --glass-blur: none;
+  --metal-highlight: 0 0 #0000;
+  --glow-blue: transparent;
+  --glow-violet: transparent;
+  --dot-texture: transparent;
+  --shadow-glow-green: 0 0 #0000;
+  --shadow-glow-coffee: 0 0 #0000;
 
-  --text-primary:   #1A1D1F;
-  --text-secondary: #6F767E;
-  --text-tertiary:  #9AA0A6;
-  --text-inverse:   #FFFFFF;
+  /* ---- Legacy colour ramps, mapped onto the palette ---- */
+  /* brand (was green) -> burnt orange */
+  --green-50: #F6E9DF;  --green-100: #EFD9CB; --green-200: #DDB29B;
+  --green-500: #AB562F; --green-600: #AB562F; --green-700: #924822; --green-800: #6E351C;
+  /* secondary (was coffee) -> dark */
+  --coffee-50: #F1E8E0; --coffee-100: #E7DED6; --coffee-200: #C1B0A6;
+  --coffee-500: #1B1612; --coffee-600: #1B1612; --coffee-700: #1B1612; --coffee-800: #0F0C0A;
+  /* info (was blue) -> burnt orange */
+  --blue-50: #F3E4DB; --blue-100: #E4C6B5; --blue-500: #6E351C; --blue-600: #5A2B16; --blue-700: #46210F;
+  --purple-50: #F1E8E0; --purple-100: #E7DED6; --purple-500: #4A3F38; --purple-600: #1B1612;
+  /* medium (was amber) -> beige / taupe with dark text */
+  --amber-50: #F4EAE2; --amber-100: #E7DED6; --amber-500: #C1B0A6; --amber-600: #5E5048;
+  /* RESERVED: destructive actions and errors only */
+  --red-50: #FBEAEA; --red-100: #F3CACA; --red-500: #D64545; --red-600: #C0392B; --red-700: #962D22;
 
-  --border-subtle: #EEF0F3;
-  --border-default: #E6E8EC;
-  --border-strong: #D1D5DB;
+  --blue-500-rgb: 110, 53, 28;
+  --red-500-rgb: 192, 57, 43;
+  --purple-500-rgb: 74, 63, 56;
 
-  --priority-high:   var(--red-600);
-  --priority-medium: var(--amber-500);
-  --priority-low:    var(--green-600);
+  --priority-high: #C0392B;
+  --priority-medium: #AB562F;
+  --priority-low: #C1B0A6;
 
+  /* Chart series: orange + dark; taupe only for "Other" (always labelled). */
+  --series-1: #AB562F;
+  --series-2: #1B1612;
+  --series-3: #C1B0A6;
+
+  /* Compatibility aliases used across older stylesheets */
+  --surface-100: #FFFDFB;
+  --surface-200: #F7EFE8;
+  --surface-300: #F6E9DF;
+  --border-color: #DDD0C6;
+
+  /* ---- Type, space, shape ---- */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-display: 'Sora', 'Inter', sans-serif;
+  /* Editorial serif for page and card headings */
+  --font-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
   --fs-xs: 12px; --fs-sm: 13px; --fs-base: 14px; --fs-md: 15px;
@@ -67,83 +146,26 @@
   --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 20px;
   --sp-6: 24px; --sp-7: 28px; --sp-8: 32px; --sp-10: 40px; --sp-12: 48px; --sp-16: 64px;
 
-  --r-sm: 6px; --r-md: 10px; --r-lg: 14px; --r-xl: 18px; --r-2xl: 24px; --r-full: 999px;
+  --r-sm: 4px; --r-md: 6px; --r-lg: 8px; --r-xl: 10px; --r-2xl: 12px; --r-full: 999px;
 
-  --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.04);
-  --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16, 24, 40, 0.04);
-  --shadow-md: 0 4px 12px rgba(16, 24, 40, 0.06), 0 2px 4px rgba(16, 24, 40, 0.04);
-  --shadow-lg: 0 12px 32px rgba(16, 24, 40, 0.08), 0 4px 8px rgba(16, 24, 40, 0.04);
-  --shadow-glow-green: 0 8px 24px rgba(14, 140, 90, 0.18);
-  --shadow-glow-coffee: 0 8px 24px rgba(122, 78, 45, 0.18);
+  /* Flat: hairline-level shadows only, for floating layers (menus, modals). */
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: 0 1px 0 rgba(27, 22, 18, 0.06);
+  --shadow-lg: 0 6px 16px rgba(27, 22, 18, 0.14);
+  --shadow-xl: 0 8px 20px rgba(27, 22, 18, 0.16);
+  --shadow-2xl: 0 10px 24px rgba(27, 22, 18, 0.18);
 
-  --sidebar-w: 248px;
+  --sidebar-w: 240px;
   --sidebar-w-collapsed: 76px;
-  --topbar-h: 68px;
+  --topbar-h: 60px;
   --right-panel-w: 320px;
 
-  --t-fast: 120ms ease;
-  --t-base: 200ms ease;
-  --t-slow: 320ms cubic-bezier(0.4, 0, 0.2, 1);
+  /* No motion: timing tokens stay defined (stylesheets reference them),
+     and the global rule in index.css switches transitions off. */
+  --t-fast: 0s;
+  --t-base: 0s;
+  --t-slow: 0s;
 }
 
-[data-theme="dark"] {
-  --bg-app: #0B0D10;
-  --bg-surface: #14171C;
-  --bg-surface-alt: #191D24;
-  --bg-hover: #1F242C;
-  --bg-active: #262C36;
-
-  --green-50: rgba(22, 164, 107, 0.10);
-  --green-100: rgba(22, 164, 107, 0.15);
-  --green-200: rgba(22, 164, 107, 0.25);
-  --green-500: #16A46B;
-  --green-600: #17A46B;
-  --green-700: #22D08D;
-  --green-800: #075436;
-
-  --coffee-50: rgba(160, 113, 74, 0.10);
-  --coffee-100: rgba(160, 113, 74, 0.15);
-  --coffee-200: rgba(160, 113, 74, 0.25);
-  --coffee-500: #A0714A;
-  --coffee-600: #7A4E2D;
-  --coffee-700: #5E3B21;
-  --coffee-800: #442A17;
-
-  --red-50: rgba(239, 91, 91, 0.10);
-  --red-100: rgba(239, 91, 91, 0.15);
-  --red-500: #EF5B5B;
-  --red-600: #E23B3B;
-  --red-700: #B92A2A;
-
-  --amber-50: rgba(245, 165, 36, 0.10);
-  --amber-100: rgba(245, 165, 36, 0.15);
-  --amber-500: #F5A524;
-  --amber-600: #D98A0F;
-
-  --blue-50: rgba(59, 130, 246, 0.10);
-  --blue-100: rgba(59, 130, 246, 0.15);
-  --blue-500: #3B82F6;
-  --blue-600: #2563EB;
-
-  --purple-50: rgba(139, 92, 246, 0.10);
-  --purple-500: #8B5CF6;
-  --purple-600: #7C3AED;
-
-  --text-primary: #F1F3F5;
-  --text-secondary: #A8B0BB;
-  --text-tertiary: #6B7280;
-  --text-inverse: #1A1D1F;
-
-  --border-subtle: #1E232B;
-  --border-default: #2A313B;
-  --border-strong: #3A4250;
-
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.2);
-  --shadow-glow-green: 0 8px 24px rgba(22, 164, 107, 0.18);
-  --shadow-glow-coffee: 0 8px 24px rgba(160, 113, 74, 0.18);
-}
-
-body { transition: background var(--t-base), color var(--t-base); }
+body { background: var(--bg-app); color: var(--text-primary); }

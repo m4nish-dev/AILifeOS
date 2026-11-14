@@ -45,7 +45,7 @@
   transition: all var(--t-fast);
 }
 .af__input-wrap:focus-within {
-  border-color: var(--green-600); box-shadow: 0 0 0 3px rgba(14,140,90,0.12);
+  border-color: var(--green-600); box-shadow: 0 0 0 3px rgba(171, 86, 47,0.12);
 }
 .af__input-wrap input {
   flex: 1; font-size: var(--fs-sm); color: var(--text-primary);
@@ -66,12 +66,12 @@
 .af__submit {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 12px; margin-top: 8px;
-  background: linear-gradient(135deg, var(--green-600), var(--green-500));
+  background: var(--green-600);
   color: #fff; font-size: var(--fs-sm); font-weight: var(--fw-semibold);
   border-radius: var(--r-md); box-shadow: var(--shadow-glow-green);
   transition: transform var(--t-fast);
 }
-.af__submit:hover { transform: translateY(-1px); }
+
 
 .af__alt {
   text-align: center; margin-top: var(--sp-5);

@@ -1,60 +1,48 @@
+/* Tasks — empty state, shown inside the task panel. */
 .es {
-  background: var(--bg-surface);
-  border: 1px dashed var(--border-default);
-  border-radius: var(--r-xl);
-  padding: var(--sp-12) var(--sp-6);
-  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--sp-3);
-  animation: fadeIn var(--t-slow) both;
+  text-align: center;
+  padding: 56px 24px 64px;
 }
 .es__icon {
-  width: 64px;
-  height: 64px;
-  border-radius: var(--r-full);
-  background: var(--green-50);
-  color: var(--green-600);
   display: grid;
   place-items: center;
-  margin-bottom: var(--sp-2);
+  width: 44px;
+  height: 44px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  background: var(--bg-surface-alt);
+  color: var(--orange-base);
 }
+.es__icon svg { width: 20px; height: 20px; }
 .es__title {
-  font-family: var(--font-display);
-  font-size: var(--fs-lg);
-  font-weight: var(--fw-bold);
-  color: var(--text-primary);
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--ink);
 }
 .es__sub {
-  font-size: var(--fs-sm);
+  max-width: 340px;
+  margin-top: 6px;
+  font-size: 13.5px;
+  line-height: 1.5;
   color: var(--text-secondary);
-  max-width: 380px;
 }
-.es__actions {
-  display: flex;
-  gap: var(--sp-2);
-  margin-top: var(--sp-3);
-}
+.es__actions { display: flex; gap: 8px; margin-top: 20px; }
 .es__btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 10px 18px;
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-semibold);
-  border-radius: var(--r-md);
-  transition: all var(--t-fast);
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
 }
-.es__btn--primary {
-  background: linear-gradient(135deg, var(--green-600), var(--green-500));
-  color: #fff;
-  box-shadow: var(--shadow-glow-green);
-}
-.es__btn--primary:hover { transform: translateY(-1px); }
-.es__btn--ghost {
-  color: var(--text-primary);
-  background: var(--bg-surface);
-  border: 1px solid var(--border-default);
-}
-.es__btn--ghost:hover { background: var(--bg-hover); }
+.es__btn--primary { background: var(--orange-base); color: #FFFFFF; }
+.es__btn--primary:hover { background: var(--accent-hover); }
+.es__btn--ghost { border: 1px solid var(--border-default); background: var(--bg-surface); color: var(--ink); }
+.es__btn--ghost:hover { border-color: var(--border-strong); }

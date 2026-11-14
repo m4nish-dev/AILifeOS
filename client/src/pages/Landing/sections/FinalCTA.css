@@ -1,7 +1,7 @@
 .final-cta-section {
   position: relative;
   padding: 120px 32px;
-  background: #0B0D10;
+  background: #1B1612;
   text-align: center;
   overflow: hidden;
   border-top: 1px solid rgba(255,255,255,0.04);
@@ -12,9 +12,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-image: none;
   background-size: 48px 48px;
   pointer-events: none;
 }
@@ -28,7 +26,7 @@
   transform: translateX(-50%);
   width: 800px;
   height: 600px;
-  background: radial-gradient(ellipse, rgba(22,164,107,0.08), transparent 65%);
+  background: transparent;
   pointer-events: none;
 }
 
@@ -41,7 +39,7 @@
 
 .cta-title {
   font-size: clamp(28px, 4.5vw, 52px);
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   color: #F1F3F5;
   line-height: 1.1;
   letter-spacing: -0.03em;
@@ -62,7 +60,7 @@
   gap: 8px;
   height: 54px;
   padding: 0 32px;
-  background: #16A46B;
+  background: #AB562F;
   color: #fff;
   border-radius: 999px;
   font-size: 16px;
@@ -70,14 +68,10 @@
   text-decoration: none;
   margin-bottom: 16px;
   transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
-  box-shadow: 0 8px 24px rgba(22,164,107,0.25);
+  box-shadow: 0 8px 24px rgba(171, 86, 47,0.25);
 }
 
-.cta-btn:hover {
-  background: #13916A;
-  transform: scale(1.02);
-  box-shadow: 0 12px 32px rgba(22,164,107,0.35);
-}
+.cta-btn:hover { background: #AB562F; }
 
 .cta-footnote {
   display: block;

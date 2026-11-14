@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, Bell, Flame, Command, Sun, Moon, Menu, CheckCheck, Trash2 } from 'lucide-react'
-import { useTheme } from '../../../context/ThemeContext'
-import { useAuth } from '../../../context/AuthContext'
+import { Search, Bell, Flame, Command, Menu, CheckCheck, Trash2 } from 'lucide-react'
 import { notificationService } from '../../../services/notificationService'
 import { studyService } from '../../../services/studyService'
+import UserMenu from '../UserMenu/UserMenu'
 import './Topbar.css'
 
 // Compact relative time, e.g. "just now", "4m ago", "3d ago".
@@ -28,8 +27,6 @@ const timeAgo = (date) => {
 }
 
 export default function Topbar({ toggleMobileMenu }) {
-  const { theme, toggleTheme } = useTheme()
-  const { initials } = useAuth()
   const navigate = useNavigate()
 
   const [notifications, setNotifications] = useState([])
@@ -177,15 +174,6 @@ export default function Topbar({ toggleMobileMenu }) {
           </div>
         )}
 
-        <button
-          className="topbar__icon-btn"
-          onClick={toggleTheme}
-          aria-label="Toggle theme"
-          title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-        >
-          {theme === 'light' ? <Moon size={17} /> : <Sun size={17} />}
-        </button>
-
         <div className="topbar__notif-container" ref={notifRef}>
           <button
             className="topbar__icon-btn topbar__icon-btn--notif"
@@ -247,7 +235,7 @@ export default function Topbar({ toggleMobileMenu }) {
           )}
         </div>
 
-        <button className="topbar__avatar">{initials ? initials[0] : '?'}</button>
+        <UserMenu />
       </div>
     </header>
   )

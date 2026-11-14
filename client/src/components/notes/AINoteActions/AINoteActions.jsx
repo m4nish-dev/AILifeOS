@@ -4,15 +4,12 @@ import './AINoteActions.css'
 export default function AINoteActions({ onSummarize, onQuiz }) {
   return (
     <div className="ana">
-      <button className="ana__btn ana__btn--summary" onClick={onSummarize}>
-        <BookOpen size={13} strokeWidth={2.4} />
-        <span>Summarize</span>
-        <span className="ana__ai"><Sparkles size={9} /> AI</span>
+      <span className="ana__label"><Sparkles size={12} /> AI</span>
+      <button className="ui-btn ui-btn--secondary" onClick={onSummarize}>
+        <BookOpen size={13} /> Summarize
       </button>
-      <button className="ana__btn ana__btn--quiz" onClick={onQuiz}>
-        <FileQuestion size={13} strokeWidth={2.4} />
-        <span>Generate Quiz</span>
-        <span className="ana__ai"><Sparkles size={9} /> AI</span>
+      <button className="ui-btn ui-btn--secondary" onClick={onQuiz}>
+        <FileQuestion size={13} /> Generate quiz
       </button>
     </div>
   )

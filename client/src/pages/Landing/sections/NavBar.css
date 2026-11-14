@@ -7,8 +7,8 @@
   z-index: 100;
   height: 64px;
   background: rgba(11, 13, 16, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border-bottom: 1px solid transparent;
   transition: border-color 0.2s, background 0.2s;
 }
@@ -40,11 +40,11 @@
 .logo-icon {
   width: 34px;
   height: 34px;
-  border-radius: 10px;
-  background: rgba(22, 164, 107, 0.15);
+  border-radius: 6px;
+  background: rgba(171, 86, 47, 0.15);
   display: grid;
   place-items: center;
-  color: #16A46B;
+  color: #AB562F;
 }
 
 .logo-text {
@@ -55,7 +55,7 @@
 
 .logo-pro {
   font-size: 10px;
-  background: #16A46B;
+  background: #AB562F;
   color: #fff;
   padding: 2px 5px;
   border-radius: 4px;
@@ -84,10 +84,7 @@
   font-family: inherit;
 }
 
-.landing-nav-links button:hover {
-  color: #F1F3F5;
-  background: rgba(255,255,255,0.05);
-}
+.landing-nav-links button:hover { color: #F1F3F5; background: rgba(255,255,255,0.05); }
 
 .landing-nav-actions {
   display: flex;
@@ -109,7 +106,7 @@
   top: 64px;
   left: 0;
   right: 0;
-  background: #14171C;
+  background: #2A221D;
   border-bottom: 1px solid rgba(255,255,255,0.06);
   padding: 20px 24px;
   display: flex;

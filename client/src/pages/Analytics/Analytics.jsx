@@ -126,7 +126,7 @@ export default function Analytics() {
     { label: 'Tasks Completed', value: stats.tasksCompleted, delta: stats.tasksCompletedDelta, icon: CheckCircle2, color: 'green' },
     { label: 'Focus Hours',     value: stats.focusHours, delta: stats.focusHoursDelta, icon: Clock, color: 'coffee' },
     { label: 'Goals On Track',  value: stats.goalsOnTrack, delta: '', icon: Target, color: 'blue' },
-    { label: 'Streak Days',     value: stats.streakDays, delta: '', icon: Flame, color: 'red' },
+    { label: 'Streak Days',     value: stats.streakDays, delta: '', icon: Flame, color: 'coffee' },
   ]
 
   return (
@@ -171,8 +171,8 @@ export default function Analytics() {
               <p>Tasks completed and focus hours per day</p>
             </div>
             <div className="an-legend">
-              <span className="an-legend__item"><span style={{ background: '#0E8C5A' }}></span> Tasks</span>
-              <span className="an-legend__item"><span style={{ background: '#7A4E2D' }}></span> Focus (hrs)</span>
+              <span className="an-legend__item"><span style={{ background: 'var(--series-1)' }}></span> Tasks</span>
+              <span className="an-legend__item"><span style={{ background: 'var(--series-2)' }}></span> Focus (hrs)</span>
             </div>
           </div>
           <ResponsiveContainer width="100%" height={240}>
@@ -181,8 +181,8 @@ export default function Analytics() {
               <XAxis dataKey="day" tick={{ fill: 'var(--text-tertiary)', fontSize: 12 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: 'var(--text-tertiary)', fontSize: 12 }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ borderRadius: 8, border: '1px solid var(--border-default)', background: 'var(--bg-surface)' }} />
-              <Bar dataKey="tasks" fill="#0E8C5A" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="focus" fill="#7A4E2D" radius={[6, 6, 0, 0]} />
+              <Bar isAnimationActive={false} dataKey="tasks" fill="var(--series-1)" radius={[6, 6, 0, 0]} />
+              <Bar isAnimationActive={false} dataKey="focus" fill="var(--series-2)" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -199,7 +199,7 @@ export default function Analytics() {
             <>
               <ResponsiveContainer width="100%" height={240}>
                 <PieChart>
-                  <Pie data={categoryData} dataKey="value" nameKey="name"
+                  <Pie isAnimationActive={false} data={categoryData} dataKey="value" nameKey="name"
                     cx="50%" cy="50%" innerRadius={55} outerRadius={90} paddingAngle={2}>
                     {categoryData.map((c, i) => <Cell key={i} fill={c.color} />)}
                   </Pie>

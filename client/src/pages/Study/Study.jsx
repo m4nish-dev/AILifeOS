@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Play, Pause, Square, Clock, Flame, Book, Brain, Target, Sparkles, PieChart, Plus, Loader2 } from 'lucide-react'
+import { Play, Pause, Square, Clock, Flame, Book, Brain, Sparkles, PieChart, Plus } from 'lucide-react'
 import { studyService } from '../../services/studyService'
 import { useToast } from '../../context/ToastContext'
 import FlashcardDeck from '../../components/study/FlashcardDeck/FlashcardDeck'
@@ -8,7 +8,14 @@ import MoodPrompt from '../../components/study/MoodPrompt/MoodPrompt'
 import StudyGoalCard from '../../components/study/StudyGoalCard/StudyGoalCard'
 import FocusPatternHeatmap from '../../components/study/FocusPatternHeatmap/FocusPatternHeatmap'
 import CreateDeckModal from '../../components/study/CreateDeckModal/CreateDeckModal'
+import PageHeader from '../../components/common/PageHeader/PageHeader'
+import StatGrid from '../../components/common/StatGrid/StatGrid'
 import './Study.css'
+
+const SESSION_SECONDS = 25 * 60
+const DAILY_TARGET_MIN = 240
+const RING_R = 108
+const RING_C = 2 * Math.PI * RING_R
 
 const TABS = [
   { id: 'focus', label: 'Focus', icon: Clock },
@@ -204,18 +211,29 @@ export default function Study() {
     return `${m}:${s}`
   }
 
+  const todayMin = stats?.totalMinutesToday || 0
+  const streak = stats?.currentStreak || 0
+  const topSubject = stats?.bySubject ? Object.keys(stats.bySubject)[0] : null
+  const ringProgress = Math.min(1, Math.max(0, (SESSION_SECONDS - timeLeft) / SESSION_SECONDS))
+
   return (
     <div className="study-os">
-      <div className="study-os__header">
-        <h1>Study OS</h1>
-        <div className="study-os__tabs">
+      <PageHeader
+        title="Study OS"
+        subtitle={`${todayMin} minute${todayMin !== 1 ? 's' : ''} of focus today.`}
+      />
+
+      <div className="study-os__bar">
+        <div className="ui-tabs" role="tablist" aria-label="Study sections">
           {TABS.map(t => (
-            <button 
-              key={t.id} 
-              className={`study-os__tab ${activeTab === t.id ? 'study-os__tab--active' : ''}`}
+            <button
+              key={t.id}
+              role="tab"
+              aria-selected={activeTab === t.id}
+              className={`ui-tab${activeTab === t.id ? ' ui-tab--active' : ''}`}
               onClick={() => { setActiveTab(t.id); setActiveDeck(null); }}
             >
-              <t.icon size={16} /> {t.label}
+              <t.icon /> {t.label}
             </button>
           ))}
         </div>
@@ -225,82 +243,95 @@ export default function Study() {
         {/* === FOCUS TAB === */}
         {activeTab === 'focus' && (
           <div className="study-os__focus">
-            
-            <div className="study-os__timer-panel">
-              <div className={`study-timer__circle ${isActive ? 'study-timer__circle--active' : ''}`}>
-                <div className="study-timer__time">{formatTime(timeLeft)}</div>
-                <div className="study-timer__mode">Pomodoro</div>
+
+            <section className="ui-panel study-timer">
+              <div className="ui-panel__head">
+                <h2 className="ui-panel__title">Focus session</h2>
+                <span className="study-timer__status">
+                  <span className={`ui-mark${isActive ? ' ui-mark--orange' : ''}`} />
+                  {isActive ? 'In progress' : sessionId ? 'Paused' : 'Ready'}
+                </span>
               </div>
 
-              {showMoodPrompt ? (
-                <MoodPrompt onSelect={submitMoodAndEnd} />
-              ) : (
-                <>
-                  <div className="study-timer__controls">
-                    {!isActive ? (
-                      <button className="study-btn study-btn--primary" onClick={startTimer}>
-                        <Play size={20} fill="currentColor" /> Start Focus
-                      </button>
-                    ) : (
-                      <button className="study-btn study-btn--secondary" onClick={pauseTimer}>
-                        <Pause size={20} fill="currentColor" /> Pause
-                      </button>
-                    )}
-                    <button 
-                      className="study-btn study-btn--stop" 
-                      onClick={() => endTimer(false)}
-                      disabled={!sessionId && !isActive}
-                    >
-                      <Square size={20} fill="currentColor" /> Stop
-                    </button>
+              <div className="study-timer__body">
+                <div className="study-timer__ring">
+                  <svg viewBox="0 0 240 240" aria-hidden="true">
+                    <circle cx="120" cy="120" r={RING_R} className="study-timer__track" />
+                    <circle
+                      cx="120" cy="120" r={RING_R}
+                      className="study-timer__progress"
+                      strokeDasharray={RING_C}
+                      strokeDashoffset={RING_C * (1 - ringProgress)}
+                    />
+                  </svg>
+                  <div className="study-timer__readout">
+                    <div className="study-timer__time">{formatTime(timeLeft)}</div>
+                    <div className="study-timer__mode">Pomodoro · 25 min</div>
                   </div>
+                </div>
 
-                  <div className="study-timer__setup">
-                    <div className="study-field">
-                      <label>Subject</label>
-                      <input 
-                        placeholder="e.g. React, Data Structures..."
-                        value={subject}
-                        onChange={(e) => setSubject(e.target.value)}
-                        disabled={isActive}
-                      />
+                {showMoodPrompt ? (
+                  <MoodPrompt onSelect={submitMoodAndEnd} />
+                ) : (
+                  <>
+                    <div className="study-timer__controls">
+                      {!isActive ? (
+                        <button className="ui-btn ui-btn--primary ui-btn--lg" onClick={startTimer}>
+                          <Play size={14} fill="currentColor" /> {sessionId ? 'Resume' : 'Start focus'}
+                        </button>
+                      ) : (
+                        <button className="ui-btn ui-btn--secondary ui-btn--lg" onClick={pauseTimer}>
+                          <Pause size={14} fill="currentColor" /> Pause
+                        </button>
+                      )}
+                      <button
+                        className="ui-btn ui-btn--secondary ui-btn--lg"
+                        onClick={() => endTimer(false)}
+                        disabled={!sessionId && !isActive}
+                      >
+                        <Square size={12} fill="currentColor" /> Stop
+                      </button>
                     </div>
-                    <div className="study-field">
-                      <label>Session Goal</label>
-                      <input 
-                        placeholder="What do you want to accomplish?"
-                        value={goal}
-                        onChange={(e) => setGoal(e.target.value)}
-                        disabled={isActive}
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
 
-            <div className="study-os__sidebar">
-              <div className="study-stat-card">
-                <div className="study-stat__header">
-                  <Clock size={16} className="text-blue-500" /> Today's Focus
-                </div>
-                <div className="study-stat__big-num">
-                  {stats?.totalMinutesToday || 0} <span>minutes</span>
-                </div>
+                    <div className="study-timer__setup">
+                      <label className="ui-field">
+                        <span className="ui-label">Subject</span>
+                        <input
+                          className="ui-input"
+                          placeholder="e.g. React, Data Structures"
+                          value={subject}
+                          onChange={(e) => setSubject(e.target.value)}
+                          disabled={isActive}
+                        />
+                      </label>
+                      <label className="ui-field">
+                        <span className="ui-label">Session goal</span>
+                        <input
+                          className="ui-input"
+                          placeholder="What do you want to accomplish?"
+                          value={goal}
+                          onChange={(e) => setGoal(e.target.value)}
+                          disabled={isActive}
+                        />
+                      </label>
+                    </div>
+                  </>
+                )}
               </div>
-              <div className="study-stat-card">
-                <div className="study-stat__header">
-                  <Flame size={16} className="text-amber-500" /> Current Streak
-                </div>
-                <div className="study-stat__big-num" style={{ color: 'var(--amber-500)' }}>
-                  {stats?.currentStreak || 0} <span>days</span>
-                </div>
+            </section>
+
+            <aside className="study-os__sidebar">
+              <StatGrid columns={1} items={[
+                { key: 'today', label: "Today's focus", value: todayMin, unit: 'min', icon: Clock,
+                  progress: Math.round((todayMin / DAILY_TARGET_MIN) * 100), sub: `of ${DAILY_TARGET_MIN / 60}h daily target` },
+                { key: 'streak', label: 'Current streak', value: streak, unit: streak === 1 ? 'day' : 'days', icon: Flame,
+                  sub: streak ? 'Keep it going' : 'Start one today' },
+              ]} />
+              <div className="study-note">
+                <Brain size={16} />
+                <p>Suggested focus today: <strong>{topSubject || 'your core subjects'}</strong>, to keep your weekly goals on pace.</p>
               </div>
-              <div className="study-ai-insight">
-                <Brain size={20} className="text-purple-500" />
-                <p>AI suggests focusing on <strong>{stats?.bySubject ? Object.keys(stats.bySubject)[0] || 'your core subjects' : 'your core subjects'}</strong> today to maintain your weekly goal velocity.</p>
-              </div>
-            </div>
+            </aside>
           </div>
         )}
 
@@ -316,16 +347,17 @@ export default function Study() {
             ) : (
               <>
                 <div className="study-os__toolbar">
-                  <h2>Your Decks</h2>
-                  <button className="study-btn study-btn--secondary" onClick={() => setDeckModalOpen(true)}>
-                    <Sparkles size={16} /> Generate with AI
+                  <h2 className="ui-panel__title">Your decks</h2>
+                  <button className="ui-btn ui-btn--dark" onClick={() => setDeckModalOpen(true)}>
+                    <Sparkles size={14} /> Generate with AI
                   </button>
                 </div>
                 {decks.length === 0 ? (
-                  <div className="study-empty">
-                    <Book size={48} />
-                    <p>No flashcard decks yet.</p>
-                    <button className="study-btn study-btn--primary" onClick={() => setDeckModalOpen(true)}>Create Deck</button>
+                  <div className="empty-state">
+                    <div className="empty-state__icon-wrapper"><Book className="empty-state__icon" strokeWidth={1.6} /></div>
+                    <h3 className="empty-state__title">No flashcard decks yet</h3>
+                    <p className="empty-state__desc">Generate a deck from any topic with AI, then review the cards that are due each day.</p>
+                    <button className="empty-state__btn" onClick={() => setDeckModalOpen(true)}><Plus size={14} /> Create deck</button>
                   </div>
                 ) : (
                   <div className="study-decks-grid">
@@ -356,9 +388,9 @@ export default function Study() {
           <div className="study-os__insights">
             <div className="study-insights__section">
               <div className="study-os__toolbar">
-                <h2>Weekly Goals</h2>
-                <button className="study-btn study-btn--secondary" onClick={() => setGoalModalOpen(true)}>
-                  <Plus size={16} /> Set Goal
+                <h2 className="ui-panel__title">Weekly goals</h2>
+                <button className="ui-btn ui-btn--primary" onClick={() => setGoalModalOpen(true)}>
+                  <Plus size={14} /> Set goal
                 </button>
               </div>
               <div className="study-goals-grid">
@@ -372,9 +404,11 @@ export default function Study() {
               </div>
             </div>
 
-            <div className="study-insights__section" style={{ marginTop: 32 }}>
-              <h2>Focus Pattern Heatmap</h2>
-              <p className="study-subtitle">When are you most productive? (Last 30 days)</p>
+            <div className="study-insights__section ui-panel study-heatmap-panel">
+              <div className="ui-panel__head">
+                <h2 className="ui-panel__title">Focus pattern</h2>
+                <span className="study-subtitle">When you focus best · last 30 days</span>
+              </div>
               <div className="study-heatmap-container">
                 <FocusPatternHeatmap data={heatmapData} />
               </div>
@@ -384,26 +418,26 @@ export default function Study() {
               <div className="sb-modal-overlay" onClick={() => setGoalModalOpen(false)}>
                 <form className="sb-modal-content" onClick={(e) => e.stopPropagation()} onSubmit={handleCreateStudyGoal}>
                   <h3 className="sb-modal-title">Set a Weekly Goal</h3>
-                  <div className="sb-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                    <label style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13 }}>
-                      Subject
+                  <div className="sb-modal-body study-goal-form">
+                    <label className="ui-field">
+                      <span className="ui-label">Subject</span>
                       <input
+                        className="ui-input"
                         autoFocus
                         placeholder="e.g. DSA, React, Physics"
                         value={goalForm.subject}
                         onChange={(e) => setGoalForm({ ...goalForm, subject: e.target.value })}
-                        style={{ padding: '8px 12px', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 6, color: 'var(--text-primary)', outline: 'none' }}
                       />
                     </label>
-                    <label style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13 }}>
-                      Target hours per week
+                    <label className="ui-field">
+                      <span className="ui-label">Target hours per week</span>
                       <input
+                        className="ui-input"
                         type="number"
                         min="0.5"
                         step="0.5"
                         value={goalForm.hoursPerWeek}
                         onChange={(e) => setGoalForm({ ...goalForm, hoursPerWeek: e.target.value })}
-                        style={{ padding: '8px 12px', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 6, color: 'var(--text-primary)', outline: 'none' }}
                       />
                     </label>
                   </div>

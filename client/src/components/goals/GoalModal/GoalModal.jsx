@@ -3,6 +3,8 @@ import { X, Plus, Check, Trash2, Target, Calendar, Flag, Loader2 } from 'lucide-
 import { GOAL_CATEGORIES } from '../../../data/mockGoalsFull'
 import './GoalModal.css'
 
+const toDateInput = (v) => (v ? String(v).slice(0, 10) : '')
+
 const emptyGoal = {
   title: '', description: '', category: 'career', status: 'active',
   progress: 0, startDate: '', dueDate: '', color: 'green', icon: 'code', milestones: [],
@@ -16,7 +18,9 @@ export default function GoalModal({ open, goal, isSaving, onClose, onSave, onDel
   const [newMilestone, setNewMilestone] = useState('')
 
   useEffect(() => {
-    if (goal) setForm({ ...emptyGoal, ...goal })
+    // <input type="date"> only accepts YYYY-MM-DD; the API returns full ISO
+    // timestamps, which rendered as a blank field whenever a goal was edited.
+    if (goal) setForm({ ...emptyGoal, ...goal, dueDate: toDateInput(goal.dueDate), startDate: toDateInput(goal.startDate) })
     else setForm(emptyGoal)
     setNewMilestone('')
   }, [goal, open])

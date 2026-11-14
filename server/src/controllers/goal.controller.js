@@ -3,7 +3,7 @@ import Task from '../models/Task.model.js';
 import Notification from '../models/Notification.model.js';
 
 const GOAL_WRITABLE_FIELDS = [
-  'title', 'description', 'status', 'dueDate', 'color', 'category', 'icon', 'milestones'
+  'title', 'description', 'status', 'startDate', 'dueDate', 'color', 'category', 'icon', 'milestones'
 ];
 
 // Only these milestone fields may come from the client; `done`/`completedAt`

@@ -20,7 +20,7 @@ export default function FocusPatternHeatmap({ data }) {
           // Colors from very light blue to deep blue
           const bgColor = d.minutes === 0 
             ? 'var(--surface-200)' 
-            : `rgba(var(--blue-500-rgb), ${Math.max(0.2, intensity)})`;
+            : `rgba(171, 86, 47, ${Math.max(0.15, intensity)})`;
 
           return (
             <div key={d.hour} className="focus-heatmap__cell-wrap" title={`${formatHour(d.hour)}: ${d.minutes} mins`}>

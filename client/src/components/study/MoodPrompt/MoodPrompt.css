@@ -1,7 +1,7 @@
 .mood-prompt {
   background: var(--surface-100);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
+  border-radius: 6px;
   padding: 24px;
   text-align: center;
   margin-top: 24px;
@@ -23,7 +23,7 @@
 .mood-prompt__btn {
   background: var(--surface-200);
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: 6px;
   padding: 16px;
   display: flex;
   flex-direction: column;
@@ -34,10 +34,7 @@
   min-width: 80px;
 }
 
-.mood-prompt__btn:hover {
-  background: var(--surface-300);
-  transform: translateY(-2px);
-}
+.mood-prompt__btn:hover { background: var(--surface-300); }
 
 .mood-prompt__emoji {
   font-size: 28px;

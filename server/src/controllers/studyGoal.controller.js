@@ -1,5 +1,6 @@
 import StudyGoal from '../models/StudyGoal.model.js';
 import StudySession from '../models/StudySession.model.js';
+import { readTzOffset, localWeekStartUtc } from '../utils/analytics.utils.js';
 
 export const getGoals = async (req, res) => {
   try {
@@ -47,11 +48,8 @@ export const getProgress = async (req, res) => {
     const activeGoals = await StudyGoal.find({ userId, active: true });
     
     // Get start of week
-    const now = new Date();
-    const day = now.getDay();
-    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-    const startOfWeek = new Date(now.setDate(diff));
-    startOfWeek.setHours(0, 0, 0, 0);
+    // Week starts Monday 00:00 on the user's calendar.
+    const startOfWeek = localWeekStartUtc(readTzOffset(req));
 
     const sessionsThisWeek = await StudySession.find({
       userId,

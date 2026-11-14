@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import GoalsHeader from '../../components/goals/GoalsHeader/GoalsHeader'
-import GoalStats from '../../components/goals/GoalStats/GoalStats'
 import GoalCard from '../../components/goals/GoalCard/GoalCard'
 import GoalModal from '../../components/goals/GoalModal/GoalModal'
 import AIRoadmapModal from '../../components/goals/AIRoadmapModal/AIRoadmapModal'
@@ -46,6 +45,27 @@ export default function Goals() {
     if (filter !== 'all') list = list.filter(g => g.status === filter || (filter === 'active' && (g.status === 'active' || g.status === 'on-track')))
     return list
   }, [goals, search, filter])
+
+  // Tab counts respect the search box, so they always match what you'd see.
+  const counts = useMemo(() => {
+    const base = search ? goals.filter(g => g.title.toLowerCase().includes(search.toLowerCase())) : goals
+    return {
+      all: base.length,
+      active: base.filter(g => g.status === 'active' || g.status === 'on-track').length,
+      'on-track': base.filter(g => g.status === 'on-track').length,
+      'at-risk': base.filter(g => g.status === 'at-risk').length,
+      completed: base.filter(g => g.status === 'completed').length,
+    }
+  }, [goals, search])
+
+  const avgProgress = goals.length ? Math.round(goals.reduce((s, g) => s + (g.progress || 0), 0) / goals.length) : 0
+  const atRiskCount = goals.filter(g => g.status === 'at-risk').length
+  const goalSummary = (
+    <>
+      {goals.length} goal{goals.length !== 1 ? 's' : ''} · {avgProgress}% average progress ·{' '}
+      {atRiskCount ? <span className="goals__alert">{atRiskCount} at risk</span> : 'none at risk'}
+    </>
+  )
 
   const openCreate = () => { setEditingGoal(null); setModalOpen(true) }
   const openEdit = (goal) => { setEditingGoal(goal); setModalOpen(true) }
@@ -130,8 +150,9 @@ export default function Goals() {
         onAIGenerate={() => setAiOpen(true)}
         count={goals.length}
         filter={filter} onFilterChange={setFilter}
+        counts={counts}
+        summary={goalSummary}
       />
-      <GoalStats goals={goals} />
 
       {filtered.length === 0 ? (
         <EmptyState

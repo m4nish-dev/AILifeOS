@@ -5,15 +5,13 @@
 
 .al__brand {
   padding: var(--sp-8) var(--sp-10); color: #fff;
-  background: linear-gradient(135deg, var(--green-800), var(--green-600) 50%, var(--coffee-600));
+  background: var(--green-800);
   position: relative; overflow: hidden;
   display: flex; flex-direction: column; justify-content: space-between;
 }
 .al__brand::before {
   content: ''; position: absolute; inset: 0;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.15), transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(255,255,255,0.08), transparent 50%);
+  background: transparent;
 }
 
 .al__brand-top {
@@ -49,7 +47,7 @@
 .al__foot {
   padding: var(--sp-4); background: rgba(255,255,255,0.1);
   border-radius: var(--r-lg); font-size: var(--fs-sm); font-style: italic;
-  line-height: 1.5; position: relative; backdrop-filter: blur(10px);
+  line-height: 1.5; position: relative; backdrop-filter: none;
 }
 .al__foot span { display: block; margin-top: 8px; font-style: normal; font-size: 11px; opacity: 0.8; }
 

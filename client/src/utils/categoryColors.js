@@ -4,7 +4,7 @@ export function categoryColor(category) {
     case 'dsa':         return { bg: 'var(--amber-50)',  fg: 'var(--amber-600)',  dot: 'var(--amber-500)' }
     case 'learning':    return { bg: 'var(--coffee-50)', fg: 'var(--coffee-700)', dot: 'var(--coffee-600)' }
     case 'work':        return { bg: 'var(--blue-50)',   fg: 'var(--blue-600)',   dot: 'var(--blue-500)' }
-    case 'personal':    return { bg: 'var(--red-50)',    fg: 'var(--red-600)',    dot: 'var(--red-600)' }
+    case 'personal':    return { bg: 'var(--bg-surface-alt)', fg: 'var(--text-secondary)', dot: 'var(--border-bright)' }
     default:            return { bg: 'var(--bg-hover)',  fg: 'var(--text-secondary)', dot: 'var(--text-tertiary)' }
   }
 }

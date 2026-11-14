@@ -1,66 +1,59 @@
 .flashcard-deck {
-  background: var(--surface-100);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: left;
   width: 100%;
+  padding: 16px 20px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  text-align: left;
+  cursor: pointer;
 }
-
-.flashcard-deck:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border-color: var(--blue-500);
-}
-
-.flashcard-deck__header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
+.flashcard-deck:hover { border-color: var(--border-strong); }
+.flashcard-deck__header { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .flashcard-deck__icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background: rgba(var(--blue-500-rgb), 0.1);
-  color: var(--blue-500);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  background: var(--bg-surface-alt);
+  color: var(--orange-base);
 }
-
 .flashcard-deck__title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
-  color: var(--text-primary);
-  margin: 0;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
 .flashcard-deck__stats {
   display: flex;
+  align-items: flex-end;
   gap: 24px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
 }
-
-.flashcard-deck__stat {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
+.flashcard-deck__stat { display: flex; flex-direction: column; gap: 4px; }
 .flashcard-deck__stat-val {
-  font-size: 18px;
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.flashcard-deck__stat-val--due { color: var(--orange-base); }
+.flashcard-deck__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  font-size: 12.5px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-secondary);
 }
-
-.flashcard-deck__stat-lbl {
-  font-size: 12px;
-  color: var(--text-tertiary);
-  font-weight: 500;
-}
+.flashcard-deck:hover .flashcard-deck__cta { color: var(--orange-base); }

@@ -12,7 +12,7 @@ export default function FeatureCard({
 }) {
   return (
     <div className={`feature-card ${colSpan === 2 ? 'col-span-2' : ''}`} style={{ '--card-accent': accentColor }}>
-      <CursorGlow color={accentColor.replace(')', ', 0.15)').replace('var(--green-500)', 'rgba(22, 164, 107, 0.15)').replace('var(--coffee-500)', 'rgba(160, 113, 74, 0.15)')}>
+      <CursorGlow color={accentColor.replace(')', ', 0.15)').replace('var(--green-500)', 'rgba(171, 86, 47, 0.15)').replace('var(--coffee-500)', 'rgba(160, 113, 74, 0.15)')}>
         <div className="feature-card-inner">
           <div className="feature-card-content">
             <div className="feature-icon-wrapper" style={{ background: `color-mix(in srgb, ${accentColor} 15%, transparent)` }}>

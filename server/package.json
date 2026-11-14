@@ -8,10 +8,11 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "test:api": "node scripts/smoke-test.mjs",
-    "create-indexes": "node scripts/createIndexes.js"
+    "create-indexes": "node scripts/createIndexes.js",
+    "seed": "node scripts/seed.js"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.19.0"
   },
   "keywords": [],
   "author": "",

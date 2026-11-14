@@ -19,7 +19,7 @@
 .ambient-orb--green, .ambient-orb--green-static {
   width: 800px;
   height: 800px;
-  background: radial-gradient(circle, var(--green-500), transparent 70%);
+  background: transparent;
   top: -200px;
   left: -200px;
 }
@@ -27,7 +27,7 @@
 .ambient-orb--coffee, .ambient-orb--coffee-static {
   width: 700px;
   height: 700px;
-  background: radial-gradient(circle, var(--coffee-500), transparent 70%);
+  background: transparent;
   bottom: -100px;
   right: -200px;
 }

@@ -1,6 +1,6 @@
 .logo-strip-section {
   padding: 28px 0;
-  background: #0f1115;
+  background: #1B1612;
   border-top: 1px solid rgba(255,255,255,0.04);
   border-bottom: 1px solid rgba(255,255,255,0.04);
   overflow: hidden;
@@ -36,11 +36,11 @@
 }
 .marquee-container::before {
   left: 0;
-  background: linear-gradient(to right, #0f1115, transparent);
+  background: transparent;
 }
 .marquee-container::after {
   right: 0;
-  background: linear-gradient(to left, #0f1115, transparent);
+  background: transparent;
 }
 
 .marquee-track {
@@ -65,9 +65,7 @@
   letter-spacing: 0.02em;
 }
 
-.logo-item:hover {
-  color: rgba(255,255,255,0.6);
-}
+.logo-item:hover { color: rgba(255,255,255,0.6); }
 
 @keyframes marqueeScroll {
   0% { transform: translateX(0); }

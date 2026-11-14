@@ -1,122 +1,104 @@
-import { Clock, Calendar, MoreVertical, CheckCircle2, Circle, Trash2, Pencil } from 'lucide-react'
+import { Check, Trash2, Pencil } from 'lucide-react'
 import { priorityColor } from '../../../utils/priorityColors'
-import { categoryColor, statusColor } from '../../../utils/categoryColors'
+import { categoryColor } from '../../../utils/categoryColors'
 import { dueLabel, dueTone } from '../../../utils/taskDate'
 import { PRIORITY_LABEL } from '../../../utils/constants'
-import { STATUS_LABEL } from '../../../data/mockTasksFull'
+import { STATUS_LABEL, CATEGORIES } from '../../../data/mockTasksFull'
 import './TasksListView.css'
+
+const CATEGORY_LABEL = Object.fromEntries(CATEGORIES.map(c => [c.id, c.label]))
 
 export default function TasksListView({ tasks, onEdit, onToggleDone, onDelete }) {
   return (
-    <div className="tlv">
-      <div className="tlv__head">
-        <div className="tlv__col tlv__col--check"></div>
-        <div className="tlv__col tlv__col--title">Task</div>
-        <div className="tlv__col tlv__col--cat">Category</div>
-        <div className="tlv__col tlv__col--status">Status</div>
-        <div className="tlv__col tlv__col--priority">Priority</div>
-        <div className="tlv__col tlv__col--due">Due</div>
-        <div className="tlv__col tlv__col--time">Time</div>
-        <div className="tlv__col tlv__col--actions"></div>
+    <div className="tlv" role="table" aria-label="Tasks">
+      <div className="tlv__head" role="row">
+        <span role="columnheader" aria-label="Done" />
+        <span role="columnheader">Task</span>
+        <span role="columnheader" className="tlv__c-cat">Category</span>
+        <span role="columnheader" className="tlv__c-status">Status</span>
+        <span role="columnheader">Priority</span>
+        <span role="columnheader" className="tlv__c-due">Due</span>
+        <span role="columnheader" className="tlv__c-time">Time</span>
+        <span role="columnheader" aria-label="Actions" />
       </div>
 
-      <div className="tlv__body">
-        {tasks.map((task) => {
-          const pc = priorityColor(task.priority)
-          const cc = categoryColor(task.category)
-          const sc = statusColor(task.status)
-          const dLabel = dueLabel(task.dueDate)
-          const dTone  = dueTone(task.dueDate, task.status)
-          const isDone = task.status === 'done'
+      {tasks.map((task) => {
+        const pc = priorityColor(task.priority)
+        const cc = categoryColor(task.category)
+        const dLabel = dueLabel(task.dueDate)
+        const dTone = dueTone(task.dueDate, task.status)
+        const isDone = task.status === 'done'
 
-          return (
-            <div
-              key={task.id}
-              className={`tlv__row${isDone ? ' tlv__row--done' : ''}`}
-              onClick={() => onEdit(task)}
-            >
-              <div className="tlv__col tlv__col--check">
-                <button
-                  className={`tlv__check${isDone ? ' tlv__check--on' : ''}`}
-                  onClick={(e) => { e.stopPropagation(); onToggleDone(task) }}
-                  aria-label="Toggle done"
-                >
-                  {isDone
-                    ? <CheckCircle2 size={20} strokeWidth={2} fill="var(--green-600)" color="#fff" />
-                    : <Circle size={20} strokeWidth={1.7} />}
-                </button>
-              </div>
+        return (
+          <div
+            key={task.id}
+            role="row"
+            className={`tlv__row${isDone ? ' tlv__row--done' : ''}`}
+            onClick={() => onEdit(task)}
+          >
+            <span role="cell">
+              <button
+                className={`tlv__check${isDone ? ' tlv__check--on' : ''}`}
+                onClick={(e) => { e.stopPropagation(); onToggleDone(task) }}
+                aria-label={isDone ? 'Mark as not done' : 'Mark as done'}
+              >
+                {isDone && <Check size={11} strokeWidth={3} />}
+              </button>
+            </span>
 
-              <div className="tlv__col tlv__col--title">
-                <div className="tlv__title-text">{task.title}</div>
-                <div className="tlv__project">{task.project}</div>
-              </div>
+            <span role="cell" className="tlv__task">
+              <span className="tlv__title">{task.title}</span>
+              {task.project && <span className="tlv__project">{task.project}</span>}
+            </span>
 
-              <div className="tlv__col tlv__col--cat">
-                <span
-                  className="tlv__badge"
-                  style={{ background: cc.bg, color: cc.fg }}
-                >
-                  <span className="tlv__dot" style={{ background: cc.dot }} />
-                  {task.category}
-                </span>
-              </div>
+            <span role="cell" className="tlv__c-cat">
+              <span className="tlv__tag">
+                <span className="tlv__dot" style={{ background: cc.dot }} />
+                {CATEGORY_LABEL[task.category] || task.category}
+              </span>
+            </span>
 
-              <div className="tlv__col tlv__col--status">
-                <span
-                  className="tlv__badge"
-                  style={{ background: sc.bg, color: sc.fg }}
-                >
-                  <span className="tlv__dot" style={{ background: sc.dot }} />
-                  {STATUS_LABEL[task.status]}
-                </span>
-              </div>
+            <span role="cell" className="tlv__c-status">
+              <span className="tlv__tag">
+                <span className={`tlv__status-mark tlv__status-mark--${task.status}`} />
+                {STATUS_LABEL[task.status]}
+              </span>
+            </span>
 
-              <div className="tlv__col tlv__col--priority">
-                <span
-                  className="tlv__badge tlv__badge--pri"
-                  style={{ background: pc.bg, color: pc.fg }}
-                >
-                  {PRIORITY_LABEL[task.priority]}
-                </span>
-              </div>
+            <span role="cell">
+              <span className={`tlv__pri tlv__pri--${task.priority}`}>
+                <span className="tlv__pri-mark" style={{ background: pc.dot }} />
+                {PRIORITY_LABEL[task.priority]}
+              </span>
+            </span>
 
-              <div className="tlv__col tlv__col--due">
-                {dLabel && (
-                  <span className={`tlv__due tlv__due--${dTone}`}>
-                    <Calendar size={12} />
-                    {dLabel}
-                  </span>
-                )}
-              </div>
+            <span role="cell" className={`tlv__c-due tlv__due tlv__due--${dTone}`}>
+              {dLabel || <span className="tlv__none">—</span>}
+            </span>
 
-              <div className="tlv__col tlv__col--time">
-                <span className="tlv__time">
-                  <Clock size={12} />
-                  {task.duration}m
-                </span>
-              </div>
+            <span role="cell" className="tlv__c-time tlv__time">
+              {task.duration ? `${task.duration} min` : <span className="tlv__none">—</span>}
+            </span>
 
-              <div className="tlv__col tlv__col--actions">
-                <button
-                  className="tlv__action"
-                  onClick={(e) => { e.stopPropagation(); onEdit(task) }}
-                  aria-label="Edit"
-                >
-                  <Pencil size={13} />
-                </button>
-                <button
-                  className="tlv__action tlv__action--danger"
-                  onClick={(e) => { e.stopPropagation(); onDelete(task.id) }}
-                  aria-label="Delete"
-                >
-                  <Trash2 size={13} />
-                </button>
-              </div>
-            </div>
-          )
-        })}
-      </div>
+            <span role="cell" className="tlv__actions">
+              <button
+                className="tlv__action"
+                onClick={(e) => { e.stopPropagation(); onEdit(task) }}
+                aria-label={`Edit "${task.title}"`}
+              >
+                <Pencil size={13} />
+              </button>
+              <button
+                className="tlv__action tlv__action--danger"
+                onClick={(e) => { e.stopPropagation(); onDelete(task.id) }}
+                aria-label={`Delete "${task.title}"`}
+              >
+                <Trash2 size={13} />
+              </button>
+            </span>
+          </div>
+        )
+      })}
     </div>
   )
 }

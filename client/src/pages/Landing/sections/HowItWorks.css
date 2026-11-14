@@ -30,7 +30,7 @@
   top: 0;
   left: 23px;
   width: 2px;
-  background: linear-gradient(to bottom, var(--green-500), var(--blue-500));
+  background: var(--green-500);
   z-index: 1;
 }
 
@@ -55,7 +55,7 @@
   color: var(--coffee-500);
   font-family: var(--font-display);
   font-weight: 700;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  box-shadow: none;
   transition: border-color var(--t-base);
 }
 
@@ -67,7 +67,7 @@
   flex: 1;
   background: var(--bg-surface);
   border: 1px solid rgba(255,255,255,0.05);
-  border-radius: 20px;
+  border-radius: 10px;
   padding: 32px;
   display: flex;
   align-items: center;
@@ -75,16 +75,13 @@
   transition: transform var(--t-base), border-color var(--t-base);
 }
 
-.hiw-step-card:hover {
-  transform: translateX(10px);
-  border-color: rgba(255,255,255,0.15);
-}
+
 
 .hiw-step-icon {
   width: 60px;
   height: 60px;
-  border-radius: 16px;
-  background: rgba(22, 164, 107, 0.1);
+  border-radius: 8px;
+  background: rgba(171, 86, 47, 0.1);
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -92,7 +89,7 @@
 
 .hiw-step-content h3 {
   font-size: 24px;
-  font-weight: 600;
+  font-weight: var(--fw-bold);
   color: #fff;
   margin-bottom: 8px;
 }

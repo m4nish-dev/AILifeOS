@@ -15,16 +15,29 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('ailifeos-token');
     if (token) config.headers.Authorization = `Bearer ${token}`;
+    // The server runs in UTC; send the browser's offset so "today", streaks,
+    // weekly charts and greetings follow the user's own calendar and clock.
+    // Same convention as Date#getTimezoneOffset (minutes, UTC minus local).
+    if ((config.method || 'get').toLowerCase() === 'get') {
+      config.params = { ...(config.params || {}), tzOffset: new Date().getTimezoneOffset() };
+    }
     return config;
   },
   (error) => Promise.reject(error)
 );
 
+const CREDENTIAL_CHECKS = ['/auth/login', '/auth/register', '/auth/password'];
+
 // Response interceptor — handle 401 globally
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    // A 401 from these endpoints means "wrong credentials", not "session
+    // expired": wiping the token and redirecting there logged users out for
+    // mistyping their current password in Settings.
+    const url = error.config?.url || '';
+    const isCredentialCheck = CREDENTIAL_CHECKS.some((path) => url.includes(path));
+    if (error.response?.status === 401 && !isCredentialCheck) {
       localStorage.removeItem('ailifeos-token');
       localStorage.removeItem('ailifeos-user');
       window.location.href = '/signin';

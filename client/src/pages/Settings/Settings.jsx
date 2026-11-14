@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { User, Palette, Bell, Shield, CreditCard, Sun, Moon, Monitor, Check, Camera, Loader2, Download } from 'lucide-react'
+import { User, Palette, Bell, Shield, CreditCard, Monitor, Check, Camera, Loader2, Download } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
 import { useAuth } from '../../context/AuthContext'
 import { useToast } from '../../context/ToastContext'
@@ -130,12 +130,6 @@ function ProfileSection({ user, updateUser, showToast }) {
 }
 
 function ThemeSection({ theme, setTheme, user, updateUser, showToast }) {
-  const options = [
-    { id: 'light', label: 'Light', icon: Sun, desc: 'Clean and bright' },
-    { id: 'dark', label: 'Dark', icon: Moon, desc: 'Easy on the eyes' },
-    { id: 'system', label: 'System', icon: Monitor, desc: 'Match your device' },
-  ]
-
   const accentColors = ['green', 'coffee', 'blue', 'purple', 'red']
   const currentAccent = user.preferences?.accentColor || 'green'
 
@@ -150,26 +144,6 @@ function ThemeSection({ theme, setTheme, user, updateUser, showToast }) {
 
   return (
     <Section title="Appearance" sub="Customize how AI LifeOS looks on your device.">
-      <div className="set-themes">
-        {options.map(({ id, label, icon: Icon, desc }) => (
-          <button
-            key={id}
-            className={`set-theme${theme === id ? ' set-theme--active' : ''}`}
-            onClick={() => setTheme(id)}
-          >
-            <div className={`set-theme__preview set-theme__preview--${id}`}>
-              <div></div><div></div>
-            </div>
-            <div className="set-theme__row">
-              <Icon size={14} />
-              <span>{label}</span>
-              {theme === id && <Check size={13} className="set-theme__check" strokeWidth={2.5} />}
-            </div>
-            <p>{desc}</p>
-          </button>
-        ))}
-      </div>
-
       <div className="set-field">
         <label>Accent Color (Coming Soon globally)</label>
         <div className="set-colors">

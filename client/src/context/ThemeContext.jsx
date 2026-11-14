@@ -1,62 +1,25 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect } from 'react'
 
+// AI LifeOS ships a single theme. The provider keeps its old API (theme,
+// resolvedTheme, setTheme, toggleTheme) so nothing that imports it can break,
+// but every value is fixed and the setters are no-ops.
 const ThemeContext = createContext()
 
 const STORAGE_KEY = 'ailifeos-theme'
-const VALID = ['light', 'dark', 'system']
-
-const prefersDark = () =>
-  typeof window !== 'undefined'
-  && window.matchMedia
-  && window.matchMedia('(prefers-color-scheme: dark)').matches
+const THEME = 'light'
 
 export function ThemeProvider({ children }) {
-  // `theme` is the user's *preference* (light | dark | system).
-  const [theme, setTheme] = useState(() => {
-    if (typeof window === 'undefined') return 'system'
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      return VALID.includes(stored) ? stored : 'system'
-    } catch {
-      return 'system'
-    }
-  })
-
-  // `resolvedTheme` is what's actually applied (light | dark).
-  const [resolvedTheme, setResolvedTheme] = useState(() =>
-    theme === 'system' ? (prefersDark() ? 'dark' : 'light') : theme
-  )
-
   useEffect(() => {
-    const resolve = () => (theme === 'system' ? (prefersDark() ? 'dark' : 'light') : theme)
+    // Stylesheets scope their single-theme rules to [data-theme="light"].
+    document.documentElement.setAttribute('data-theme', THEME)
+    // Drop any stale dark/system preference saved by earlier versions.
+    try { localStorage.removeItem(STORAGE_KEY) } catch { /* storage blocked */ }
+  }, [])
 
-    const apply = () => {
-      const next = resolve()
-      setResolvedTheme(next)
-      document.documentElement.setAttribute('data-theme', next)
-    }
-
-    apply()
-
-    try {
-      localStorage.setItem(STORAGE_KEY, theme)
-    } catch {
-      // Private browsing / blocked storage — the theme still applies for this session.
-    }
-
-    // While on "system", follow live OS changes.
-    if (theme !== 'system' || !window.matchMedia) return
-
-    const mq = window.matchMedia('(prefers-color-scheme: dark)')
-    mq.addEventListener('change', apply)
-    return () => mq.removeEventListener('change', apply)
-  }, [theme])
-
-  // Toggling flips the *effective* theme and pins it as an explicit choice.
-  const toggleTheme = () => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')
+  const noop = () => {}
 
   return (
-    <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme: THEME, resolvedTheme: THEME, setTheme: noop, toggleTheme: noop }}>
       {children}
     </ThemeContext.Provider>
   )

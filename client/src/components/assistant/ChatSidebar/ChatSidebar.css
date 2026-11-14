@@ -1,81 +1,112 @@
+/* Assistant — conversation list. Same flush-panel pattern as Notes. */
 .cs {
-  width: 280px; background: var(--bg-surface);
-  border: 1px solid var(--border-subtle); border-radius: var(--r-xl);
-  padding: var(--sp-4); display: flex; flex-direction: column;
-  gap: var(--sp-3); height: calc(100vh - 132px); position: sticky; top: var(--sp-6);
+  width: 280px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 132px);
+  position: sticky;
+  top: 24px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  overflow: hidden;
 }
-.cs__new {
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 10px; font-size: var(--fs-sm); font-weight: var(--fw-semibold); color: #fff;
-  background: linear-gradient(135deg, var(--coffee-600), var(--coffee-500));
-  border-radius: var(--r-md); box-shadow: var(--shadow-glow-coffee);
-  transition: transform var(--t-fast);
+.cs__head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border-bottom: 1px solid var(--border-subtle);
 }
-.cs__new:hover { transform: translateY(-1px); }
-
-.cs__search {
-  display: flex; align-items: center; gap: 8px;
-  padding: 0 12px; height: 34px; background: var(--bg-app);
-  border-radius: var(--r-md); color: var(--text-tertiary);
-}
-.cs__search input { flex: 1; font-size: var(--fs-xs); color: var(--text-primary); background: transparent; }
-
-.cs__list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+.cs__list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 12px 8px; }
+.cs__section { display: flex; flex-direction: column; gap: 1px; }
 .cs__group-head {
-  padding: 4px; font-size: 10px; font-weight: var(--fw-semibold);
-  color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.06em;
-  margin-bottom: 4px;
+  padding: 4px 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
 }
-
 .cs__item {
-  display: grid; grid-template-columns: auto 1fr auto;
-  align-items: center; gap: 8px; padding: 10px;
-  border-radius: var(--r-md); text-align: left;
-  color: var(--text-secondary); transition: all var(--t-fast);
   position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px 8px 12px;
+  border-radius: 4px;
+  text-align: left;
+  color: var(--text-secondary);
 }
-.cs__item:hover { background: var(--bg-hover); color: var(--text-primary); }
-.cs__item--active { background: var(--coffee-50); color: var(--coffee-700); }
+.cs__item:hover { background: var(--bg-hover); color: var(--ink); }
+.cs__item--active,
+.cs__item--active:hover { background: var(--accent-soft); color: var(--ink); box-shadow: inset 2px 0 0 var(--orange-base); }
 .cs__item-body { min-width: 0; }
 .cs__item-title {
-  font-size: var(--fs-xs); font-weight: var(--fw-semibold);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .cs__item-preview {
-  font-size: 10px; color: var(--text-tertiary);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.cs__del {
-  width: 22px; height: 22px; display: grid; place-items: center;
-  border-radius: var(--r-sm); color: var(--text-tertiary); opacity: 0;
-  transition: all var(--t-fast);
-}
-.cs__item:hover .cs__del { opacity: 1; }
-.cs__del:hover { background: var(--red-50); color: var(--red-600); }
+.cs__empty { padding: 32px 12px; text-align: center; font-size: 12.5px; color: var(--text-tertiary); }
 
-.cs__empty { padding: var(--sp-6) var(--sp-3); text-align: center; color: var(--text-tertiary); font-size: var(--fs-xs); }
-
-.cs__section { display: flex; flex-direction: column; gap: 4px; }
-.cs__actions { position: relative; display: flex; align-items: center; opacity: 0; transition: opacity var(--t-fast); }
-.cs__item:hover .cs__actions { opacity: 1; }
-.cs__menu-btn { width: 22px; height: 22px; display: grid; place-items: center; border-radius: var(--r-sm); color: var(--text-tertiary); }
-.cs__menu-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+.cs__actions { position: relative; display: flex; align-items: center; opacity: 0; }
+.cs__item:hover .cs__actions,
+.cs__item:focus-within .cs__actions,
+.cs__item--active .cs__actions { opacity: 1; }
+@media (hover: none) { .cs__actions { opacity: 1; } }
+.cs__menu-btn { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 4px; color: var(--text-tertiary); }
+.cs__menu-btn:hover { background: var(--bg-hover); color: var(--ink); }
 .cs__menu {
-  position: absolute; right: 0; top: 100%; margin-top: 4px; z-index: 100;
-  background: var(--bg-surface); border: 1px solid var(--border-subtle);
-  border-radius: var(--r-md); box-shadow: var(--shadow-xl);
-  padding: 4px; width: 140px; display: flex; flex-direction: column; gap: 2px;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 4px;
+  z-index: 100;
+  width: 148px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  box-shadow: var(--shadow-lg);
 }
 .cs__menu button {
-  display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
-  padding: 8px; font-size: var(--fs-xs); color: var(--text-secondary);
-  border-radius: var(--r-sm); transition: background var(--t-fast);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--ink);
+  text-align: left;
 }
-.cs__menu button:hover { background: var(--bg-hover); color: var(--text-primary); }
-.cs__menu-div { height: 1px; background: var(--border-subtle); margin: 2px 0; }
-.cs__menu .cs__menu-del { color: var(--red-500); }
-.cs__menu .cs__menu-del:hover { background: var(--red-50); color: var(--red-600); }
+.cs__menu button:hover { background: var(--bg-hover); }
+.cs__menu-div { height: 1px; margin: 3px 0; background: var(--border-subtle); }
+.cs__menu .cs__menu-del { color: var(--red-600); }
+.cs__menu .cs__menu-del:hover { background: var(--red-50); }
 .cs__rename-input {
-  width: 100%; font-size: var(--fs-xs); font-weight: var(--fw-semibold);
-  background: transparent; color: var(--text-primary); outline: none; border: none;
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
 }

@@ -1,111 +1,92 @@
+/* Tasks — kanban. Tinted columns, flat white cards, one hairline each. */
 .kb {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--sp-4);
-  animation: fadeIn var(--t-slow) both;
-  min-height: 500px;
+  grid-template-columns: repeat(4, minmax(240px, 1fr));
+  gap: 16px;
+  padding: 20px;
+  overflow-x: auto;
 }
-
 .kb__col {
-  background: var(--bg-surface-alt);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--r-xl);
-  padding: var(--sp-4);
   display: flex;
   flex-direction: column;
-  gap: var(--sp-3);
-  transition: background var(--t-fast), border-color var(--t-fast);
+  min-width: 0;
+  background: var(--bg-surface-alt);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
 }
-.kb__col--over {
-  background: var(--bg-surface);
-  border-color: var(--_c);
-  border-style: dashed;
-}
-
-.kb__col--grey   { --_c: var(--text-tertiary); --_tint: var(--bg-hover); }
-.kb__col--blue   { --_c: var(--blue-500);      --_tint: var(--blue-50); }
-.kb__col--coffee { --_c: var(--coffee-600);    --_tint: var(--coffee-50); }
-.kb__col--green  { --_c: var(--green-600);     --_tint: var(--green-50); }
+.kb__col--over { border-color: var(--orange-base); background: var(--accent-soft); }
 
 .kb__col-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 4px 8px;
-  border-bottom: 2px solid var(--_c);
+  height: 44px;
+  padding: 0 8px 0 12px;
+  border-bottom: 1px solid var(--border-subtle);
 }
 .kb__col-title {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-semibold);
-  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
 }
-.kb__col-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: var(--r-full);
-  background: var(--_c);
-}
+.kb__col-mark { width: 8px; height: 8px; border-radius: 2px; background: var(--taupe); }
+.kb__col--progress .kb__col-mark { background: var(--orange-base); }
+.kb__col--review   .kb__col-mark { background: var(--blue-500); }
+.kb__col--done     .kb__col-mark { background: var(--dark); }
 .kb__col-count {
-  font-size: 10px;
-  font-weight: var(--fw-bold);
-  padding: 2px 7px;
-  background: var(--_tint);
-  color: var(--_c);
-  border-radius: var(--r-full);
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 3px;
+  background: var(--beige);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
 }
 .kb__col-add {
-  width: 24px;
-  height: 24px;
   display: grid;
   place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
   color: var(--text-secondary);
-  border-radius: var(--r-sm);
-  transition: all var(--t-fast);
 }
-.kb__col-add:hover {
-  background: var(--_tint);
-  color: var(--_c);
-}
+.kb__col-add:hover { background: var(--bg-hover); color: var(--ink); }
 
 .kb__col-body {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-3);
-  min-height: 100px;
+  gap: 8px;
+  padding: 8px;
+  min-height: 120px;
 }
-
 .kb__empty {
-  padding: var(--sp-6) var(--sp-3);
-  text-align: center;
-  border: 1px dashed var(--border-default);
-  border-radius: var(--r-lg);
-  color: var(--text-tertiary);
-  font-size: var(--fs-xs);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--sp-2);
+  justify-content: center;
+  gap: 8px;
+  flex: 1;
+  min-height: 104px;
+  border: 1px dashed var(--border-default);
+  border-radius: 4px;
+  font-size: 12.5px;
+  color: var(--text-tertiary);
 }
 .kb__empty button {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 5px 10px;
-  font-size: 11px;
-  font-weight: var(--fw-semibold);
-  color: var(--_c);
-  background: var(--_tint);
-  border-radius: var(--r-full);
-  transition: opacity var(--t-fast);
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--orange-base);
 }
-.kb__empty button:hover { opacity: 0.85; }
-
-@media (max-width: 1200px) {
-  .kb { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 700px) {
-  .kb { grid-template-columns: 1fr; }
-}
+.kb__empty button:hover { background: var(--accent-soft); }

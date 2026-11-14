@@ -25,10 +25,7 @@
   transition: transform 0.1s ease;
 }
 
-.focus-heatmap__cell:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 0 1px var(--border-color);
-}
+
 
 .focus-heatmap__label {
   font-size: 10px;

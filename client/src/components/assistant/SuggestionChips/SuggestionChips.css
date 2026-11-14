@@ -1,37 +1,57 @@
+/* Assistant — welcome. A quiet tile, a serif question, suggestions as rows. */
 .sc {
-  padding: var(--sp-8) var(--sp-6); display: flex;
-  flex-direction: column; align-items: center; gap: var(--sp-6);
-  max-width: 720px; margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+  max-width: 640px;
+  margin: auto;
+  padding: 40px 24px;
 }
 .sc__brand { text-align: center; }
 .sc__icon {
-  width: 64px; height: 64px; border-radius: var(--r-xl);
-  background: linear-gradient(135deg, var(--coffee-600), var(--coffee-500));
-  color: #fff; display: grid; place-items: center; margin: 0 auto var(--sp-4);
-  box-shadow: var(--shadow-glow-coffee);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  background: var(--bg-surface-alt);
+  color: var(--orange-base);
 }
+.sc__icon svg { width: 20px; height: 20px; }
 .sc__title {
-  font-family: var(--font-display); font-size: var(--fs-2xl);
-  font-weight: var(--fw-bold); color: var(--text-primary);
-  letter-spacing: -0.02em; margin-bottom: var(--sp-2);
+  font-family: var(--font-serif);
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--ink);
 }
-.sc__sub { color: var(--text-secondary); font-size: var(--fs-sm); }
+.sc__sub { margin-top: 8px; font-size: 14px; color: var(--text-secondary); }
 
 .sc__grid {
-  display: grid; grid-template-columns: repeat(2, 1fr);
-  gap: var(--sp-2); width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
 }
 .sc__chip {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 14px 16px; background: var(--bg-surface);
-  border: 1px solid var(--border-subtle); border-radius: var(--r-lg);
-  font-size: var(--fs-sm); color: var(--text-primary);
-  text-align: left; transition: all var(--t-fast);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 10px 14px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  font-size: 13.5px;
+  color: var(--ink);
+  text-align: left;
 }
-.sc__chip:hover {
-  border-color: var(--coffee-500); background: var(--coffee-50);
-  color: var(--coffee-700); transform: translateY(-1px);
-}
-.sc__chip svg { color: var(--coffee-600); flex-shrink: 0; }
+.sc__chip:hover { border-color: var(--orange-base); background: var(--accent-soft); }
+.sc__chip svg { flex-shrink: 0; color: var(--orange-base); }
 
-@media (max-width: 640px) { .sc__grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .sc__grid { grid-template-columns: minmax(0, 1fr); } }
