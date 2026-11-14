@@ -57,11 +57,15 @@
   color: var(--text-tertiary);
   flex-shrink: 0;
 }
+/* The bar is a trigger for the GlobalSearch overlay, not a real text field. */
+.topbar__search { cursor: pointer; }
+
 .topbar__search-input {
   flex: 1;
   font-size: var(--fs-base);
   color: var(--text-primary);
   background: transparent;
+  cursor: pointer;
 }
 .topbar__search-input::placeholder { color: var(--text-tertiary); }
 .topbar__search-kbd {
@@ -125,16 +129,7 @@
   background: var(--bg-hover);
   color: var(--text-primary);
 }
-.topbar__dot {
-  position: absolute;
-  top: 9px;
-  right: 10px;
-  width: 8px;
-  height: 8px;
-  background: var(--red-600);
-  border-radius: var(--r-full);
-  border: 2px solid var(--bg-surface);
-}
+/* Note: .topbar__dot is defined further down as an unread-count badge. */
 
 .topbar__avatar {
   width: 40px;
@@ -244,11 +239,59 @@
   background: var(--bg-hover);
 }
 
+/* --blue-500-rgb was never defined, so the previous rgba() here was invalid
+   and unread items rendered with no highlight at all. */
 .topbar__notif-item--unread {
-  background: rgba(var(--blue-500-rgb), 0.05);
+  background: rgba(0, 111, 238, 0.06);
+  border-left: 2px solid var(--blue-600);
 }
 .topbar__notif-item--unread:hover {
-  background: rgba(var(--blue-500-rgb), 0.1);
+  background: rgba(0, 111, 238, 0.12);
+}
+[data-theme="dark"] .topbar__notif-item--unread {
+  background: rgba(0, 111, 238, 0.14);
+}
+[data-theme="dark"] .topbar__notif-item--unread:hover {
+  background: rgba(0, 111, 238, 0.22);
+}
+
+.topbar__notif-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.topbar__notif-delete {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 2px;
+  border-radius: var(--r-sm);
+  opacity: 0;
+  transition: opacity var(--t-fast), color var(--t-fast), background var(--t-fast);
+}
+.topbar__notif-item:hover .topbar__notif-delete {
+  opacity: 1;
+}
+.topbar__notif-delete:hover {
+  color: var(--red-600);
+  background: var(--bg-hover);
+}
+/* Keep the control reachable for keyboard and touch users, where there is
+   no hover to reveal it. */
+.topbar__notif-delete:focus-visible {
+  opacity: 1;
+  outline: 2px solid var(--blue-600);
+}
+@media (hover: none) {
+  .topbar__notif-delete { opacity: 1; }
+}
+
+.topbar__notif-error {
+  color: var(--red-600);
 }
 
 .topbar__notif-title {

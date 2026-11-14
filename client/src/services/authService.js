@@ -22,7 +22,8 @@ export const authService = {
   logout() {
     localStorage.removeItem('ailifeos-token');
     localStorage.removeItem('ailifeos-user');
-    window.location.href = '/login';
+    // Matches the canonical auth route used by App.jsx and the 401 interceptor.
+    window.location.href = '/signin';
   },
 
   getCurrentUser() {

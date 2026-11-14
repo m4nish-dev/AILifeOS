@@ -14,8 +14,9 @@ export const protect = async (req, res, next) => {
 
     const token = authHeader.split(' ')[1];
 
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Verify token. Pinning the algorithm prevents algorithm-confusion attacks
+    // (e.g. a token forged with alg:none or an asymmetric alg).
+    const decoded = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
 
     // Attach user to request (exclude password)
     const user = await User.findById(decoded.id).select('-password');

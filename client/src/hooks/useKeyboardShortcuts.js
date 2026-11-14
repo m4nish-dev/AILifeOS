@@ -1,38 +1,48 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+// Alt + <key> → route. Keyed by KeyboardEvent.code because on macOS
+// Option+D produces "∂" rather than "d", which made e.key matching fail.
+const NAV_SHORTCUTS = {
+  KeyD: '/dashboard',
+  KeyT: '/tasks',
+  KeyG: '/goals',
+  KeyC: '/calendar',
+  KeyN: '/notes',
+  KeyS: '/study',
+  KeyA: '/assistant',
+}
+
+const isTypingTarget = (target) => {
+  if (!target) return false
+  if (['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) return true
+  return Boolean(target.isContentEditable)
+}
+
 export function useKeyboardShortcuts() {
   const navigate = useNavigate()
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Allow Cmd+K to pass through even if in input (handled by GlobalSearch)
-      
-      // Ignore other shortcuts if we are inside an input/textarea
-      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return
+      // Cmd/Ctrl+K is owned by GlobalSearch and must work from anywhere.
 
-      // Shift + ? to show help
-      if (e.key === '?' && e.shiftKey) {
+      // Never hijack keys while the user is typing.
+      if (isTypingTarget(e.target)) return
+
+      // Shift + ? opens the shortcuts help modal.
+      if (e.key === '?') {
         e.preventDefault()
         window.dispatchEvent(new Event('toggle-shortcuts-help'))
         return
       }
 
-      // App navigation: G then [Key]
-      // Alternatively, simple shortcuts:
-      // g d = dashboard, g t = tasks, g g = goals
-      // To implement sequence, we'd need state. For simplicity, let's use Ctrl+Shift+[Key] or just Alt+[Key]
-      // Let's use Alt + [Key] (Option on Mac)
-      if (e.altKey) {
-        switch (e.key.toLowerCase()) {
-          case 'd': e.preventDefault(); navigate('/dashboard'); break
-          case 't': e.preventDefault(); navigate('/tasks'); break
-          case 'g': e.preventDefault(); navigate('/goals'); break
-          case 'c': e.preventDefault(); navigate('/calendar'); break
-          case 'n': e.preventDefault(); navigate('/notes'); break
-          case 's': e.preventDefault(); navigate('/study'); break
-          case 'a': e.preventDefault(); navigate('/assistant'); break
-          default: break
+      // Alt/Option + <letter> navigates. Ignore when Cmd/Ctrl is also held so
+      // we don't shadow browser or OS shortcuts.
+      if (e.altKey && !e.metaKey && !e.ctrlKey) {
+        const path = NAV_SHORTCUTS[e.code]
+        if (path) {
+          e.preventDefault()
+          navigate(path)
         }
       }
     }
@@ -41,3 +51,5 @@ export function useKeyboardShortcuts() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [navigate])
 }
+
+export default useKeyboardShortcuts

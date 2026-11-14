@@ -8,8 +8,11 @@ export const getEvents = async (req, res) => {
     const filter = { userId: req.user._id };
     
     if (req.query.from && req.query.to) {
-      filter.start = { $gte: new Date(req.query.from) };
-      filter.end = { $lte: new Date(req.query.to) };
+      // Overlap test, not containment: an event that starts before the window
+      // and ends inside it (or vice versa) must still be returned, otherwise
+      // multi-day events disappear from calendar views.
+      filter.start = { $lt: new Date(req.query.to) };
+      filter.end = { $gt: new Date(req.query.from) };
     }
 
     const events = await Event.find(filter).sort({ start: 1 });

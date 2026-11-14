@@ -1,9 +1,12 @@
 import Flashcard from '../models/Flashcard.model.js';
 import Note from '../models/Note.model.js';
 import Groq from 'groq-sdk';
+import { AI_MODEL } from '../config/ai.js';
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
+// Lazy init — never construct the Groq client at import time, so the server can
+// boot even when GROQ_API_KEY is missing. Same pattern as ai.controller.js.
+const getGroqClient = () => new Groq({
+  apiKey: process.env.GROQ_API_KEY || 'missing_key',
 });
 
 export const getDecks = async (req, res) => {
@@ -81,10 +84,13 @@ export const reviewFlashcard = async (req, res) => {
     
     if (correct) {
       card.correctCount += 1;
-      // Spaced repetition: push out by correctCount * 2 days
-      nextReviewDate.setDate(now.getDate() + (card.correctCount * 2));
+      // Leitner-style doubling interval (1,2,4,8…) capped at 60 days, so cards
+      // keep coming back instead of being pushed out indefinitely.
+      const interval = Math.min(2 ** (card.correctCount - 1), 60);
+      nextReviewDate.setDate(now.getDate() + interval);
     } else {
-      // If wrong, review again tomorrow
+      // A wrong answer resets progress and schedules it for tomorrow.
+      card.correctCount = 0;
       nextReviewDate.setDate(now.getDate() + 1);
     }
     
@@ -109,19 +115,43 @@ export const getDueFlashcards = async (req, res) => {
 
 export const generateFromNote = async (req, res) => {
   try {
-    const { noteId, deckName } = req.body;
+    if (!process.env.GROQ_API_KEY) {
+      return res.status(503).json({
+        success: false,
+        message: 'AI features are not configured on this server. The GROQ_API_KEY environment variable is missing.',
+      });
+    }
+
+    // The route is POST /flashcards/generate/:noteId, but older clients sent
+    // the id in the body — accept either so both work.
+    const noteId = req.params.noteId || req.body.noteId;
+    const { deckName } = req.body;
+
+    if (!noteId) {
+      return res.status(400).json({ success: false, message: 'A noteId is required.' });
+    }
+
     const note = await Note.findOne({ _id: noteId, userId: req.user._id });
     
     if (!note) return res.status(404).json({ success: false, message: 'Note not found' });
     
-    const prompt = `Generate 5-10 study flashcards from the following text. 
-Return strictly a JSON array of objects, where each object has a 'front' (the question) and 'back' (the answer) string property. 
-Do not include markdown blocks like \`\`\`json, just the raw JSON array.
-Text: ${note.content}`;
+    if (!note.content || !note.content.trim()) {
+      return res.status(400).json({ success: false, message: 'This note is empty — nothing to generate from.' });
+    }
 
+    // Cap the text sent to the model so a huge note can't blow the context
+    // window (and the request budget).
+    const sourceText = note.content.slice(0, 12000);
+
+    const prompt = `Generate 5-10 study flashcards from the following text.
+Return strictly a JSON array of objects, where each object has a 'front' (the question) and 'back' (the answer) string property.
+Do not include markdown blocks like \`\`\`json, just the raw JSON array.
+Text: ${sourceText}`;
+
+    const groq = getGroqClient();
     const completion = await groq.chat.completions.create({
       messages: [{ role: 'user', content: prompt }],
-      model: 'llama3-8b-8192',
+      model: AI_MODEL,
       temperature: 0.2,
     });
 
@@ -140,13 +170,26 @@ Text: ${note.content}`;
       return res.status(500).json({ success: false, message: 'AI did not return an array.' });
     }
 
-    const cardsToInsert = generatedCards.map(c => ({
-      userId: req.user._id,
-      deckName: deckName || note.title,
-      front: c.front,
-      back: c.back,
-      noteId: note._id
-    }));
+    // The model can return malformed entries — keep only usable cards so a
+    // single bad item doesn't fail the whole insert.
+    const cardsToInsert = generatedCards
+      .filter(c => c && typeof c.front === 'string' && typeof c.back === 'string'
+        && c.front.trim() && c.back.trim())
+      .slice(0, 20)
+      .map(c => ({
+        userId: req.user._id,
+        deckName: (deckName || note.title || 'Generated').trim(),
+        front: c.front.trim(),
+        back: c.back.trim(),
+        noteId: note._id
+      }));
+
+    if (cardsToInsert.length === 0) {
+      return res.status(422).json({
+        success: false,
+        message: 'The AI did not return any usable flashcards. Please try again.'
+      });
+    }
 
     const inserted = await Flashcard.insertMany(cardsToInsert);
 

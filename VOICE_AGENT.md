@@ -1,5 +1,16 @@
 # AILifeOS Voice Agent Architecture
 
+> **⚠️ STATUS: DESIGN DOCUMENT — NOT IMPLEMENTED**
+>
+> Nothing described below exists in the codebase yet. There is no
+> `voiceAgentBridge.js`, no WebSocket server, no Deepgram or Gemini
+> integration, and no `VoiceOrb` / `VoicePanel` / `MicStreamer` /
+> `AgentAudioPlayer` / `VoiceAgentSocket` on the client. The AI features that
+> *are* implemented use the Groq API over plain HTTP (see `README.md`).
+>
+> Treat this file as the intended future architecture, not a description of
+> current behaviour.
+
 This document describes the Phase 5 architecture of the AILifeOS Voice Agent, a real-time, Hinglish-capable AI assistant powered by Deepgram and Google Gemini 2.0 Flash.
 
 ## Architecture Overview

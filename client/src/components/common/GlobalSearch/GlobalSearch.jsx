@@ -9,6 +9,7 @@ export default function GlobalSearch() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState({ tasks: [], goals: [], notes: [], events: [] });
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const inputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -27,28 +28,48 @@ export default function GlobalSearch() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen]);
 
+  // Lets other components (e.g. the Topbar search box) open this overlay,
+  // matching the window-event pattern used by ShortcutsHelp.
+  useEffect(() => {
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener('open-global-search', handleOpen);
+    return () => window.removeEventListener('open-global-search', handleOpen);
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
       inputRef.current?.focus();
     } else {
       setQuery('');
       setResults({ tasks: [], goals: [], notes: [], events: [] });
+      setError('');
     }
   }, [isOpen]);
 
   // Debounced search
   useEffect(() => {
     const timer = setTimeout(async () => {
-      if (query.length < 2) {
+      if (query.trim().length < 2) {
         setResults({ tasks: [], goals: [], notes: [], events: [] });
+        setError('');
         return;
       }
       setIsLoading(true);
+      setError('');
       try {
-        const { data } = await api.get(`/search?q=${encodeURIComponent(query)}`);
-        setResults(data.data);
+        const { data } = await api.get('/search', { params: { q: query.trim() } });
+        setResults({
+          tasks: data.data?.tasks || [],
+          goals: data.data?.goals || [],
+          notes: data.data?.notes || [],
+          events: data.data?.events || [],
+        });
       } catch (err) {
         console.error('Search failed', err);
+        setResults({ tasks: [], goals: [], notes: [], events: [] });
+        setError(
+          err.response?.data?.message || 'Search is unavailable right now. Please try again.'
+        );
       } finally {
         setIsLoading(false);
       }
@@ -84,8 +105,12 @@ export default function GlobalSearch() {
 
         <div className="global-search-results">
           {isLoading && <div className="global-search-loading">Searching...</div>}
-          
-          {!isLoading && query.length >= 2 && totalResults === 0 && (
+
+          {!isLoading && error && (
+            <div className="global-search-empty global-search-error">{error}</div>
+          )}
+
+          {!isLoading && !error && query.trim().length >= 2 && totalResults === 0 && (
             <div className="global-search-empty">No results found for "{query}"</div>
           )}
 

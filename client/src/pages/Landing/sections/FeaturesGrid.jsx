@@ -89,7 +89,7 @@ const FEATURES = [
     accent: '#F5A524',
     accentDim: 'rgba(245,165,36,0.1)',
     title: 'Smart Notes',
-    desc: 'Jarvis writes structured Hinglish notes on any topic — DBMS, system design, whatever's blocking you.',
+    desc: "Jarvis writes structured Hinglish notes on any topic — DBMS, system design, whatever's blocking you.",
     preview: (
       <div className="fg-note-preview">
         <div className="fg-note-top">SystemDesign.md</div>

@@ -6,11 +6,15 @@ import Note from '../models/Note.model.js';
 import Event from '../models/Event.model.js';
 import StudySession from '../models/StudySession.model.js';
 import Conversation from '../models/Conversation.model.js';
-import bcrypt from 'bcryptjs';
+import Flashcard from '../models/Flashcard.model.js';
+import StudyGoal from '../models/StudyGoal.model.js';
+import Notification from '../models/Notification.model.js';
+import Folder from '../models/Folder.model.js';
 
 // Helper: generate a signed JWT
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+    algorithm: 'HS256',
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
   });
 };
@@ -147,7 +151,17 @@ export const updateProfile = async (req, res) => {
     }
 
     user.name = req.body.name || user.name;
-    user.email = req.body.email || user.email;
+
+    // Changing email must not silently collide with another account.
+    if (req.body.email && req.body.email.toLowerCase() !== user.email) {
+      const nextEmail = req.body.email.toLowerCase().trim();
+      const taken = await User.findOne({ email: nextEmail, _id: { $ne: user._id } });
+      if (taken) {
+        return res.status(409).json({ success: false, message: 'That email is already in use.' });
+      }
+      user.email = nextEmail;
+    }
+
     if (req.body.avatar !== undefined) user.avatar = req.body.avatar;
     if (req.body.preferences) {
       user.preferences = { ...user.preferences, ...req.body.preferences };
@@ -210,14 +224,22 @@ export const changePassword = async (req, res) => {
 export const deleteAccount = async (req, res) => {
   try {
     const userId = req.user._id;
-    
-    await Task.deleteMany({ userId });
-    await Goal.deleteMany({ userId });
-    await Note.deleteMany({ userId });
-    await Event.deleteMany({ userId });
-    await StudySession.deleteMany({ userId });
-    await Conversation.deleteMany({ userId });
-    
+
+    // Remove every collection that references this user, otherwise orphaned
+    // rows survive the account deletion.
+    await Promise.all([
+      Task.deleteMany({ userId }),
+      Goal.deleteMany({ userId }),
+      Note.deleteMany({ userId }),
+      Folder.deleteMany({ userId }),
+      Event.deleteMany({ userId }),
+      StudySession.deleteMany({ userId }),
+      StudyGoal.deleteMany({ userId }),
+      Flashcard.deleteMany({ userId }),
+      Notification.deleteMany({ userId }),
+      Conversation.deleteMany({ userId }),
+    ]);
+
     await User.findByIdAndDelete(userId);
 
     res.status(200).json({ success: true, message: 'Account and all data deleted' });
@@ -233,13 +255,20 @@ export const exportData = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const [user, tasks, goals, notes, events, studySessions, conversations] = await Promise.all([
+    const [
+      user, tasks, goals, notes, folders, events,
+      studySessions, studyGoals, flashcards, notifications, conversations
+    ] = await Promise.all([
       User.findById(userId).select('-password'),
       Task.find({ userId }),
       Goal.find({ userId }),
       Note.find({ userId }),
+      Folder.find({ userId }),
       Event.find({ userId }),
       StudySession.find({ userId }),
+      StudyGoal.find({ userId }),
+      Flashcard.find({ userId }),
+      Notification.find({ userId }),
       Conversation.find({ userId })
     ]);
 
@@ -248,8 +277,12 @@ export const exportData = async (req, res) => {
       tasks,
       goals,
       notes,
+      folders,
       events,
       studySessions,
+      studyGoals,
+      flashcards,
+      notifications,
       conversations,
       exportedAt: new Date()
     };

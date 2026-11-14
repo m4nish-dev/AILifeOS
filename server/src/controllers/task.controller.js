@@ -1,5 +1,19 @@
 import Task from '../models/Task.model.js';
 import Event from '../models/Event.model.js';
+import { escapeRegex } from '../utils/sanitize.utils.js';
+
+// Fields a client is allowed to set/change on a task. Anything else (userId,
+// completedAt, timestamps) is controlled by the server only.
+const TASK_WRITABLE_FIELDS = [
+  'title', 'description', 'status', 'priority', 'dueDate', 'category',
+  'project', 'time', 'duration', 'tags', 'subtasks', 'goalId', 'eventId'
+];
+
+const pickWritable = (body, allowed) =>
+  allowed.reduce((acc, field) => {
+    if (body[field] !== undefined) acc[field] = body[field];
+    return acc;
+  }, {});
 
 // @desc   Get all tasks for the authenticated user
 // @route  GET /api/tasks
@@ -13,10 +27,12 @@ export const getTasks = async (req, res) => {
     if (priority) filter.priority = priority;
     if (category) filter.category = category;
     if (search) {
+      // Escape metacharacters so a crafted query can't trigger ReDoS.
+      const safe = escapeRegex(String(search).slice(0, 100));
       filter.$or = [
-        { title:       { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { tags:        { $elemMatch: { $regex: search, $options: 'i' } } },
+        { title:       { $regex: safe, $options: 'i' } },
+        { description: { $regex: safe, $options: 'i' } },
+        { tags:        { $elemMatch: { $regex: safe, $options: 'i' } } },
       ];
     }
 
@@ -63,7 +79,10 @@ export const createTask = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Task title is required.' });
     }
 
-    const task = await Task.create({ ...req.body, userId: req.user._id });
+    const task = await Task.create({
+      ...pickWritable(req.body, TASK_WRITABLE_FIELDS),
+      userId: req.user._id,
+    });
 
     res.status(201).json({
       success: true,
@@ -71,7 +90,7 @@ export const createTask = async (req, res) => {
       data: { task },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(400).json({ success: false, message: error.message });
   }
 };
 
@@ -90,8 +109,7 @@ export const updateTask = async (req, res) => {
     }
 
     // Apply updates field by field (never overwrite userId)
-    const allowed = ['title', 'description', 'status', 'priority', 'dueDate', 'category', 'project', 'time', 'duration', 'tags', 'subtasks', 'goalId', 'eventId'];
-    allowed.forEach(field => {
+    TASK_WRITABLE_FIELDS.forEach(field => {
       if (req.body[field] !== undefined) task[field] = req.body[field];
     });
 

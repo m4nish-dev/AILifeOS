@@ -32,4 +32,10 @@ const notificationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+notificationSchema.index({ userId: 1, createdAt: -1 });
+
+// Notifications are transient — expire them after 30 days so the collection
+// doesn't grow without bound.
+notificationSchema.index({ createdAt: 1 }, { expireAfterSeconds: 30 * 24 * 60 * 60 });
+
 export default mongoose.model('Notification', notificationSchema);

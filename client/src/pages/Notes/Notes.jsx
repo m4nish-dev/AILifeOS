@@ -3,34 +3,45 @@ import NotesSidebar from '../../components/notes/NotesSidebar/NotesSidebar'
 import NoteEditor from '../../components/notes/NoteEditor/NoteEditor'
 import NoteQuizModal from '../../components/notes/NoteQuizModal/NoteQuizModal'
 import { noteService } from '../../services/noteService'
-import { foldersData } from '../../data/mockNotes' // Keep folders local for now
+import { folderService } from '../../services/folderService'
+import { useToast } from '../../context/ToastContext'
 import './Notes.css'
 
 export default function Notes() {
-  const [folders, setFolders] = useState(foldersData)
+  const { showToast } = useToast()
+
+  const [folders, setFolders] = useState([])
   const [notes, setNotes] = useState([])
   const [selectedFolder, setSelectedFolder] = useState(null)
   const [selectedNote, setSelectedNote] = useState(null)
-  
+
   const [apiLoading, setApiLoading] = useState(true)
+  const [loadError, setLoadError] = useState(null)
   const [saveStatus, setSaveStatus] = useState('saved') // 'saved' | 'saving' | 'error'
 
   const [aiModal, setAiModal] = useState({ open: false, mode: 'summary', note: null })
 
-  const fetchNotes = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     try {
       setApiLoading(true)
-      const data = await noteService.getNotes()
-      setNotes(data)
-      if (data.length > 0) setSelectedNote(data[0])
+      setLoadError(null)
+      // Folders and notes are independent — load them together.
+      const [noteData, folderData] = await Promise.all([
+        noteService.getNotes(),
+        folderService.getFolders()
+      ])
+      setNotes(noteData)
+      setFolders(folderData)
+      if (noteData.length > 0) setSelectedNote(noteData[0])
     } catch (err) {
       console.error('Failed to load notes:', err)
+      setLoadError(err.response?.data?.message || 'Could not load your notes. Please try again.')
     } finally {
       setApiLoading(false)
     }
   }, [])
 
-  useEffect(() => { fetchNotes() }, [fetchNotes])
+  useEffect(() => { fetchData() }, [fetchData])
 
   const handleNewNote = async () => {
     try {
@@ -38,7 +49,8 @@ export default function Notes() {
       const newNote = await noteService.createNote({
         title: 'Untitled Note',
         content: '# New Note\n\nStart writing…',
-        folderId: selectedFolder || folders[0].id,
+        // null = unfiled; only send a folder when one is selected.
+        folderId: selectedFolder || null,
         tags: [],
         pinned: false
       })
@@ -48,6 +60,7 @@ export default function Notes() {
     } catch (err) {
       console.error('Failed to create note', err)
       setSaveStatus('error')
+      showToast(err.response?.data?.message || 'Failed to create note', 'error')
     }
   }
 
@@ -55,12 +68,25 @@ export default function Notes() {
   const [newFolderName, setNewFolderName] = useState('')
   const [deleteModalId, setDeleteModalId] = useState(null)
 
-  const handleNewFolderSubmit = (e) => {
+  const [creatingFolder, setCreatingFolder] = useState(false)
+
+  const handleNewFolderSubmit = async (e) => {
     e.preventDefault()
-    if (!newFolderName.trim()) return
-    setFolders([...folders, { id: `f${Date.now()}`, name: newFolderName.trim(), icon: '📁', color: 'green' }])
-    setNewFolderModal(false)
-    setNewFolderName('')
+    if (!newFolderName.trim() || creatingFolder) return
+
+    try {
+      setCreatingFolder(true)
+      const folder = await folderService.createFolder({ name: newFolderName.trim() })
+      setFolders([...folders, folder])
+      setNewFolderModal(false)
+      setNewFolderName('')
+      showToast('Folder created', 'success')
+    } catch (err) {
+      console.error('Failed to create folder', err)
+      showToast(err.response?.data?.message || 'Failed to create folder', 'error')
+    } finally {
+      setCreatingFolder(false)
+    }
   }
 
   const handleSave = async (updatedNote) => {
@@ -87,6 +113,7 @@ export default function Notes() {
       setSelectedNote(remaining[0] || null)
     } catch (err) {
       console.error('Failed to delete note', err)
+      showToast(err.response?.data?.message || 'Failed to delete note', 'error')
     } finally {
       setDeleteModalId(null)
     }
@@ -96,6 +123,15 @@ export default function Notes() {
     return (
       <div className="notes-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-tertiary)' }}>
         Loading notes...
+      </div>
+    )
+  }
+
+  if (loadError) {
+    return (
+      <div className="notes-page" style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'center', justifyContent: 'center', color: 'var(--text-tertiary)' }}>
+        <span>{loadError}</span>
+        <button className="sb-btn sb-btn-primary" onClick={fetchData}>Retry</button>
       </div>
     )
   }
@@ -143,7 +179,9 @@ export default function Notes() {
             </div>
             <div className="sb-modal-actions">
               <button type="button" className="sb-btn sb-btn-ghost" onClick={() => setNewFolderModal(false)}>Cancel</button>
-              <button type="submit" className="sb-btn sb-btn-primary">Create</button>
+              <button type="submit" className="sb-btn sb-btn-primary" disabled={creatingFolder || !newFolderName.trim()}>
+                {creatingFolder ? 'Creating…' : 'Create'}
+              </button>
             </div>
           </form>
         </div>

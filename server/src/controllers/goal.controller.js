@@ -2,6 +2,20 @@ import Goal from '../models/Goal.model.js';
 import Task from '../models/Task.model.js';
 import Notification from '../models/Notification.model.js';
 
+const GOAL_WRITABLE_FIELDS = [
+  'title', 'description', 'status', 'dueDate', 'color', 'category', 'icon', 'milestones'
+];
+
+// Only these milestone fields may come from the client; `done`/`completedAt`
+// are managed through the toggle endpoint.
+const MILESTONE_WRITABLE_FIELDS = ['id', 'title', 'week'];
+
+const pickWritable = (body, allowed) =>
+  allowed.reduce((acc, field) => {
+    if (body[field] !== undefined) acc[field] = body[field];
+    return acc;
+  }, {});
+
 // @desc   Get all goals
 // @route  GET /api/goals
 // @access Protected
@@ -52,11 +66,14 @@ export const createGoal = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Title is required' });
     }
 
-    const goal = await Goal.create({ ...req.body, userId: req.user._id });
+    const goal = await Goal.create({
+      ...pickWritable(req.body, GOAL_WRITABLE_FIELDS),
+      userId: req.user._id,
+    });
 
     res.status(201).json({ success: true, message: 'Goal created', data: { goal } });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(400).json({ success: false, message: error.message });
   }
 };
 
@@ -72,8 +89,7 @@ export const updateGoal = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Not authorized' });
     }
 
-    const allowed = ['title', 'description', 'status', 'dueDate', 'color', 'category', 'icon', 'milestones'];
-    allowed.forEach((field) => {
+    GOAL_WRITABLE_FIELDS.forEach((field) => {
       if (req.body[field] !== undefined) goal[field] = req.body[field];
     });
 
@@ -186,7 +202,12 @@ export const addMilestone = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Not authorized' });
     }
 
-    goal.milestones.push(req.body);
+    const milestone = pickWritable(req.body, MILESTONE_WRITABLE_FIELDS);
+    if (!milestone.title || !String(milestone.title).trim()) {
+      return res.status(400).json({ success: false, message: 'Milestone title is required' });
+    }
+
+    goal.milestones.push(milestone);
     await goal.save();
     const savedGoal = await Goal.findById(goal._id);
 

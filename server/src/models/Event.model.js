@@ -56,6 +56,9 @@ const eventSchema = new mongoose.Schema(
   }
 );
 
+// Calendar views always query a user's events within a date window.
+eventSchema.index({ userId: 1, start: 1 });
+
 eventSchema.pre('save', function () {
   if (this.end && this.start && this.end <= this.start) {
     throw new Error('End date must be strictly after start date.');

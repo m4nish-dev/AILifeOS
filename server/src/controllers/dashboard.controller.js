@@ -70,8 +70,10 @@ export const getDashboardSummary = async (req, res) => {
 
     // 2. Tasks
     const tasksDoneToday = await Task.countDocuments({ userId, status: 'done', completedAt: { $gte: todayStart } });
-    const tasksPendingToday = await Task.countDocuments({ userId, status: { $ne: 'done' } }); // Total pending
-    const tasksTotal = tasksDoneToday + tasksPendingToday;
+    const tasksPending = await Task.countDocuments({ userId, status: { $ne: 'done' } });
+    // "Today's workload" = what's still open plus what was finished today, so
+    // the done/total ratio on the dashboard is meaningful.
+    const tasksTotal = tasksDoneToday + tasksPending;
 
     const overdueCount = await Task.countDocuments({ userId, status: { $ne: 'done' }, dueDate: { $lt: todayStart } });
 

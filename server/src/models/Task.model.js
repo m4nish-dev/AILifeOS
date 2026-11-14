@@ -60,6 +60,13 @@ const taskSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Compound indexes matching the hot query paths (list/filter, due dates,
+// analytics on completion time). Previously these lived only in a manual
+// script, so fresh databases ran unindexed collection scans.
+taskSchema.index({ userId: 1, status: 1 });
+taskSchema.index({ userId: 1, dueDate: 1 });
+taskSchema.index({ userId: 1, completedAt: -1 });
+
 // Auto-set/clear completedAt when status changes
 taskSchema.pre('save', function () {
   if (this.isModified('status')) {

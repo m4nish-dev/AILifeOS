@@ -1,5 +1,13 @@
 import Note from '../models/Note.model.js';
 
+const NOTE_WRITABLE_FIELDS = ['title', 'content', 'tags', 'pinned', 'color', 'folderId'];
+
+const pickWritable = (body, allowed) =>
+  allowed.reduce((acc, field) => {
+    if (body[field] !== undefined) acc[field] = body[field];
+    return acc;
+  }, {});
+
 // @desc   Get all notes
 // @route  GET /api/notes
 // @access Protected
@@ -11,6 +19,13 @@ export const getNotes = async (req, res) => {
     if (req.query.pinned === 'false') filter.pinned = false;
     
     if (req.query.tag) filter.tags = req.query.tag.toLowerCase();
+
+    // Filter by folder. `folderId=none` returns notes not filed anywhere.
+    if (req.query.folderId === 'none') {
+      filter.folderId = null;
+    } else if (req.query.folderId) {
+      filter.folderId = req.query.folderId;
+    }
 
     if (req.query.search) {
       filter.$text = { $search: req.query.search };
@@ -54,10 +69,13 @@ export const getNote = async (req, res) => {
 // @access Protected
 export const createNote = async (req, res) => {
   try {
-    const note = await Note.create({ ...req.body, userId: req.user._id });
+    const note = await Note.create({
+      ...pickWritable(req.body, NOTE_WRITABLE_FIELDS),
+      userId: req.user._id,
+    });
     res.status(201).json({ success: true, message: 'Note created', data: { note } });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(400).json({ success: false, message: error.message });
   }
 };
 
@@ -73,8 +91,7 @@ export const updateNote = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Not authorized' });
     }
 
-    const allowed = ['title', 'content', 'tags', 'pinned', 'color'];
-    allowed.forEach((field) => {
+    NOTE_WRITABLE_FIELDS.forEach((field) => {
       if (req.body[field] !== undefined) note[field] = req.body[field];
     });
 

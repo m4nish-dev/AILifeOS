@@ -1,7 +1,12 @@
 import axios from 'axios';
 
+// Default to a relative path: in dev Vite proxies /api to the local Express
+// server, and in production the SPA and API share one Vercel origin. Set
+// VITE_API_URL only when the backend lives on a different host.
+export const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
 });
 

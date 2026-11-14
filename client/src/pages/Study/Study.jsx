@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react'
 import { Play, Pause, Square, Clock, Flame, Book, Brain, Target, Sparkles, PieChart, Plus, Loader2 } from 'lucide-react'
 import { studyService } from '../../services/studyService'
 import { useToast } from '../../context/ToastContext'
-import api from '../../services/api'
 import FlashcardDeck from '../../components/study/FlashcardDeck/FlashcardDeck'
 import FlashcardStudy from '../../components/study/FlashcardStudy/FlashcardStudy'
 import MoodPrompt from '../../components/study/MoodPrompt/MoodPrompt'
@@ -40,6 +39,35 @@ export default function Study() {
   // -- INSIGHTS TAB STATE --
   const [goalProgress, setGoalProgress] = useState([])
   const [heatmapData, setHeatmapData] = useState([])
+  const [goalModalOpen, setGoalModalOpen] = useState(false)
+  const [goalForm, setGoalForm] = useState({ subject: '', hoursPerWeek: 5 })
+  const [savingGoal, setSavingGoal] = useState(false)
+
+  const handleCreateStudyGoal = async (e) => {
+    e.preventDefault()
+    if (!goalForm.subject.trim() || savingGoal) return
+
+    const hours = Number(goalForm.hoursPerWeek)
+    if (!Number.isFinite(hours) || hours <= 0) {
+      return showToast('Enter a weekly target greater than 0 hours', 'error')
+    }
+
+    try {
+      setSavingGoal(true)
+      await studyService.createGoal({
+        subject: goalForm.subject.trim(),
+        targetMinutesPerWeek: Math.round(hours * 60)
+      })
+      setGoalModalOpen(false)
+      setGoalForm({ subject: '', hoursPerWeek: 5 })
+      showToast('Weekly goal created', 'success')
+      await loadData()
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to create goal', 'error')
+    } finally {
+      setSavingGoal(false)
+    }
+  }
 
   useEffect(() => {
     loadData()
@@ -329,7 +357,9 @@ export default function Study() {
             <div className="study-insights__section">
               <div className="study-os__toolbar">
                 <h2>Weekly Goals</h2>
-                <button className="study-btn study-btn--secondary"><Plus size={16} /> Set Goal</button>
+                <button className="study-btn study-btn--secondary" onClick={() => setGoalModalOpen(true)}>
+                  <Plus size={16} /> Set Goal
+                </button>
               </div>
               <div className="study-goals-grid">
                 {goalProgress.length === 0 ? (
@@ -349,6 +379,43 @@ export default function Study() {
                 <FocusPatternHeatmap data={heatmapData} />
               </div>
             </div>
+
+            {goalModalOpen && (
+              <div className="sb-modal-overlay" onClick={() => setGoalModalOpen(false)}>
+                <form className="sb-modal-content" onClick={(e) => e.stopPropagation()} onSubmit={handleCreateStudyGoal}>
+                  <h3 className="sb-modal-title">Set a Weekly Goal</h3>
+                  <div className="sb-modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13 }}>
+                      Subject
+                      <input
+                        autoFocus
+                        placeholder="e.g. DSA, React, Physics"
+                        value={goalForm.subject}
+                        onChange={(e) => setGoalForm({ ...goalForm, subject: e.target.value })}
+                        style={{ padding: '8px 12px', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 6, color: 'var(--text-primary)', outline: 'none' }}
+                      />
+                    </label>
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13 }}>
+                      Target hours per week
+                      <input
+                        type="number"
+                        min="0.5"
+                        step="0.5"
+                        value={goalForm.hoursPerWeek}
+                        onChange={(e) => setGoalForm({ ...goalForm, hoursPerWeek: e.target.value })}
+                        style={{ padding: '8px 12px', background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 6, color: 'var(--text-primary)', outline: 'none' }}
+                      />
+                    </label>
+                  </div>
+                  <div className="sb-modal-actions">
+                    <button type="button" className="sb-btn sb-btn-ghost" onClick={() => setGoalModalOpen(false)}>Cancel</button>
+                    <button type="submit" className="sb-btn sb-btn-primary" disabled={savingGoal || !goalForm.subject.trim()}>
+                      {savingGoal ? 'Saving…' : 'Create Goal'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
           </div>
         )}
 

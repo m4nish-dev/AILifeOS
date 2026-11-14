@@ -72,5 +72,9 @@ const studySessionSchema = new mongoose.Schema(
   }
 );
 
+// Stats/analytics queries always filter by user + completion and sort by date.
+studySessionSchema.index({ userId: 1, startedAt: -1 });
+studySessionSchema.index({ userId: 1, completed: 1, startedAt: -1 });
+
 const StudySession = mongoose.model('StudySession', studySessionSchema);
 export default StudySession;

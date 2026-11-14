@@ -155,7 +155,7 @@ function ThemeSection({ theme, setTheme, user, updateUser, showToast }) {
           <button
             key={id}
             className={`set-theme${theme === id ? ' set-theme--active' : ''}`}
-            onClick={() => setTheme(id === 'system' ? 'light' : id)}
+            onClick={() => setTheme(id)}
           >
             <div className={`set-theme__preview set-theme__preview--${id}`}>
               <div></div><div></div>
@@ -264,7 +264,7 @@ function AccountSection({ showToast }) {
     try {
       await api.delete('/auth/account')
       logout()
-      navigate('/login')
+      navigate('/signin')
     } catch (err) {
       showToast(err.response?.data?.message || 'Failed to delete account', 'error')
       setDeleting(false)

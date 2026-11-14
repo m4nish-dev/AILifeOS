@@ -4,10 +4,19 @@ import mongoose from 'mongoose';
 // @desc   Start a new session
 // @route  POST /api/study/sessions
 // @access Protected
+const SESSION_WRITABLE_FIELDS = [
+  'taskId', 'goalId', 'subject', 'plannedDuration', 'mode', 'notes', 'environment', 'mood'
+];
+
 export const startSession = async (req, res) => {
   try {
+    const payload = SESSION_WRITABLE_FIELDS.reduce((acc, field) => {
+      if (req.body[field] !== undefined) acc[field] = req.body[field];
+      return acc;
+    }, {});
+
     const session = await StudySession.create({
-      ...req.body,
+      ...payload,
       userId: req.user._id,
       startedAt: new Date()
     });
@@ -31,7 +40,21 @@ export const endSession = async (req, res) => {
 
     session.endedAt = new Date();
     session.completed = req.body.completed !== undefined ? req.body.completed : true;
-    if (req.body.duration !== undefined) session.duration = req.body.duration;
+
+    // Derive duration server-side from real elapsed wall-clock time. A client
+    // could otherwise report any number and inflate streaks/analytics. We take
+    // the smaller of (reported, elapsed) so pausing still shortens a session,
+    // and clamp to the planned duration so a tab left open overnight doesn't
+    // record 8 hours of "focus".
+    const elapsedSeconds = Math.max(
+      0,
+      Math.floor((session.endedAt.getTime() - session.startedAt.getTime()) / 1000)
+    );
+    const reported = Number(req.body.duration);
+    const claimed = Number.isFinite(reported) && reported >= 0 ? reported : elapsedSeconds;
+    const cap = session.plannedDuration || elapsedSeconds;
+    session.duration = Math.min(claimed, elapsedSeconds, cap);
+
     if (req.body.notes !== undefined) session.notes = req.body.notes;
     if (req.body.mood) session.mood = req.body.mood;
     if (req.body.environment) session.environment = req.body.environment;

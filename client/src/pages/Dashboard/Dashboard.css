@@ -308,6 +308,20 @@
   border: 2px solid var(--border-strong);
   border-radius: 50%;
   flex-shrink: 0;
+  /* Rendered as a <button> so a task can be completed from the dashboard —
+     reset the UA styles so it still reads as a plain circle. */
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.dash-task-checkbox:hover:not(:disabled) {
+  border-color: var(--green-500);
+  background: var(--green-500);
+}
+.dash-task-checkbox:disabled {
+  opacity: 0.5;
+  cursor: progress;
 }
 .dash-task-content {
   flex: 1;
@@ -613,4 +627,23 @@
 .dash-am-content {
   flex: 1; display: flex; justify-content: space-between; align-items: center;
   font-size: var(--fs-sm); font-weight: 500;
+}
+
+/* Shared empty state for dashboard panels. Was referenced by the markup but
+   never defined, so empty states rendered as unstyled stacked text. */
+.dash-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-5) var(--sp-4);
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: var(--fs-sm);
+  height: 100%;
+}
+.dash-empty p {
+  margin: 0;
+  color: var(--text-tertiary);
 }

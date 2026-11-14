@@ -52,6 +52,8 @@ const goalSchema = new mongoose.Schema(
   }
 );
 
+goalSchema.index({ userId: 1, status: 1 });
+
 // Virtual field for progress
 goalSchema.virtual('progress').get(function () {
   if (!this.milestones || this.milestones.length === 0) return 0;

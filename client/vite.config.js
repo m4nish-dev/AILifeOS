@@ -17,5 +17,18 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    rollupOptions: {
+      output: {
+        // Split heavy third-party libraries out of the app bundle. These change
+        // far less often than app code, so browsers keep them cached across
+        // deploys instead of re-downloading ~900KB every release.
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-charts': ['recharts'],
+          'vendor-motion': ['framer-motion'],
+          'vendor-icons': ['lucide-react'],
+        },
+      },
+    },
   },
 })
